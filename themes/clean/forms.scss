@@ -1,0 +1,133 @@
+fieldset
+{
+	display:inline-block;
+	margin: 0 5px;
+}
+
+input, select, textarea, span.autoCompleteMultiSelectBox
+{
+	margin: 0 5px;
+	box-sizing: border-box;
+	
+	padding: 0.375rem 0.75rem;
+	background-color: $control-background-color;
+	background-clip: padding-box;
+	border: 1px solid $border-color;
+	border-radius: 0.25rem;
+	color: $text-color;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	
+	/*
+	for full width:
+	display: inline-block;
+	width: calc(100% - 10px); 10px is the margin left and right
+	*/
+}
+
+input:focus, select:focus, span.autoCompleteMultiSelectBox.focused
+{
+	border-color: $primary-color;
+	box-shadow: 0 0 0 0.2rem rgba(red($primary-color), green($primary-color), blue($primary-color), 0.1);
+}
+
+span.autoComplete, span.autoCompleteMultiSelectBox
+{
+	position: relative;
+}
+
+span.autoComplete.withSuggestions input:focus, span.autoCompleteMultiSelectBox.withSuggestions
+{
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-color: transparent;
+	box-shadow: 0 0 0 0.2rem rgba(red($primary-color), green($primary-color), blue($primary-color), 0.1);
+}
+
+ul.suggestions
+{
+	z-index: 2000;
+	position: absolute;
+	background-color: $control-background-color;
+    display: block;
+	margin-top: -1px;
+	margin-bottom: 0;
+	margin-left: 5px;
+	margin-right: 5px;
+    list-style-type: none;
+    list-style: none;
+	border-bottom-left-radius: 0.25rem;
+	border-bottom-right-radius: 0.25rem;
+	padding: 0;
+	left: 0;
+	box-sizing: border-box;
+	width: calc(100% - 10px); /*10px is the margin left and right*/
+	border: 1px solid $primary-color;
+	border-top: none;
+	box-shadow: 0 0.2rem 0 0.2rem rgba(red($primary-color), green($primary-color), blue($primary-color), 0.1);
+	
+	li
+	{
+		padding: 0.5rem;
+	}
+	
+	li:not(.disabled)
+	{
+		cursor: pointer;
+	}
+	
+	li:not(.disabled):hover, li:not(.disabled):focus, li:not(.disabled).selected
+	{
+		background-color: $primary-color;
+	}
+}
+
+span.autoCompleteMultiSelectBox
+{
+	display: inline-block;
+	
+	ul:first-child
+	{
+		display: flex;
+		align-items: center;
+		list-style-type: none;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		
+		li
+		{
+			display: inline-block;
+		}
+		
+		li:not(:last-child)
+		{
+			margin: -0.25rem 0.25rem -0.25rem 0;			
+			padding: 0.25rem;
+			border-radius: 0.25rem;
+			background-color: $primary-color;
+			color: $text-on-primary-color;
+			cursor: pointer;
+		}
+		
+		li:focus
+		{
+			opacity: 0.5;
+		}
+		
+		input
+		{
+			border: none;
+			box-shadow: none;
+			margin: 0;
+			padding: 0;
+		}
+	}
+	
+	ul.suggestions
+	{
+		margin-top: 5px;
+		margin-left: -1px;
+		margin-right: 0;
+		width: calc(100% + 2px);
+	}
+}

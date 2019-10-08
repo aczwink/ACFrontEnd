@@ -1,0 +1,46 @@
+nav
+{
+	display: flex;
+	justify-content: space-between;
+	flex-grow: 0;
+	flex-shrink: 1;
+	flex-basis: auto;
+	position: sticky;
+	top: 0;
+	font-weight: 500;
+	box-shadow: 0 0.1rem 0.2rem $shadow-color;
+	background: $background-color;
+	
+	ul
+	{
+		list-style-type: 0;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		text-align: center;
+		
+		li
+		{
+			display: inline-block;
+			
+			a
+			{
+				display: block;
+				padding: 0.5rem;
+				color: $text-color;
+			}
+			
+			a:hover
+			{
+				color: $text-color;
+				text-decoration: none;
+				color: $primary-color;
+			}
+		}
+		
+		li.active a
+		{
+			color: $primary-color;
+		}
+	}
+}

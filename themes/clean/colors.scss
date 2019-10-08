@@ -1,0 +1,29 @@
+$text-color: $dark-color;
+$shadow-color: rgba(0, 0, 0, 0.075);
+
+
+
+
+
+
+
+
+
+
+
+$secondary-color: adjust_hue($primary-color, 180); // complementary
+
+$gray-dark-color: mix($bright-color, $dark-color, 10%);
+$gray-meddark-color: mix($bright-color, $dark-color, 25%);
+$gray-medium-color: mix($bright-color, $dark-color, 50%);
+$gray-bright-color: mix($bright-color, $dark-color, 85%);
+
+$background-color: $bright-color;
+$border-color: $gray-bright-color;
+$text-color-less-important: $gray-meddark-color;
+$text-on-primary-color: $bright-color;
+$text-color-disabled: $gray-medium-color;
+$text-color-highlighted: $bright-color;
+$ui-area-background-color: $gray-bright-color;
+$ui-area-background-color-highlighted: lighten($gray-meddark-color, 10%);
+$control-background-color: $bright-color;

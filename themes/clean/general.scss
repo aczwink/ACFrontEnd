@@ -1,0 +1,186 @@
+html
+{
+	height: 100%;
+	margin: 0
+}
+
+body
+{
+	background-color: $background-color;
+	color: $text-color;
+	min-height: 100vh;
+	margin: 0;
+	display: flex;
+	flex-flow: column;
+	font-size: 0.875rem;
+}
+
+body.scroll-lock
+{
+	height: 100%;
+	overflow: hidden;
+}
+
+h1, h2, h3
+{
+	color: inherit;
+}
+
+a
+{
+	color: $primary-color;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+div#contentContainer
+{
+	/*flex: 1 1 auto;*/
+	display: flex;
+}
+
+ul.horzList, ul.imageGallery
+{
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	list-style-type: none;
+	
+	li
+	{
+		display: block;
+		flex: 0 1 auto;
+		list-style-type: none;
+		text-align: center;
+		padding: 0.25rem;
+	}
+}
+
+ul.imageGallery
+{
+	align-items: center;
+	justify-content: center;
+}
+
+
+
+
+
+
+
+
+@keyframes loadingSpinner
+{
+	to {transform: rotate(360deg);}
+}
+
+div.loadingSpinner
+{
+	display: block;
+	box-sizing: border-box;
+	width: 50px;
+	height: 50px;
+	margin: auto;
+	border-radius: 50%;
+	border: 1px solid $gray-medium-color;
+	border-top-color: $primary-color;
+	animation: loadingSpinner 600ms linear infinite;
+}
+
+div.loadMoreView > button:last-child
+{
+	display:block;
+	margin: 20px auto;
+}
+
+ul.contextMenu
+{
+	z-index: 2000;
+	position: absolute;
+	background-color: $ui-area-background-color;
+	border: 1px solid $border-color;
+    display: block;
+    margin: 0;
+    list-style-type: none;
+    list-style: none;
+	border-radius: 0.25rem;
+	padding: 0;
+	
+	li
+	{
+		padding: 0.5rem;
+		cursor: pointer;
+		border-bottom: 1px solid $border-color;
+	}
+	
+	li:last-child
+	{
+		border-bottom: none;
+	}
+	
+	li:hover
+	{
+		background-color: $ui-area-background-color-highlighted;
+	}
+}
+
+div.icon
+{
+	color: $primary-color;
+	width: 16px;
+	height: 16px;
+}
+
+table.keyValue
+{
+	border: none;
+	margin: 0;
+	
+	tr
+	{
+		background: none;
+		
+		th
+		{
+			text-align: right;
+			border: none;
+			padding: 0;
+		}
+		
+		th:after
+		{
+			content: ":";
+		}
+		
+		td
+		{
+			border: none;
+			text-align: left;
+			padding: 0;
+			padding-left: 1em;
+		}
+	}
+	
+	tr:hover
+	{
+		background: none !important;
+	}
+}
+
+div.rating
+{
+	display: flex;
+}
+
+div.rating.editable
+{
+	> div
+	{
+		cursor: pointer;
+	}
+}

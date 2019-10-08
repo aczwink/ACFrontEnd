@@ -1,0 +1,79 @@
+div.paginator
+{
+	display: flex;
+	margin: 1.5rem;
+	
+	div.limitSelection
+	{
+		width: calc(100% / 3);
+	}
+	
+	div.statusText
+	{
+		width: calc(100% / 3);
+		text-align: center;
+	}
+}
+
+ul.paginationNavigation
+{
+	width: auto;
+	text-align:right;
+	margin-left: auto;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-right: 0;
+	
+	list-style-type: none;
+	border-radius: 0.25rem;
+	
+	li
+	{
+		display: inline-block;
+		border: 1px solid $border-color;
+		
+		a
+		{
+			display: block;
+			padding: 0.5rem 0.75rem;
+			cursor: pointer;
+			
+			background-color: $ui-area-background-color-highlighted;
+		}
+		
+		a:hover
+		{
+			background-color: $background-color;
+			color: $secondary-color;
+			text-decoration: none;
+		}
+		
+		a.disabled
+		{
+			color: $text-color-disabled;
+			pointer-events: none;
+			background-color: $border-color;
+			border-color: $border-color;
+		}
+		
+		a.active
+		{
+			background-color: $primary-color;
+			border-color: $primary-color;
+			color: $ui-area-background-color-highlighted;
+			pointer-events: none;
+		}
+	}
+	
+	li:first-child
+	{
+		border-top-left-radius: 0.25rem;
+		border-bottom-left-radius: 0.25rem;
+	}
+	
+	li:last-child
+	{
+		border-top-right-radius: 0.25rem;
+		border-bottom-right-radius: 0.25rem;
+	}
+}

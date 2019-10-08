@@ -1,0 +1,163 @@
+div.box
+{
+	background-color: $ui-area-background-color;
+	background-clip: border-box;
+	border: 1px solid $border-color;
+	border-radius: 0.25rem;
+	padding: 1.25rem;
+
+	display: flex;
+	margin: 10px;
+}
+
+div.column
+{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+div.row, div.equallySpacedRow, div.evenlySpacedRow
+{
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+}
+
+div.equallySpacedRow
+{
+	justify-content: space-between;
+}
+
+div.evenlySpacedRow
+{
+	justify-content: space-evenly;
+}
+
+div.infoMessage, div.tooltip
+{
+	position: absolute;
+	border: 1px solid $shadow-color;
+	border-radius: 0.25rem;
+	background-color: $bright-color;
+	z-index: 2000;
+	
+	> div:last-child /* body */
+	{
+		padding: 0.5rem 0.75rem
+	}
+}
+
+div.infoMessage
+{
+	top: 5%;
+	right: 2%;
+	position: fixed;
+}
+
+div.tooltip
+{
+	> .arrow
+	{
+		position: relative;
+		background: $background-color;
+	}
+	
+	> .arrow:after, > .arrow:before
+	{
+		border: solid transparent;
+		content: " ";
+		height: 0;
+		width: 0;
+		position: absolute;
+		pointer-events: none;
+	}
+	
+	> .arrow.up:after, > .arrow.up:before
+	{
+		bottom: 100%;
+		left: 50%;
+	}
+	
+	> .arrow.right:after, > .arrow.right:before
+	{
+		left: 100%;
+		top: 50%;
+	}
+	
+	> .arrow:after
+	{
+		border-color: transparent;
+		border-width: calc(0.4rem - 1px);
+	}
+	
+	> .arrow.up:after
+	{
+		border-bottom-color: $bright-color;
+		margin-left: calc(-0.4rem + 1px);
+	}
+	
+	> .arrow.right:after
+	{
+		border-left-color: $bright-color;
+		margin-top: calc(-0.4rem + 1px);
+	}
+	
+	> .arrow:before
+	{
+		border-color: transparent;
+		border-width: 0.4rem;
+	}
+	
+	> .arrow.up:before
+	{
+		border-bottom-color: $shadow-color;
+		margin-left: -0.4rem;
+		bottom: calc(100% + 1px);
+	}
+	
+	> .arrow.right:before
+	{
+		border-left-color: $shadow-color;
+		margin-top: -0.4rem;
+		left: calc(100% + 1px);
+	}
+}
+
+
+
+
+ul.iconView
+{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+	padding: 0;
+	margin:auto;
+	width:100%;
+	list-style-type: none;
+	
+	li
+	{
+		text-align:center;
+		padding: 0.5rem;
+	}
+	
+	img
+	{
+		display:block;
+		margin: auto;
+		max-width: 200px;
+		max-height: 200px;
+		min-width: 100px;
+		min-height: 100px;
+		border-radius: 0.25rem;
+		transition: 0.3s;
+	}
+	
+	img:hover
+	{
+		opacity: 0.7;
+	}
+}

@@ -1,0 +1,47 @@
+table
+{
+	margin: auto;
+	padding: 5px;
+	border-collapse: collapse;
+	border: 1px solid $border-color;
+}
+
+tr:nth-of-type(2n+1)
+{
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+tr:hover
+{
+	background-color: $ui-area-background-color !important;
+}
+
+tr.selected
+{
+	background-color: $primary-color;
+}
+
+tr.selected:hover
+{
+	background-color: darken($primary-color, 10%) !important;
+}
+
+tr.selected a
+{
+	color: $text-on-primary-color;
+	text-decoration: underline;
+}
+
+th
+{
+	border: 1px solid $border-color;
+	padding: 0.75rem;
+	text-align: center;
+}
+
+td
+{
+	border: 1px solid $border-color;
+	padding: 0.75rem;
+	text-align: center;
+}
