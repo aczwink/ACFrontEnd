@@ -15,33 +15,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { VirtualNode } from "./VirtualNode";
+import { VirtualNode, TextLiteral } from "./VirtualNode";
 
-export type TextLiteral = string | number;
-
-export class VirtualTextNode implements VirtualNode
+export class VirtualTextNode extends VirtualNode
 {
     constructor(text: TextLiteral)
     {
+        super();
         this.text = text;
-		this._domNode = null;
     }
 
-    //Properties
-    get domNode(): Node
+    //Protected methods
+    protected RealizeSelf(): void
     {
-        if(this._domNode === null)
-			this._domNode = document.createTextNode(this.text.toString());
-		return this._domNode;
+        this.domNode = document.createTextNode(this.text.toString());
     }
 
-    //Public methods
-    public Update(newNode: VirtualNode): VirtualNode
+    protected UpdateSelf(newNode: VirtualNode): VirtualNode
     {
-        throw new Error("Method not implemented.");
+        if(newNode instanceof VirtualTextNode)
+        {
+            this.text = newNode.text;
+            if(this.domNode !== null)
+                this.domNode.nodeValue = newNode.text.toString();
+            return this;
+        }
+        return newNode;
+        /*	
+        if(this._domNode !== null)
+            newNode.ReplaceNodeWithSelf(this._domNode);
+		*/
     }
 
     //Private members
     private text: TextLiteral;
-    private _domNode: Node | null;
 }

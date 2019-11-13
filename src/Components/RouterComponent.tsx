@@ -19,8 +19,8 @@ import { Component } from "../Component";
 import { Router } from "../Services/Router/Router";
 import { Injectable, Instantiatable } from "../Injector";
 import { VirtualInstance } from "../VirtualInstance";
-import { RenderNode } from "../VirtualElement";
 import { RouterStateNode } from "../Services/Router/RouterState";
+import { RenderNode } from "../VirtualNode";
 
 @Injectable
 export class RouterComponent extends Component
@@ -29,8 +29,6 @@ export class RouterComponent extends Component
     constructor(private router: Router)
     {
         super();
-
-        this.router.state.Subscribe(() => this.Update());
     }
 
     //Protected methods
@@ -53,5 +51,11 @@ export class RouterComponent extends Component
         if(node.child !== undefined)
             return this.FindComponent(node.child);
         return null;
+    }
+
+    //Event handlers
+    public OnInitiated()
+    {
+        this.router.state.Subscribe(() => this.Update());
     }
 }

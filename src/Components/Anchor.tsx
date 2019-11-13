@@ -16,11 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualElement";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { TextLiteral } from "../VirtualTextNode";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../Injector";
+import { TextLiteral, RenderNode } from "../VirtualNode";
 
 @Injectable
 export class Anchor extends Component

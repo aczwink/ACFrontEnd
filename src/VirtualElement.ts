@@ -16,52 +16,90 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { VirtualNode } from "./VirtualNode";
-import { TextLiteral } from "./VirtualTextNode";
 
-export type RenderNode = VirtualNode | TextLiteral | null;
-
-export class VirtualElement implements VirtualNode
+function MoveProperty(properties: any, fromKey: string, toKey: string)
 {
-    constructor(tagName: string, properties: any, children: VirtualNode[])
+    if(fromKey in properties)
     {
+        properties[toKey] = properties[fromKey];
+        delete properties[fromKey];
+    }
+}
+
+function RedirectProperties(properties: any)
+{
+    if(properties !== null)
+    {
+        MoveProperty(properties, "class", "className");
+    }
+    return properties;
+}
+
+export class VirtualElement extends VirtualNode
+{
+    constructor(tagName: string, properties: any)
+    {
+        super();
         this.tagName = tagName;
-        this.properties = properties;
-        this.children = children;
-        this._domNode = null;
+        this.properties = RedirectProperties(properties);
     }
 
-    //Properties
-    get domNode(): Node
-    {
-        if( (this._domNode === null) )
-			this._domNode = this.CreateDomNode();
-		return this._domNode;
-    }
-
-    //Public methods
-    public Update(newNode: VirtualNode): VirtualNode
-    {
-        throw new Error("Method not implemented.");
-    }
-
-    //Private members
-    private CreateDomNode(): Node
+    //Protected methods
+    protected RealizeSelf(): void
     {
         const element = document.createElement(this.tagName);
-
+            
         for(var key in this.properties)
             (element as any)[key] = this.properties[key];
 
-        this.children.forEach( child => {
-            element.appendChild(child.domNode);
-		});
+        this.domNode = element;
+    }
 
-        return element;
+    protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
+    {
+        if(newNode instanceof VirtualElement)
+        {
+            if(this.tagName == newNode.tagName)
+            {
+                //update self
+                if(this.domNode !== null)
+                    this.UpdateObject(this.domNode, this.properties, newNode.properties);
+                this.properties = newNode.properties;
+                
+                this.UpdateChildren(newNode);
+                return this;
+            }
+        }
+
+        return newNode;
+        /*
+        if(this._domNode)
+            DOM.ReplaceNode(this._domNode, newNode.domNode);
+		*/
     }
 
     //Private members
     private tagName: string;
     private properties: any;
-    private children: Array<VirtualNode>;
-    private _domNode: Node | null;
+
+    //Private methods
+    private UpdateObject(object: any, oldProps: any, newProps: any)
+	{
+		var propsToSet = [];
+		var propsToUnset = [];
+		
+		for(var prop in newProps)
+		{
+			if((prop in oldProps) && (oldProps[prop] === newProps[prop]))
+				continue;
+			propsToSet.push(prop);
+		}
+		for(var prop in oldProps)
+		{
+			if(!(prop in newProps))
+				propsToUnset.push(prop);
+		}
+		propsToSet.forEach( prop => object[prop] = newProps[prop] );
+		propsToUnset.forEach( prop => object[prop] = null );
+    }
 }

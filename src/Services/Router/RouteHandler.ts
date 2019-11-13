@@ -70,14 +70,14 @@ export class RouteHandler
             route: this.route
         };
 
-        if(pathSegments.length > 0)
+        if(this.HasChildren())
         {
-            throw new Error("CHECK CHILDREN");
-        }
-        else if(this.HasChildren())
-        {
-            //children need to have default route
-            const child = this.FindChildRoute([""]);
+            let child: RouterStateNode | null;
+            if(pathSegments.length > 0)
+                child = this.FindChildRoute(pathSegments);
+            else //children need to have default route
+                child = this.FindChildRoute([""]);
+            
             if(child === null)
                 return null;
             node.child = child;

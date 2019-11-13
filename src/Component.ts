@@ -15,8 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { VirtualNode } from "./VirtualNode";
-import { RenderNode } from "./VirtualElement";
+import { VirtualNode, RenderNode } from "./VirtualNode";
 import { VirtualTextNode } from "./VirtualTextNode";
 
 export abstract class Component
@@ -28,11 +27,11 @@ export abstract class Component
     }
 
     //Properties
-    get domNode(): Node
+    get vNode(): VirtualNode | null
     {
         if( (this._vNode === null) )
-			this.UpdateSync();
-		return this._vNode!.domNode;
+            this.UpdateSync();
+        return this._vNode;
     }
 
     //Abstract
@@ -49,34 +48,37 @@ export abstract class Component
         let newNode = this.Render();
 
         //is there something to render?
-		if((newNode === null) || (newNode === undefined)) //can be undefined if Render does not return something
+		if((newNode === undefined)) //can be undefined if Render does not return something
 		{
             //nothing to render
-            //TODO: this is currently needed for a "special case" (the one below).
-            //If the component did render null before and now updates it isn't mounted within the parent.
-            //So this update will update the vnode but not the real dom node as it is not existing.
-            newNode = new VirtualTextNode("");
+            newNode = null;
         }
-        
-        if((typeof newNode === "string") || (typeof newNode === "number"))
-			newNode = new VirtualTextNode(newNode);
+        else if((typeof newNode === "string") || (typeof newNode === "number"))
+            newNode = new VirtualTextNode(newNode);
 
-        //special case: check if we did not have a node before
-		if(this._vNode === null)
-		{
-			this._vNode = newNode as VirtualNode;
-			//TODO: see some lines above, where: (this._vNode = new VTextNode("");)
-			return;
+        if(this._vNode === null) //special case: component was never used before
+        {
+            this._vNode = newNode;
+            return;
         }
-        
-        //we keep our real node but update it
-		this._vNode = this._vNode.Update(newNode);
+
+        this._vNode = this._vNode.Update(newNode);
     }
 
     //Private methods
     private NextTick(func: Function)
     {
         setTimeout(func, 0);
+    }
+
+    //Event handlers
+    public OnInitiated()
+    {
+    }
+
+    public OnInputChanged()
+    {
+        this.Update();
     }
 
     //Private members

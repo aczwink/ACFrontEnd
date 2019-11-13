@@ -16,8 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+export interface MountPoint
+{
+    mountPointNode: Node;
+    referenceNode?: Node;
+    reference: "before" | "appendChild";
+}
+
 export const DOM = new class
 {
+    public Mount(node: Node, mountPoint: MountPoint)
+    {
+        switch(mountPoint.reference)
+        {
+            case "appendChild":
+                mountPoint.mountPointNode.appendChild(node);
+                break;
+            case "before":
+                mountPoint.mountPointNode.insertBefore(node, mountPoint.referenceNode!);
+                break;
+        }
+    }
+
     public ReplaceNode(oldNode: Node, newNode: Node)
     {
         /**
@@ -27,5 +47,14 @@ export const DOM = new class
         if(parent === null)
             return;
         parent.replaceChild(newNode, oldNode);
+    }
+
+    public Unmount(node: Node)
+    {
+        /**
+         * There is node.remove(); but it is not standardized yet.
+         */
+        if(node.parentNode !== null)
+            node.parentNode.removeChild(node);
     }
 }

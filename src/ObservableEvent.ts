@@ -15,31 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-declare module JSX
+
+export class ObservableEvent
 {
-    interface ElementAttributesProperty
+    constructor()
     {
-        input:any;
+        this.observers = [];
     }
 
-    interface ElementChildrenAttribute
+    //Public methods
+    public Emit()
     {
-        children: {};
+        this.observers.forEach(observer => observer());
     }
 
-    interface IntrinsicElements
+    public Subscribe(observer: Function)
     {
-        a: any;
-        button: any;
-        div: any;
-        h1: any;
-        h4: any;
-        input: any;
-        li: any;
-        nav: any;
-        option: any;
-        select: any;
-        span: any;
-        ul: any;
+        this.observers.push(observer);
     }
+
+    //Private members
+    private observers: Function[];
 }

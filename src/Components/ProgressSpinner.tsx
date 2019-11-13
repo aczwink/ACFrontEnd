@@ -15,31 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-declare module JSX
+import { Component } from "../Component";
+import { RenderNode } from "../VirtualNode";
+import { JSX_CreateElement } from "../JSX_CreateElement";
+
+export class ProgressSpinner extends Component
 {
-    interface ElementAttributesProperty
+    protected Render(): RenderNode
     {
-        input:any;
-    }
-
-    interface ElementChildrenAttribute
-    {
-        children: {};
-    }
-
-    interface IntrinsicElements
-    {
-        a: any;
-        button: any;
-        div: any;
-        h1: any;
-        h4: any;
-        input: any;
-        li: any;
-        nav: any;
-        option: any;
-        select: any;
-        span: any;
-        ul: any;
+        return <div class="loadingSpinner" />;
     }
 }

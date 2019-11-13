@@ -15,21 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { VirtualNode } from "./VirtualNode";
-import { RenderNode, VirtualElement } from "./VirtualElement";
+import { VirtualNode, RenderNode } from "./VirtualNode";
+import { VirtualElement } from "./VirtualElement";
 import { Component } from "./Component";
 import { VirtualInstance } from "./VirtualInstance";
 import { Instantiatable } from "./Injector";
-import { VirtualTextNode } from "./VirtualTextNode";
 import { VirtualFragment } from "./VirtualFragment";
+import { VirtualTextNode } from "./VirtualTextNode";
 
-function TransformChildren(children: RenderNode[]): VirtualNode[]
+function TransformChildren(children: RenderNode[], parent: VirtualNode | null): VirtualNode[]
 {
-    return children.filter(child => child !== null).map(child => {
+    return children.filter(child => child !== null).map(child =>
+    {
         if((typeof child === "string") || (typeof child === "number"))
-            return new VirtualTextNode(child);
+            child = new VirtualTextNode(child);
         if(Array.isArray(child))
-            return new VirtualFragment(TransformChildren(child));
+        {
+            child = new VirtualFragment(child);
+        }
         return child;
     }) as VirtualNode[];
 }
@@ -38,13 +41,17 @@ export function JSX_CreateElement(type: string | Instantiatable<Component> | Ins
 {
     if(typeof(type) == "string")
     {
-        return new VirtualElement(type, properties, TransformChildren(children));
+        const vNode = new VirtualElement(type, properties);
+        vNode.children = TransformChildren(children, vNode);
+        return vNode;
     }
 
     if(type == VirtualFragment)
     {
-        return new VirtualFragment(TransformChildren(children));
+        const vNode =  new VirtualFragment();
+        vNode.children = TransformChildren(children, vNode);
+        return vNode;
     }
 
-    return new VirtualInstance(type as Instantiatable<Component>, properties, TransformChildren(children));
+    return new VirtualInstance(type as Instantiatable<Component>, properties, TransformChildren(children, null));
 }

@@ -15,31 +15,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-declare module JSX
+import { ObservableEvent } from "../ObservableEvent";
+import { Observable } from "../Observable";
+
+export interface DialogProperties
 {
-    interface ElementAttributesProperty
+    title: string;
+}
+
+export class DialogRef
+{
+    constructor(private closer: Function)
     {
-        input:any;
+        this._onAccept = new ObservableEvent();
+        this._waiting = new Observable<boolean>(false);
     }
 
-    interface ElementChildrenAttribute
+    //Properties
+    get onAccept()
     {
-        children: {};
+        return this._onAccept;
     }
 
-    interface IntrinsicElements
+    public get waiting()
     {
-        a: any;
-        button: any;
-        div: any;
-        h1: any;
-        h4: any;
-        input: any;
-        li: any;
-        nav: any;
-        option: any;
-        select: any;
-        span: any;
-        ul: any;
+        return this._waiting;
     }
+
+    //Public methods
+    public Close()
+    {
+        this.closer();
+    }
+
+    //Members
+    private _onAccept: ObservableEvent;
+    private _waiting: Observable<boolean>;
 }

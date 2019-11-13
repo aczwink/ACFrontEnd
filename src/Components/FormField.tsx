@@ -15,31 +15,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-declare module JSX
+import { Component } from "../Component";
+import { JSX_CreateElement } from "../JSX_CreateElement";
+import { Injectable } from "../Injector";
+import { TextLiteral, RenderNode } from "../VirtualNode";
+
+@Injectable
+export class FormField extends Component
 {
-    interface ElementAttributesProperty
-    {
-        input:any;
-    }
+    //Input
+    input!: {
+        children: TextLiteral;
+        hint: string;
+    };
 
-    interface ElementChildrenAttribute
+    //Protected methods
+    protected Render(): RenderNode
     {
-        children: {};
-    }
-
-    interface IntrinsicElements
-    {
-        a: any;
-        button: any;
-        div: any;
-        h1: any;
-        h4: any;
-        input: any;
-        li: any;
-        nav: any;
-        option: any;
-        select: any;
-        span: any;
-        ul: any;
+        return <div class="formElement">
+            <span>{this.input.hint}</span>
+            {this.input.children}
+        </div>;
     }
 }

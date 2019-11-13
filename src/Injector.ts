@@ -43,12 +43,14 @@ export const Injector = new class
     public CreateComponent<T>(componentType: Instantiatable<Component>): Component
     {
         const instance = this.CreateInstance(componentType); //components are always instantiated
+        const instanceAny = instance as any;
 
         //set input
-        (instance as any).input = {};
+        instanceAny.input = {};
+
+        this.InstallDataBindings(instance, instanceAny);
         
         return instance;
-        //console.log("keys", Reflect.ownKeys(instance)); //todo, make props observable
     }
 
     public Register<T>(type: Instantiatable<T>, instance: T)
@@ -67,6 +69,7 @@ export const Injector = new class
         {
             const newInstance = this.CreateInstance(target);
             this.Register(target, newInstance);
+            instance = newInstance;
         }
         return instance as unknown as T;
     }
@@ -78,9 +81,48 @@ export const Injector = new class
         return injections;
     }
 
-    //TODO: why can't this be private?
+    //Private methods
+    //TODO: why can't these be private?
     public CreateInstance<T>(target: Instantiatable<T>): T
     {
         return new target(...this.ResolveInjections(target));
+    }
+
+    public InstallDataBinding(instance: Component, instanceAny: any, propertyName: string)
+    {
+        let value: any = instanceAny[propertyName];
+        delete instanceAny[propertyName];
+
+        Object.defineProperty(instanceAny, propertyName, {			
+			get: () =>
+			{
+				return value;
+			},
+			
+			set: (newValue) =>
+			{
+				const oldValue = value;
+                value = newValue;
+                if(oldValue !== newValue)
+                    instance.Update();
+			}
+		});
+    }
+
+    public InstallDataBindings(instance: Component, instanceAny: any)
+    {
+        const propertyKeys = Reflect.ownKeys(instanceAny);
+        for (let i = 0; i < propertyKeys.length; i++)
+        {
+            const key = propertyKeys[i] as string;
+
+            //skip special symbols
+            if(key === "_vNode")
+                continue;
+            if(key === "input")
+                continue;
+
+            this.InstallDataBinding(instance, instanceAny, key);
+        }
     }
 }

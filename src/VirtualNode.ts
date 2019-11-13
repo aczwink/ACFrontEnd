@@ -16,10 +16,263 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-export interface VirtualNode
-{
-    //Properties
-    readonly domNode: Node;
+import { MountPoint, DOM } from "./DOM";
 
-    Update(newNode: VirtualNode): VirtualNode;
+export type TextLiteral = string | number;
+export type RenderNode = VirtualNode | TextLiteral | null;
+
+export abstract class VirtualNode
+{
+    constructor()
+    {
+        this.domNode = null;
+        this.nextSibling = null;
+        this.parent = null;
+
+        this._prevSibling = null;
+        this.realized = false;
+        this.mounted = false;
+    }
+
+    //Public members
+    public nextSibling: VirtualNode | null;
+
+    //Properties
+    public set children(children: Array<VirtualNode> | undefined)
+    {
+        this.DropAllChildren();
+        if(children !== undefined)
+        {
+            for (let index = 0; index < children.length; index++)
+            {
+                const child = children[index];
+                this.AddChild(child);
+            }
+        }
+    }
+
+    public get previousSibling()
+    {
+        return this._prevSibling;
+    }
+
+    public set previousSibling(newPrev: VirtualNode | null)
+    {
+        this._prevSibling = newPrev;
+        if(newPrev !== null)
+            newPrev.nextSibling = this;
+    }
+
+    //Public methods
+    public AddChild(newChild: VirtualNode)
+    {
+        if(this._children === undefined)
+            this._children = [];
+
+        if(this._children.length > 0)
+            newChild.previousSibling = this._children[this._children.length - 1];
+
+        newChild.parent = this;
+        this._children.push(newChild);
+
+        if(this.mounted)
+        {
+            const mountPoint = newChild.FindMountPoint();
+            if(mountPoint === null)
+            throw new Error("TODO");
+            newChild.Mount(mountPoint);
+        }
+    }
+
+    public Mount(mountPoint: MountPoint): void
+    {
+        this.EnsureRealized();
+        if(this.domNode !== null)
+            DOM.Mount(this.domNode, mountPoint);
+        else
+            this.MountChildren(mountPoint);
+        this.mounted = true;
+    }
+
+    public MountAsChildOf(mountPoint: Node)
+    {
+        this.Mount({ mountPointNode: mountPoint, reference: "appendChild" });
+    }
+
+    public Unmount()
+    {
+        if(this.domNode !== null)
+        {
+            DOM.Unmount(this.domNode);
+        }
+        else if(this._children !== undefined)
+        {
+            for (let index = 0; index < this._children.length; index++)
+            {
+                const child = this._children[index];
+                child.Unmount();
+            }
+        }
+        this.mounted = false;
+    }
+
+    public Update(newVNode: VirtualNode | null): VirtualNode | null
+    {
+        const updatedNode = this.UpdateSelf(newVNode);
+        if(updatedNode !== this)
+        {
+            if(newVNode === null)
+                throw new Error("HERE"); //this.RemoveVirtualNode(oldVNode);
+            else
+            this.Replace(newVNode);
+        }
+
+        return updatedNode;
+    }
+
+    //Protected members
+    /**
+     * Null means for a realized node that no dom node representation is available for this node.
+     * Currently this is only true for VirtualInstance and VirtualFragment.
+     * If this has not been realized, dom node is always null.
+     */
+    protected domNode: Node | null;
+
+    //Protected abstract
+    protected abstract RealizeSelf(): void;
+    protected abstract UpdateSelf(newNode: VirtualNode | null): VirtualNode | null;
+
+    //Protected methods
+    protected UpdateChildren(newNode: VirtualNode | null)
+	{
+        if(newNode === null)
+        {
+            throw new Error("HERE");
+        }
+        if(newNode._children === undefined)
+        {
+            this.DropAllChildren();
+            return;
+        }
+        if(this._children === undefined)
+            this._children = [];
+
+		var i;
+		for(i = 0; i < this._children.length; i++)
+		{
+			if(i >= newNode._children.length)
+			{
+                //drop child
+                this._children[i].Unmount();
+				this._children.splice(i, 1);
+				i--;
+			}
+            else
+                this._children[i] = this._children[i].Update(newNode._children[i])!;
+		}
+        for(; i < newNode._children.length; i++)
+            this.AddChild(newNode._children[i]);
+    }
+
+    //Private members
+    /**
+     * Undefined if the node does not have children.
+     * This is currently only true for VirtualTextNode
+     */
+    private _children?: Array<VirtualNode>;
+    private parent: VirtualNode | null;
+    private mounted: boolean;
+    private realized: boolean;
+    private _prevSibling: VirtualNode | null;
+
+    //Private methods
+    private DropAllChildren()
+    {
+        if(this._children === undefined)
+            return;
+        for (let index = 0; index < this._children.length; index++)
+        {
+            const child = this._children[index];
+            child.Unmount();
+        }
+        this._children = undefined;
+    }
+
+    private EnsureRealized()
+    {
+        if( !this.realized )
+        {
+            this.RealizeSelf();
+            this.realized = true;
+        }
+        if( this.domNode !== null )
+            this.MountChildren({ mountPointNode: this.domNode, reference: "appendChild" });
+    }
+
+    private FindMountPoint(checkChildren: boolean = true) : MountPoint | null
+    {
+        //check this
+        if(this.domNode !== null)
+            return { mountPointNode: this.domNode.parentNode!, referenceNode: this.domNode, reference: "before" };
+
+        //check children
+        if(checkChildren && (this._children !== undefined) && (this._children.length > 0))
+        {
+            const result = this._children[0].FindMountPoint();
+            if(result !== null)
+                return result;
+        }
+
+        //check next sibling
+        if(this.nextSibling !== null)
+        {
+            const result = this.nextSibling.FindMountPoint();
+            if(result !== null)
+                return result;
+        }
+
+        //try parent
+        if(this.parent !== null)
+        {
+            if(this.parent.domNode !== null)
+                return { mountPointNode: this.parent.domNode, reference: "appendChild" };
+
+            return this.parent.FindMountPoint(false);
+        }
+
+        return null;
+    }
+
+    private MountChildren(mountPoint: MountPoint)
+    {
+        if( (this._children !== undefined) )
+        {
+            const children = this._children;
+            for (let index = 0; index < children.length; index++)
+            {
+                const child = children[index];
+                child.Mount(mountPoint);
+            }
+        }
+    }
+
+    private Replace(newVNode: VirtualNode)
+    {
+        if( this.domNode !== null)
+        {
+            throw new Error("HERE");
+        }
+        else
+        {
+            //a fragment or instance
+            const mountPoint = this.FindMountPoint();
+            if(mountPoint === null)
+            {
+                console.log(this, newVNode);
+                throw new Error("HERE");
+            }
+            newVNode.Mount(mountPoint);
+            this.Unmount();
+        }
+    }
 }

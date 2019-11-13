@@ -18,97 +18,126 @@
 import { Component } from "./Component";
 import { VirtualNode } from "./VirtualNode";
 import { Instantiatable, Injector } from "./Injector";
-import { DOM } from "./DOM";
+import { EqualsAny } from "./JSTypes";
 
-export class VirtualInstance implements VirtualNode
+interface Dictionary
 {
-    constructor(type: Instantiatable<Component>, args: any, children: VirtualNode[])
+    [key: string]: any;
+}
+
+export class VirtualInstance extends VirtualNode
+{
+    constructor(type: Instantiatable<Component>, args: Dictionary | null, subChildren?: VirtualNode[])
     {
+        super();
+
         this.type = type;
         this.args = args;
-        this.children = children;
+        this._subChildren = subChildren;
         this.instance = null;
+        this.injections = undefined;
     }
 
-    //Properties
-    get domNode(): Node
+    //Protected methods
+    protected RealizeSelf(): void
     {
-        if(this.instance === null)
+        this.injections = Injector.ResolveInjections(this.type);
+        this.instance = Injector.CreateComponent(this.type);
+
+        //set children
+        this.PassInputArgs(this.args);
+
+        this.instance.OnInitiated();
+
+        if(this.instance.vNode === null)
+            this.children = undefined;
+        else
         {
-            this.instance = Injector.CreateComponent(this.type); //...this.__args
-
-            //set children
-            const input = (this.instance as any).input;
-            /*if(this.children.length == 1)
-                input.children = this.children[0];
-            else*/
-                input.children = this.children;
-
-            //set input
-            if(this.args !== null)
-            {
-                Object.keys(this.args).forEach(key => input[key] = this.args[key]);
-            }
+            this.children = [this.instance.vNode];
         }
-		return this.instance.domNode;
     }
 
-    //Public methods
-    public Update(newNode: VirtualNode): VirtualNode
+    protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
     {
         if(newNode instanceof VirtualInstance)
         {
             if(this.type === newNode.type)
             {
-                //try to not change instance to not loose state
-                if(!this.InjectionChangeCausesNewComponent())
+                if(this.instance !== null)
                 {
-                    //check if input args changed
-                    if( (this.instance !== null) && (!this.ArgsAreEqual(this.args, newNode.args)) )
+                    //try to not change instance to not loose state
+                    const requiresNewInstance = this.InjectionsChanged();
+
+                    if(!requiresNewInstance)
                     {
-                        throw new Error("Method-block not implemented.");
-                        //TODO: old code
-                        //this.instance.__OnNewProperties(...newNode.__args);
-                        //this.__instance.Update();
+                        let issueUpdate = false;
+                        //check if input args changed
+                        if(!EqualsAny(this.args, newNode.args))
+                        {
+                            this.PassInputArgs(newNode.args);
+                            this.instance.OnInputChanged();
+                        }
+
+                        //check if sub children changed
+                        if(!EqualsAny(this._subChildren, newNode._subChildren))
+                        {
+                            issueUpdate = true;
+                        }
+
+                        this.args = newNode.args;
+                        this._subChildren = newNode._subChildren;
+                        const input = (this.instance as any).input;
+                        input.children = this._subChildren;
+                        if(issueUpdate)
+                            this.instance.Update();
+                        return this;
                     }
-                    this.args = newNode.args;
-                    
-                    return this;
                 }
             }
         }
 
+        return newNode;
+        /*
         if(this.instance !== null)
-            DOM.ReplaceNode(this.domNode, newNode.domNode);
-		return newNode;
+            newNode.ReplaceNodeWithSelf(this.domNode);
+		*/
     }
 
-    //Private members
-    private type: Instantiatable<Component>;
-    private args: any;
-    private children: Array<VirtualNode>;
-    private instance: Component | null;
-
     //Private methods
-    private InjectionChangeCausesNewComponent(): boolean
+    private InjectionsChanged(): boolean
     {
         if(this.instance !== null)
         {
-            throw new Error("Method-block not implemented.");
+            const newInjections = Injector.ResolveInjections(this.type);
+            return !EqualsAny(this.injections, newInjections);
         }
 
         return false;
     }
 
-    private ArgsAreEqual(args1: any, args2: any)
-	{
-		if(args1.length != args2.length)
-			return false;
-		for(var i = 0; i < args1.length; i++)
-		{
-			if(args1[i] != args2[i])
-				return false;
-		}
-		return true;
-	}
+    private PassInputArgs(args: Dictionary | null)
+    {
+        if(args !== null)
+        {
+            const input = (this.instance as any).input;
+            for (const key in args)
+            {
+                input[key] = args[key]
+            }
+            input.children = this._subChildren;
+        }
+        else
+        {
+            (this.instance as any).input = {
+                children: this._subChildren
+            };
+        }
+    }
+    
+    //Private members
+    private type: Instantiatable<Component>;
+    private args: Dictionary | null;
+    private _subChildren?: Array<VirtualNode>;
+    private instance: Component | null;
+    private injections: any;
 }

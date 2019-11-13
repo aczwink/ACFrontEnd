@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { ObservableEvent } from "./ObservableEvent";
 
-export class Observable<T>
+export class Observable<T> extends ObservableEvent
 {
     constructor(value: T)
     {
+        super();
         this.state = value;
-        this.observers = [];
     }
 
     //Public methods
@@ -36,15 +37,9 @@ export class Observable<T>
         this.state = value;
 
         if(changed)
-            this.observers.forEach(observer => observer());
-    }
-
-    public Subscribe(observer: Function)
-    {
-        this.observers.push(observer);
+            this.Emit();
     }
 
     //Private members
     private state: T;
-    private observers: Function[];
 }

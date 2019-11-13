@@ -17,30 +17,26 @@
  * */
 import { VirtualNode } from "./VirtualNode";
 
-export class VirtualFragment implements VirtualNode
+export class VirtualFragment extends VirtualNode
 {
-    constructor(children: VirtualNode[])
+    constructor(children?: VirtualNode[])
     {
+        super();
         this.children = children;
     }
 
-    get domNode(): Node
+    //Protected methods
+    protected RealizeSelf(): void
     {
-        const fragment = document.createDocumentFragment();
-
-        this.children.forEach( child => {
-            fragment.appendChild(child.domNode);
-		});
-
-        return fragment;
     }
 
-    //Public methods
-    public Update(newNode: VirtualNode): VirtualNode
+    protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
     {
-        throw new Error("Method not implemented.");
+        if(newNode instanceof VirtualFragment)
+        {
+            this.UpdateChildren(newNode);
+            return this;
+        }
+        return newNode;
     }
-
-    //Private members
-    private children: Array<VirtualNode>;
 }

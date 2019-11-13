@@ -15,31 +15,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-declare module JSX
+import { Component } from "../Component";
+import { JSX_CreateElement } from "../JSX_CreateElement";
+import { Injectable } from "../Injector";
+import { VirtualNode, RenderNode } from "../VirtualNode";
+
+@Injectable
+export class Select extends Component
 {
-    interface ElementAttributesProperty
+    //Input
+    input!: {
+        children: VirtualNode[];
+        value: string;
+        onChanged: Function;
+    };
+
+    //Protected methods
+    protected Render(): RenderNode
     {
-        input:any;
+        return <select value={this.input.value} onchange={this.OnKeyUp.bind(this)}>{...this.input.children}</select>;
     }
 
-    interface ElementChildrenAttribute
+    //Event handlers
+    private OnKeyUp(event: Event)
     {
-        children: {};
-    }
-
-    interface IntrinsicElements
-    {
-        a: any;
-        button: any;
-        div: any;
-        h1: any;
-        h4: any;
-        input: any;
-        li: any;
-        nav: any;
-        option: any;
-        select: any;
-        span: any;
-        ul: any;
+        const newValue = (event.target! as HTMLSelectElement).value;
+        if(this.input.value !== newValue)
+            this.input.onChanged(newValue);
     }
 }

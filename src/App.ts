@@ -19,6 +19,7 @@ import { Component } from "./Component";
 import { Injector, Instantiatable } from "./Injector";
 import { Router } from "./Services/Router/Router";
 import { Routes } from "./Services/Router/Route";
+import { PopupManager } from "./Services/PopupManager";
 
 export interface AppProperties
 {
@@ -34,6 +35,9 @@ export class App
         this.router = new Router(properties.routes);
         Injector.Register(Router, this.router);
 
+        this.popupManager = new PopupManager(properties.mountPoint);
+        Injector.Register(PopupManager, this.popupManager);
+
         window.addEventListener("load", this.OnWindowLoaded.bind(this), false);
     }
 
@@ -41,10 +45,11 @@ export class App
     private OnWindowLoaded()
     {
         const rootComponent = Injector.CreateComponent(this.properties.rootComponentClass);
-        if(rootComponent.domNode !== null)
-            this.properties.mountPoint.appendChild(rootComponent.domNode);
+        if(rootComponent.vNode !== null)
+            rootComponent.vNode.MountAsChildOf(this.properties.mountPoint);
     }
 
     //Private members
     private router: Router;
+    private popupManager: PopupManager;
 }

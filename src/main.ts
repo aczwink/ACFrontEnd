@@ -19,21 +19,39 @@
 import {App} from "./App";
 import {Component} from "./Component";
 import {JSX_CreateElement} from "./JSX_CreateElement";
-import { VirtualNode } from "./VirtualNode";
+import { VirtualNode, RenderNode } from "./VirtualNode";
 import { RouterComponent } from "./Components/RouterComponent";
 import { Route, Routes } from "./Services/Router/Route";
 import { VirtualFragment } from "./VirtualFragment";
 import { Anchor } from "./Components/Anchor";
+import { MatIcon } from "./Components/MatIcon";
+import { PopupManager } from "./Services/PopupManager";
+import { Injectable } from "./Injector";
+import { FormField } from "./Components/FormField";
+import { DialogProperties, DialogRef } from "./Controller/DialogRef";
+import { LineEdit } from "./Components/LineEdit";
+import { Select } from "./Components/Select";
+import { HttpService } from "./Services/HttpService";
 
 export
 {
     Anchor,
     App,
     Component,
+    DialogProperties,
+    DialogRef,
+    FormField,
+    HttpService,
+    Injectable,
     JSX_CreateElement,
-    VirtualFragment,
+    LineEdit,
+    MatIcon,
+    PopupManager,
+    RenderNode,
     Route,
     Routes,
     RouterComponent,
+    Select,
+    VirtualFragment,
     VirtualNode
 };
