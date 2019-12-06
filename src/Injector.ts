@@ -24,7 +24,7 @@ export interface Instantiatable<T>
 }
 
 let injectables = new Map<Function, any>();
-export function Injectable<T extends {new(...args:any[]):{}}>(constructor:T)
+export function Injectable<T extends Instantiatable<{}>>(constructor:T)
 {
     injectables.set(constructor, null);
     return constructor;

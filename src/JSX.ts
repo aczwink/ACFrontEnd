@@ -19,7 +19,7 @@ declare module JSX
 {
     interface ElementAttributesProperty
     {
-        input:any;
+        input:any; //for components the name of the member that defines the attributes types
     }
 
     interface ElementChildrenAttribute
@@ -29,17 +29,55 @@ declare module JSX
 
     interface IntrinsicElements
     {
+        fragment: {}; //special for VirtualFragment
+
         a: any;
-        button: any;
+        br: {
+        };
+        button: {
+            children: string;
+            onclick: () => void;
+
+            class?: string;
+            disabled?: boolean;
+        };
         div: any;
+        form: any;
         h1: any;
+        h2: {
+            children: any[];
+
+            class?: string;
+        };
         h4: any;
-        input: any;
+        hr: {
+        };
+        img: {
+            src: string;
+            
+            class?: string;
+        };
+        input: {
+            type: "text",
+            value: string;
+
+            placeholder?: string;
+            
+            onkeyup?: Function;
+        };
         li: any;
         nav: any;
         option: any;
         select: any;
         span: any;
+        table: {
+            children: any[];
+            
+            class?: string;
+        };
+        td: {};
+        th: {};
+        tr: {};
         ul: any;
     }
 }

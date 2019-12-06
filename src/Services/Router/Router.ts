@@ -29,7 +29,7 @@ export class Router
     constructor(routes: Routes)
     {
         this.TransformRoutes(routes);
-        this._state = new Observable<RouterState>(new RouterState(null));
+        this._state = new Observable<RouterState>(new RouterState(null, {}));
         this.UpdateState(window.location.href);
     }
 

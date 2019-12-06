@@ -27,7 +27,7 @@ function TransformChildren(children: RenderNode[], parent: VirtualNode | null): 
 {
     return children.filter(child => child !== null).map(child =>
     {
-        if((typeof child === "string") || (typeof child === "number"))
+        if((typeof child === "string") || (typeof child === "number") || (typeof child === "boolean"))
             child = new VirtualTextNode(child);
         if(Array.isArray(child))
         {
@@ -41,14 +41,14 @@ export function JSX_CreateElement(type: string | Instantiatable<Component> | Ins
 {
     if(typeof(type) == "string")
     {
+        if(type == "fragment")
+        {
+            const vNode =  new VirtualFragment();
+            vNode.children = TransformChildren(children, vNode);
+            return vNode;
+        }
+        
         const vNode = new VirtualElement(type, properties);
-        vNode.children = TransformChildren(children, vNode);
-        return vNode;
-    }
-
-    if(type == VirtualFragment)
-    {
-        const vNode =  new VirtualFragment();
         vNode.children = TransformChildren(children, vNode);
         return vNode;
     }

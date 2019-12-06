@@ -18,6 +18,7 @@
 
 import { Route } from "./Route";
 import { Url } from "../../Model/Url";
+import { Dictionary } from "../../Model/Dictionary";
 
 export interface RouterStateNode
 {
@@ -27,15 +28,21 @@ export interface RouterStateNode
 
 export class RouterState
 {
-    constructor(root: RouterStateNode | null)
+    constructor(root: RouterStateNode | null, routeParams: Dictionary<string>)
     {
         this._root = root;
+        this._routeParams = routeParams;
     }
 
     //Properties
     get root(): RouterStateNode | null
     {
         return this._root;
+    }
+
+    public get routeParams(): Dictionary<string>
+    {
+        return this._routeParams;
     }
 
     //Public methods
@@ -45,7 +52,14 @@ export class RouterState
         let node: RouterStateNode | null | undefined = this._root;
         while((node !== null) && (node !== undefined))
         {
-            segments.push(node.route.path);
+            let segment = node.route.path;
+            if(segment.startsWith(":"))
+            {
+                const key = segment.substring(1);
+                segment = this._routeParams[key];
+            }
+
+            segments.push(segment);
             node = node.child;
         }
         return new Url(segments);
@@ -53,4 +67,5 @@ export class RouterState
 
     //Private members
     private _root: RouterStateNode | null;
+    private _routeParams: Dictionary<string>;
 }

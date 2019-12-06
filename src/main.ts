@@ -22,36 +22,55 @@ import {JSX_CreateElement} from "./JSX_CreateElement";
 import { VirtualNode, RenderNode } from "./VirtualNode";
 import { RouterComponent } from "./Components/RouterComponent";
 import { Route, Routes } from "./Services/Router/Route";
-import { VirtualFragment } from "./VirtualFragment";
 import { Anchor } from "./Components/Anchor";
 import { MatIcon } from "./Components/MatIcon";
 import { PopupManager } from "./Services/PopupManager";
-import { Injectable } from "./Injector";
+import { Injectable, Instantiatable, Injector } from "./Injector";
 import { FormField } from "./Components/FormField";
 import { DialogProperties, DialogRef } from "./Controller/DialogRef";
 import { LineEdit } from "./Components/LineEdit";
 import { Select } from "./Components/Select";
 import { HttpService } from "./Services/HttpService";
+import { AutocompleteTextLineEdit } from "./Components/AutocompleteTextLineEdit";
+import { ProgressSpinner } from "./Components/ProgressSpinner";
+import { SelectableTable } from "./Components/SelectableTable";
+import { MaleIcon } from "./Icons/MaleIcon";
+import { FemaleIcon } from "./Icons/FemaleIcon";
+import { Router } from "./Services/Router/Router";
+import { Observable } from "./Observable";
+import { Dictionary, PrimitiveDictionary } from "./Model/Dictionary";
+import { ObservableEvent } from "./ObservableEvent";
 
 export
 {
     Anchor,
     App,
+    AutocompleteTextLineEdit,
     Component,
     DialogProperties,
     DialogRef,
+    Dictionary,
+    FemaleIcon,
     FormField,
     HttpService,
     Injectable,
+    Injector,
+    Instantiatable,
     JSX_CreateElement,
     LineEdit,
+    MaleIcon,
     MatIcon,
+    Observable,
+    ObservableEvent,
     PopupManager,
+    PrimitiveDictionary,
+    ProgressSpinner,
     RenderNode,
     Route,
+    Router,
     Routes,
     RouterComponent,
     Select,
-    VirtualFragment,
+    SelectableTable,
     VirtualNode
 };

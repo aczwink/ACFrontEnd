@@ -1,13 +1,13 @@
 div.box
 {
-	background-color: $ui-area-background-color;
+	background-color: $background-color;
 	background-clip: border-box;
 	border: 1px solid $border-color;
 	border-radius: 0.25rem;
 	padding: 1.25rem;
 
-	display: flex;
-	margin: 10px;
+	display: inline-flex;
+	margin: 10px auto;
 }
 
 div.column
@@ -160,4 +160,10 @@ ul.iconView
 	{
 		opacity: 0.7;
 	}
+}
+
+
+div.vertNav + div.stack
+{
+	margin-left: 220px;
 }

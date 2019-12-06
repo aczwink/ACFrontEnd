@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Injectable } from "../Injector";
+import { PrimitiveDictionary } from "../Model/Dictionary";
 
 export interface HttpRequest
 {
@@ -29,8 +30,16 @@ export interface HttpRequest
 export class HttpService
 {
     //Public methods
-    public Get<T>(url: string): Promise<T>
+    public Get<T>(url: string, queryParams?: PrimitiveDictionary): Promise<T>
     {
+        if(queryParams !== undefined)
+        {
+            const parts = [];
+            for (const key in queryParams)
+                parts.push(key + "=" + encodeURIComponent(queryParams[key]));
+            url += "?" + parts.join("&");
+        }
+
         return this.Request({
             method: "GET",
             url: url,

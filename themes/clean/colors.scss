@@ -16,7 +16,9 @@ $secondary-color: adjust_hue($primary-color, 180); // complementary
 $gray-dark-color: mix($bright-color, $dark-color, 10%);
 $gray-meddark-color: mix($bright-color, $dark-color, 25%);
 $gray-medium-color: mix($bright-color, $dark-color, 50%);
-$gray-bright-color: mix($bright-color, $dark-color, 85%);
+$gray-medbright-color: mix($bright-color, $dark-color, 75%);
+$gray-bright-color: mix($bright-color, $dark-color, 90%);
+$gray-ultrabright-color: mix($bright-color, $dark-color, 95%);
 
 $background-color: $bright-color;
 $border-color: $gray-bright-color;

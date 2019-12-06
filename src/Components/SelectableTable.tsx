@@ -15,43 +15,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Component } from "../Component";
+import { RenderNode } from "../VirtualNode";
+import { JSX_CreateElement } from "../JSX_CreateElement";
 
-type ObservableSubscriber<T> = (newValue: T) => void;
-export class Observable<T>
+export class SelectableTable extends Component
 {
-    constructor(value: T)
+    //Input
+    input!: {
+        children: RenderNode[];
+        columns: string[];
+    };
+
+    //Protected methods
+    protected Render(): RenderNode
     {
-        this.state = value;
-        this.observers = [];
-    }
-
-    //Public methods
-    public Get(): T
-    {
-        return this.state;
-    }
-
-    public Set(value: T)
-    {
-        const changed = this.state !== value;
-        this.state = value;
-
-        if(changed)
-            this.Emit();
-    }
-
-    public Subscribe(observer: ObservableSubscriber<T>)
-    {
-        this.observers.push(observer);
-    }
-
-    //Private members
-    private state: T;
-    private observers: ObservableSubscriber<T>[];
-
-    //Private methods
-    private Emit()
-    {
-        this.observers.forEach(observer => observer( this.state ));
+        return <table>
+            <tr>
+                {this.input.columns.map( col => <th>{col}</th>)}
+            </tr>
+            {this.input.children}
+        </table>;
     }
 }

@@ -53,7 +53,7 @@ export abstract class Component
             //nothing to render
             newNode = null;
         }
-        else if((typeof newNode === "string") || (typeof newNode === "number"))
+        else if((typeof newNode === "string") || (typeof newNode === "number") || (typeof newNode === "boolean"))
             newNode = new VirtualTextNode(newNode);
 
         if(this._vNode === null) //special case: component was never used before

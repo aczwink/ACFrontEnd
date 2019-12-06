@@ -18,7 +18,7 @@
 
 import { MountPoint, DOM } from "./DOM";
 
-export type TextLiteral = string | number;
+export type TextLiteral = string | number | boolean;
 export type RenderNode = VirtualNode | TextLiteral | null;
 
 export abstract class VirtualNode
@@ -26,16 +26,13 @@ export abstract class VirtualNode
     constructor()
     {
         this.domNode = null;
-        this.nextSibling = null;
+        this._nextSibling = null;
         this.parent = null;
 
         this._prevSibling = null;
         this.realized = false;
         this.mounted = false;
     }
-
-    //Public members
-    public nextSibling: VirtualNode | null;
 
     //Properties
     public set children(children: Array<VirtualNode> | undefined)
@@ -49,18 +46,6 @@ export abstract class VirtualNode
                 this.AddChild(child);
             }
         }
-    }
-
-    public get previousSibling()
-    {
-        return this._prevSibling;
-    }
-
-    public set previousSibling(newPrev: VirtualNode | null)
-    {
-        this._prevSibling = newPrev;
-        if(newPrev !== null)
-            newPrev.nextSibling = this;
     }
 
     //Public methods
@@ -79,7 +64,7 @@ export abstract class VirtualNode
         {
             const mountPoint = newChild.FindMountPoint();
             if(mountPoint === null)
-            throw new Error("TODO");
+                throw new Error("TODO");
             newChild.Mount(mountPoint);
         }
     }
@@ -124,7 +109,7 @@ export abstract class VirtualNode
             if(newVNode === null)
                 throw new Error("HERE"); //this.RemoveVirtualNode(oldVNode);
             else
-            this.Replace(newVNode);
+                this.Replace(newVNode);
         }
 
         return updatedNode;
@@ -183,7 +168,23 @@ export abstract class VirtualNode
     private parent: VirtualNode | null;
     private mounted: boolean;
     private realized: boolean;
+    private _nextSibling: VirtualNode | null;
     private _prevSibling: VirtualNode | null;
+
+    //Private properties
+    private set nextSibling(newNext: VirtualNode | null)
+    {
+        this._nextSibling = newNext;
+        if( newNext !== null)
+            newNext._prevSibling = this;
+    }
+
+    private set previousSibling(newPrev: VirtualNode | null)
+    {
+        this._prevSibling = newPrev;
+        if(newPrev !== null)
+            newPrev._nextSibling = this;
+    }
 
     //Private methods
     private DropAllChildren()
@@ -224,9 +225,9 @@ export abstract class VirtualNode
         }
 
         //check next sibling
-        if(this.nextSibling !== null)
+        if(this._nextSibling !== null)
         {
-            const result = this.nextSibling.FindMountPoint();
+            const result = this._nextSibling.FindMountPoint();
             if(result !== null)
                 return result;
         }
@@ -243,6 +244,30 @@ export abstract class VirtualNode
         return null;
     }
 
+    private InsertChildBefore(referenceChild: VirtualNode, newChild: VirtualNode)
+    {
+        if(this._children === undefined)
+            this._children = [];
+
+        const refIndex = this._children.indexOf(referenceChild);
+
+        newChild.previousSibling = (refIndex == 0) ? null : this._children[refIndex];
+        newChild.nextSibling = referenceChild;
+
+        newChild.parent = this;
+        this._children.splice(refIndex, 0, newChild);
+
+        if(this.mounted)
+        {
+            const mountPoint = newChild.FindMountPoint();
+            if(mountPoint === null)
+            {
+                throw new Error("HERE");
+            }
+            newChild.Mount(mountPoint);
+        }
+    }
+
     private MountChildren(mountPoint: MountPoint)
     {
         if( (this._children !== undefined) )
@@ -256,23 +281,34 @@ export abstract class VirtualNode
         }
     }
 
+    private RemoveChild(child: VirtualNode)
+    {
+        if(this._children === undefined)
+            throw new Error("HERE");
+
+        this._children.splice(this._children.indexOf(child), 1);
+        child.Unmount();
+    }
+
     private Replace(newVNode: VirtualNode)
     {
-        if( this.domNode !== null)
+        if(this.parent === null)
+            throw new Error("HERE");
+
+        this.parent.ReplaceChild(this, newVNode);
+    }
+
+    private ReplaceChild(oldChild: VirtualNode, newChild: VirtualNode)
+    {
+        if( oldChild.domNode !== null)
         {
             throw new Error("HERE");
         }
         else
         {
             //a fragment or instance
-            const mountPoint = this.FindMountPoint();
-            if(mountPoint === null)
-            {
-                console.log(this, newVNode);
-                throw new Error("HERE");
-            }
-            newVNode.Mount(mountPoint);
-            this.Unmount();
+            this.InsertChildBefore(oldChild, newChild);
+            this.RemoveChild(oldChild);
         }
     }
 }

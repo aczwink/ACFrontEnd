@@ -49,12 +49,10 @@ export class VirtualInstance extends VirtualNode
 
         this.instance.OnInitiated();
 
-        if(this.instance.vNode === null)
+        if((this.instance === null) || (this.instance.vNode === null) )
             this.children = undefined;
         else
-        {
             this.children = [this.instance.vNode];
-        }
     }
 
     protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null

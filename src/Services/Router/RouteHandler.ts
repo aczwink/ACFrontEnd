@@ -18,6 +18,7 @@
 import { Url } from "../../Model/Url";
 import { Route } from "./Route";
 import { RouterState, RouterStateNode } from "./RouterState";
+import { Dictionary } from "../../Model/Dictionary";
 
 export class RouteHandler
 {
@@ -38,32 +39,34 @@ export class RouteHandler
             return new RouterState(
                 {
                     route: this.route
-                }
+                },
+                {}
             );
         }
 
-        const node = this.CreateRouterStateNode(url.pathSegments);
+        const routeParams: Dictionary<string> = {};
+        const node = this.CreateRouterStateNode(url.pathSegments, routeParams);
         if(node !== null)
-            return new RouterState(node);
+            return new RouterState(node, routeParams);
         return null;
     }
 
     //Private methods
-    private CreateRouterStateNode(pathSegments: string[]): RouterStateNode | null
+    private CreateRouterStateNode(pathSegments: string[], routeParams: Dictionary<string>): RouterStateNode | null
     {
         if(this.path.pathSegments.length > pathSegments.length)
             return null;
 
         for(let i = 0; i < this.path.pathSegments.length; i++)
         {
-            if(this.path.pathSegments[i] !== pathSegments[i])
+            if(!this.SegmentsMatch(this.path.pathSegments[i], pathSegments[i], routeParams))
                 return null;
         }
         pathSegments = pathSegments.slice(this.path.pathSegments.length); // remove the portion that has been matched
 
         if(this.route.redirect !== undefined)
         {
-            return this.ResolveRedirect(pathSegments);
+            return this.ResolveRedirect(pathSegments, routeParams);
         }
 
         const node: RouterStateNode = {
@@ -74,9 +77,9 @@ export class RouteHandler
         {
             let child: RouterStateNode | null;
             if(pathSegments.length > 0)
-                child = this.FindChildRoute(pathSegments);
+                child = this.FindChildRoute(pathSegments, routeParams);
             else //children need to have default route
-                child = this.FindChildRoute([""]);
+                child = this.FindChildRoute([""], routeParams);
             
             if(child === null)
                 return null;
@@ -86,11 +89,11 @@ export class RouteHandler
         return node;
     }
 
-    private FindChildRoute(pathSegments: string[])
+    private FindChildRoute(pathSegments: string[], routeParams: Dictionary<string>)
     {
         for(let i = 0; i < this.children!.length; i++)
         {
-            const node = this.children![i].CreateRouterStateNode(pathSegments);
+            const node = this.children![i].CreateRouterStateNode(pathSegments, routeParams);
             if(node !== null)
                 return node;
         }
@@ -102,7 +105,7 @@ export class RouteHandler
         return this.children.length > 0;
     }
 
-    private ResolveRedirect(pathSegments: string[]): RouterStateNode | null
+    private ResolveRedirect(pathSegments: string[], routeParams: Dictionary<string>): RouterStateNode | null
     {
         if(this.route.redirect!.startsWith("/"))
             throw new Error("NOT IMPLEMENTED");
@@ -112,7 +115,18 @@ export class RouteHandler
         if(this.parent === null)
             throw new Error("NOT IMPLEMENTED");
 
-        return this.parent.FindChildRoute([this.route.redirect!].concat(pathSegments));
+        return this.parent.FindChildRoute([this.route.redirect!].concat(pathSegments), routeParams);
+    }
+
+    private SegmentsMatch(routeSegment: string, pathSegment: string, routeParams: Dictionary<string>)
+    {
+        if(routeSegment.startsWith(":"))
+        {
+            const key = routeSegment.substring(1);
+            routeParams[key] = pathSegment;
+            return true;
+        }
+        return routeSegment == pathSegment;
     }
 
     //Private members

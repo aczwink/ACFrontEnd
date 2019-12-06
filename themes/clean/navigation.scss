@@ -1,7 +1,7 @@
-nav
+nav, div.subPageNav
 {
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	flex-grow: 0;
 	flex-shrink: 1;
 	flex-basis: auto;
@@ -10,6 +10,7 @@ nav
 	font-weight: 500;
 	box-shadow: 0 0.1rem 0.2rem $shadow-color;
 	background: $background-color;
+	margin-bottom: 1rem;
 	
 	ul
 	{
@@ -22,25 +23,86 @@ nav
 		li
 		{
 			display: inline-block;
+			border-bottom: 0.15rem solid transparent;
+			height: calc(100% - 0.15rem);
 			
 			a
 			{
 				display: block;
 				padding: 0.5rem;
-				color: $text-color;
+				color: $text-color-less-important;
+				font-size: 0.875rem;
 			}
 			
 			a:hover
 			{
 				color: $text-color;
 				text-decoration: none;
-				color: $primary-color;
 			}
+		}
+		
+		li.active
+		{
+			border-bottom: 0.15rem solid $primary-color;
 		}
 		
 		li.active a
 		{
 			color: $primary-color;
+		}
+	}
+}
+
+div.subPageNav
+{
+	box-shadow: none;
+	border-bottom: 1px solid $gray-bright-color;
+	
+	> *
+	{
+		margin: auto 0;
+		padding-bottom: 0.5rem;
+	}
+}
+
+div.vertNav
+{
+	width: 200px;
+	height: 100%;
+	padding: 0;
+	position: fixed;
+	top: auto;
+	left: 0;
+	overflow-x: hidden;
+	background-color: $gray-ultrabright-color;
+	margin-top: -1rem;
+	border-right: 1px solid $border-color;
+	border-top: 1px solid $border-color;
+	
+	ul
+	{
+		margin: 1rem auto 0 auto;
+		padding: 0;
+		list-style-type: none;
+		
+		li
+		{			
+			a
+			{
+				display: block;
+				padding: 0.5rem;
+				font-size: 0.875rem;
+			}
+			
+			a:hover
+			{
+				text-decoration: none;
+			}
+		}
+		
+		li.active a
+		{
+			background-color: $gray-bright-color;
 		}
 	}
 }

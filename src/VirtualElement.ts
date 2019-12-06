@@ -26,11 +26,23 @@ function MoveProperty(properties: any, fromKey: string, toKey: string)
     }
 }
 
+function SetPropertyOnBool(properties: any, key: string, valueOnTrue: any)
+{
+    if(key in properties)
+    {
+        if(properties[key])
+            properties[key] = valueOnTrue;
+        else
+            delete properties[key];
+    }
+}
+
 function RedirectProperties(properties: any)
 {
     if(properties !== null)
     {
         MoveProperty(properties, "class", "className");
+        SetPropertyOnBool(properties, "disabled", "disabled");
     }
     return properties;
 }
