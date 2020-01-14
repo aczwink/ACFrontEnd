@@ -36,7 +36,7 @@ export class MaleIcon extends Component
 		</symbol>
 		</svg>
 		<svg viewBox="0 0 32 32" focusable="false"><use xlink:href="#icon-male"></use></svg>
-		`;
-        return <div class="icon" innerHTML={svg}></div>
+        `;
+        return <div class="icon" innerHTML={svg}></div>;
     }
 }

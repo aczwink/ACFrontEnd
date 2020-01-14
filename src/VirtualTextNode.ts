@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { VirtualNode, TextLiteral } from "./VirtualNode";
+import { VirtualNode, RenderText } from "./VirtualNode";
 
 export class VirtualTextNode extends VirtualNode
 {
-    constructor(text: TextLiteral)
+    constructor(text: RenderText)
     {
         super();
         this.text = text;
@@ -48,5 +48,5 @@ export class VirtualTextNode extends VirtualNode
     }
 
     //Private members
-    private text: TextLiteral;
+    private text: RenderText;
 }

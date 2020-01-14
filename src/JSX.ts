@@ -15,8 +15,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+
 declare module JSX
 {
+    /*
+    //We would need that this interface extends VirtualNode.
+    However, we can not use imports in this file -.-
+    it therefore does not work.
+    interface Element
+    {
+    }
+    */
+   type JsxNode = any;
+
     interface ElementAttributesProperty
     {
         input:any; //for components the name of the member that defines the attributes types
@@ -45,7 +56,7 @@ declare module JSX
         form: any;
         h1: any;
         h2: {
-            children: any[];
+            children: JsxNode;
 
             class?: string;
         };

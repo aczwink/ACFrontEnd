@@ -18,14 +18,14 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../Injector";
-import { TextLiteral, RenderNode } from "../VirtualNode";
+import { RenderText, RenderNode } from "../VirtualNode";
 
 @Injectable
 export class FormField extends Component
 {
     //Input
     input!: {
-        children: TextLiteral;
+        children: RenderText;
         hint: string;
     };
 

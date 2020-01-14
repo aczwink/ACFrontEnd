@@ -18,8 +18,10 @@
 
 import { MountPoint, DOM } from "./DOM";
 
-export type TextLiteral = string | number | boolean;
-export type RenderNode = VirtualNode | TextLiteral | null;
+export type RenderText = string | number | boolean;
+type RenderOther = null;
+
+export type RenderNode = VirtualNode | RenderText | RenderOther;
 
 export abstract class VirtualNode
 {

@@ -19,14 +19,14 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../Injector";
-import { TextLiteral, RenderNode } from "../VirtualNode";
+import { RenderText, RenderNode } from "../VirtualNode";
 
 @Injectable
 export class Anchor extends Component
 {
     //Input
     input!: {
-        children: TextLiteral;
+        children: RenderText;
         route: string;
     };
 
