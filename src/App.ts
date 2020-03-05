@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,12 +20,34 @@ import { Injector, Instantiatable } from "./Injector";
 import { Router } from "./Services/Router/Router";
 import { Routes } from "./Services/Router/Route";
 import { PopupManager } from "./Services/PopupManager";
+import { TitleService } from "./Services/TitleService";
+import { VirtualNode } from "./VirtualNode";
 
 export interface AppProperties
 {
     mountPoint: HTMLElement;
     rootComponentClass: Instantiatable<Component>;
     routes: Routes;
+    title: string;
+    version: string;
+}
+
+class VirtualRoot extends VirtualNode
+{
+    constructor(mountPoint: HTMLElement)
+    {
+        super(mountPoint);
+    }
+
+    protected RealizeSelf(): void
+    {
+    }
+    
+    protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
+    {
+        throw new Error("This should never be called");
+    }
+
 }
 
 export class App
@@ -38,6 +60,10 @@ export class App
         this.popupManager = new PopupManager(properties.mountPoint);
         Injector.Register(PopupManager, this.popupManager);
 
+        Injector.Resolve<TitleService>(TitleService).format = "%title% | " + properties.title + " " + properties.version;
+
+        this.root = new VirtualRoot(this.properties.mountPoint);
+
         window.addEventListener("load", this.OnWindowLoaded.bind(this), false);
     }
 
@@ -46,10 +72,11 @@ export class App
     {
         const rootComponent = Injector.CreateComponent(this.properties.rootComponentClass);
         if(rootComponent.vNode !== null)
-            rootComponent.vNode.MountAsChildOf(this.properties.mountPoint);
+            this.root.AddChild(rootComponent.vNode);
     }
 
     //Private members
     private router: Router;
     private popupManager: PopupManager;
+    private root: VirtualRoot;
 }

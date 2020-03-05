@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,24 +19,38 @@
 import { MountPoint, DOM } from "./DOM";
 
 export type RenderText = string | number | boolean;
-type RenderOther = null;
+type RenderOther = null | undefined;
 
 export type RenderNode = VirtualNode | RenderText | RenderOther;
 
 export abstract class VirtualNode
 {
-    constructor()
+    constructor(domNode?: Node)
     {
-        this.domNode = null;
         this._nextSibling = null;
         this.parent = null;
-
         this._prevSibling = null;
-        this.realized = false;
-        this.mounted = false;
+
+        if(domNode === undefined)
+        {
+            this.domNode = null;
+            this.mounted = false;
+            this.realized = false;
+        }
+        else
+        {
+            this.domNode = domNode;
+            this.mounted = true;
+            this.realized = true;
+        }
     }
 
     //Properties
+    public get children()
+    {
+        return this._children;
+    }
+
     public set children(children: Array<VirtualNode> | undefined)
     {
         this.DropAllChildren();
@@ -215,11 +229,15 @@ export abstract class VirtualNode
     private FindMountPoint(checkChildren: boolean = true) : MountPoint | null
     {
         //check this
-        if(this.domNode !== null)
-            return { mountPointNode: this.domNode.parentNode!, referenceNode: this.domNode, reference: "before" };
+        if( this.mounted && (this.domNode !== null) )
+        {
+            if(this.domNode.parentNode === null)
+                throw new Error("CAN'T BE");
+            return { mountPointNode: this.domNode.parentNode, referenceNode: this.domNode, reference: "before" };
+        }
 
         //check children
-        if(checkChildren && (this._children !== undefined) && (this._children.length > 0))
+        if(checkChildren && this.mounted && (this._children !== undefined) && (this._children.length > 0))
         {
             const result = this._children[0].FindMountPoint();
             if(result !== null)
@@ -304,13 +322,17 @@ export abstract class VirtualNode
     {
         if( oldChild.domNode !== null)
         {
-            throw new Error("HERE");
+            newChild.EnsureRealized();
+            if(newChild.domNode !== null)
+                throw new Error("HERE");
         }
+
+        const next = oldChild._nextSibling;
+        this.RemoveChild(oldChild);
+
+        if(next === null)
+            this.AddChild(newChild);
         else
-        {
-            //a fragment or instance
-            this.InsertChildBefore(oldChild, newChild);
-            this.RemoveChild(oldChild);
-        }
+            this.InsertChildBefore(next, newChild);
     }
 }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,41 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Property } from "acts-util";
+import { VirtualNode } from "./VirtualNode";
 
-import { ObservableEvent } from "../ObservableEvent";
-
-export interface DialogProperties
+export class VirtualConstNode extends VirtualNode
 {
-    title: string;
-}
-
-export class DialogRef
-{
-    constructor(private closer: Function)
+    constructor()
     {
-        this._onAccept = new ObservableEvent();
-        this._waiting = new Property<boolean>(false);
+        super();
     }
 
-    //Properties
-    get onAccept()
+    //Protected methods
+    protected RealizeSelf(): void
     {
-        return this._onAccept;
     }
 
-    public get waiting()
+    protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
     {
-        return this._waiting;
+        return newNode;
     }
-
-    //Public methods
-    public Close()
-    {
-        this.closer();
-    }
-
-    //Members
-    private _onAccept: ObservableEvent;
-    private _waiting: Property<boolean>;
 }

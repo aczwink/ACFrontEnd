@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -48,21 +48,25 @@ export class RouterState
     //Public methods
     public ToUrl(): Url
     {
-        const segments = [];
+        const finalSegments = [];
         let node: RouterStateNode | null | undefined = this._root;
         while((node !== null) && (node !== undefined))
         {
-            let segment = node.route.path;
-            if(segment.startsWith(":"))
+            const segments = node.route.path.split("/");
+            for (let segment of segments)
             {
-                const key = segment.substring(1);
-                segment = this._routeParams[key];
+                if(segment.startsWith(":"))
+                {
+                    const key = segment.substring(1);
+                    segment = this._routeParams[key];
+                }
+
+                finalSegments.push(segment);
             }
 
-            segments.push(segment);
             node = node.child;
         }
-        return new Url(segments);
+        return new Url(finalSegments);
     }
 
     //Private members

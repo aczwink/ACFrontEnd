@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,13 +26,17 @@ export class LineEdit extends Component
     //Input
     input!: {
         value: string;
-        onChanged: Function;
+
+        password?: boolean;
+
+        onChanged: (newValue: string) => void;
     };
 
     //Protected methods
     protected Render(): RenderNode
     {
-        return <input type="text" value={this.input.value} onkeyup={this.OnKeyUp.bind(this)} />;
+        const type = this.input.password === true ? "password" : "text";
+        return <input type={type} value={this.input.value} onkeyup={this.OnKeyUp.bind(this)} />;
     }
 
     //Event handlers

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,34 +18,41 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../Injector";
-import { VirtualNode, RenderNode } from "../VirtualNode";
+import { RenderNode } from "../VirtualNode";
 
-@Injectable
-export class Select extends Component
+export class StackChild extends Component
 {
-    //Input
-    input!: {
-        children: VirtualNode[];
-        onChanged: (newValue: string[]) => void;
-    };
+    input!:
+    {
+        key: string;
+        children: RenderNode;
+    }
 
     //Protected methods
     protected Render(): RenderNode
     {
-        return <select onchange={this.OnSelectionChanged.bind(this)}>{...this.input.children}</select>;
+        return this.input.children;
+    }
+}
+
+@Injectable
+export class Stack extends Component
+{
+    input!:
+    {
+        activeKey: string;
+        children: StackChild[];
     }
 
-    //Event handlers
-    private OnSelectionChanged(event: Event)
+    //Protected methods
+    protected Render(): RenderNode
     {
-        const domNode = (event.target! as HTMLSelectElement);
-        const selection = [];
-        for (let index = 0; index < domNode.selectedOptions.length; index++)
-        {
-            const element = domNode.selectedOptions.item(index);
-            selection.push(element!.value);
-        }
-        
-        this.input.onChanged(selection);
+        return <const>{this.FindActiveChild()}</const>;
+    }
+
+    //Private methods
+    private FindActiveChild()
+    {
+        return this.input.children.find( child => child.input.key === this.input.activeKey );
     }
 }

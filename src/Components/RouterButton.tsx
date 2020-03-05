@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,35 +17,34 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
+import { Router } from "../Services/Router/Router";
 import { Injectable } from "../Injector";
-import { VirtualNode, RenderNode } from "../VirtualNode";
+import { RenderNode } from "../VirtualNode";
 
 @Injectable
-export class Select extends Component
+export class RouterButton extends Component
 {
     //Input
     input!: {
-        children: VirtualNode[];
-        onChanged: (newValue: string[]) => void;
+        children: RenderNode | RenderNode[];
+        route: string;
     };
+
+    //Constructor
+    constructor(private router: Router)
+    {
+        super();
+    }
 
     //Protected methods
     protected Render(): RenderNode
     {
-        return <select onchange={this.OnSelectionChanged.bind(this)}>{...this.input.children}</select>;
+        return <button onclick={this.OnActivated.bind(this)}>{this.input.children}</button>;
     }
 
     //Event handlers
-    private OnSelectionChanged(event: Event)
-    {
-        const domNode = (event.target! as HTMLSelectElement);
-        const selection = [];
-        for (let index = 0; index < domNode.selectedOptions.length; index++)
-        {
-            const element = domNode.selectedOptions.item(index);
-            selection.push(element!.value);
-        }
-        
-        this.input.onChanged(selection);
+    private OnActivated(event: Event)
+    {        
+        this.router.RouteTo(this.input.route);
     }
 }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,14 +19,14 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../Injector";
-import { RenderText, RenderNode } from "../VirtualNode";
+import { RenderNode } from "../VirtualNode";
 
 @Injectable
 export class Anchor extends Component
 {
     //Input
     input!: {
-        children: RenderText;
+        children: RenderNode | RenderNode[];
         route: string;
     };
 

@@ -120,7 +120,7 @@ export class RouteHandler
 
     private SegmentsMatch(routeSegment: string, pathSegment: string, routeParams: Dictionary<string>)
     {
-        if(routeSegment.startsWith(":"))
+        if(routeSegment.startsWith(":") && (pathSegment.length > 0) )
         {
             const key = routeSegment.substring(1);
             routeParams[key] = pathSegment;

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -69,7 +69,10 @@ export class Url
         const parser = document.createElement("a");
         parser.href = url;
 
-        return { fullUrl: parser.href, path: parser.pathname};
+        return {
+            fullUrl: parser.href,
+            path: decodeURI(parser.pathname)
+        };
     }
 
     private SplitPathIntoSegments(path: string)

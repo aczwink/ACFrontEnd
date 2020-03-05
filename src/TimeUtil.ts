@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,41 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Property } from "acts-util";
 
-import { ObservableEvent } from "../ObservableEvent";
-
-export interface DialogProperties
+export const TimeUtil = new class
 {
-    title: string;
-}
-
-export class DialogRef
-{
-    constructor(private closer: Function)
-    {
-        this._onAccept = new ObservableEvent();
-        this._waiting = new Property<boolean>(false);
-    }
-
-    //Properties
-    get onAccept()
-    {
-        return this._onAccept;
-    }
-
-    public get waiting()
-    {
-        return this._waiting;
-    }
-
     //Public methods
-    public Close()
+    public DurationToString(duration: number | null)
     {
-        this.closer();
+        if(duration === null)
+            return '?';
+            
+        var mins = Math.floor(duration / 60);
+        var secs = duration - mins * 60;
+        
+        if(mins && secs)
+            return mins + ' min ' + secs + ' s';
+        if(mins)
+            return mins + ' min';
+        return secs + ' s';
     }
-
-    //Members
-    private _onAccept: ObservableEvent;
-    private _waiting: Property<boolean>;
-}
+};

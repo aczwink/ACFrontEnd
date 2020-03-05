@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,30 +37,39 @@ import { SelectableTable } from "./Components/SelectableTable";
 import { MaleIcon } from "./Icons/MaleIcon";
 import { FemaleIcon } from "./Icons/FemaleIcon";
 import { Router } from "./Services/Router/Router";
-import { Observable } from "./Observable";
 import { Dictionary, PrimitiveDictionary } from "./Model/Dictionary";
 import { ObservableEvent } from "./ObservableEvent";
+import { TitleService } from "./Services/TitleService";
+import { TabGroup, Tab, TabHeader } from "./Components/TabGroup";
+import { TimeUtil } from "./TimeUtil";
+import { Gallery } from "./Components/Gallery";
+import { CheckBox } from "./Components/CheckBox";
+import { IntegerSpinner } from "./Components/IntegerSpinner";
+import { StackChild, Stack } from "./Components/Stack";
+import { RouterButton } from "./Components/RouterButton";
 
 export
 {
     Anchor,
     App,
     AutocompleteTextLineEdit,
+    CheckBox,
     Component,
     DialogProperties,
     DialogRef,
     Dictionary,
     FemaleIcon,
     FormField,
+    Gallery,
     HttpService,
     Injectable,
     Injector,
     Instantiatable,
+    IntegerSpinner,
     JSX_CreateElement,
     LineEdit,
     MaleIcon,
     MatIcon,
-    Observable,
     ObservableEvent,
     PopupManager,
     PrimitiveDictionary,
@@ -68,9 +77,17 @@ export
     RenderNode,
     Route,
     Router,
+    RouterButton,
     Routes,
     RouterComponent,
     Select,
     SelectableTable,
+    Stack,
+    StackChild,
+    Tab,
+    TabGroup,
+    TabHeader,
+    TimeUtil,
+    TitleService,
     VirtualNode
 };

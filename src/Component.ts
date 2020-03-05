@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { VirtualNode, RenderNode } from "./VirtualNode";
-import { VirtualTextNode } from "./VirtualTextNode";
+import { TransformRenderNodeToVirtualNode } from "./RenderNodeTransformer";
 
 export abstract class Component
 {
@@ -45,24 +45,16 @@ export abstract class Component
 
     UpdateSync()
     {
-        let newNode = this.Render();
-
-        //is there something to render?
-		if((newNode === undefined)) //can be undefined if Render does not return something
-		{
-            //nothing to render
-            newNode = null;
-        }
-        else if((typeof newNode === "string") || (typeof newNode === "number") || (typeof newNode === "boolean"))
-            newNode = new VirtualTextNode(newNode);
+        const newNode = this.Render();
+        const newVirtualNode = TransformRenderNodeToVirtualNode(newNode);
 
         if(this._vNode === null) //special case: component was never used before
         {
-            this._vNode = newNode;
+            this._vNode = newVirtualNode;
             return;
         }
 
-        this._vNode = this._vNode.Update(newNode);
+        this._vNode = this._vNode.Update(newVirtualNode);
     }
 
     //Private methods

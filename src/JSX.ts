@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+
+type EventHandler = (event: Event) => void;
 
 declare module JSX
 {
@@ -40,14 +42,15 @@ declare module JSX
 
     interface IntrinsicElements
     {
+        const: {}; //special for VirtualConstNode
         fragment: {}; //special for VirtualFragment
 
         a: any;
         br: {
         };
         button: {
-            children: string;
-            onclick: () => void;
+            children: JsxNode;
+            onclick: EventHandler;
 
             class?: string;
             disabled?: boolean;
@@ -60,6 +63,9 @@ declare module JSX
 
             class?: string;
         };
+        h3: {
+            children: string;
+        }
         h4: any;
         hr: {
         };
@@ -67,19 +73,34 @@ declare module JSX
             src: string;
             
             class?: string;
+            style?: string;
         };
         input: {
-            type: "text",
-            value: string;
+            type: "checkbox" | "datetime-local" | "number" | "password" | "text",
 
+            checked?: boolean;
+            disabled?: boolean;
             placeholder?: string;
-            
+            value?: number | string;
+
+            onchange?: EventHandler;
+            onclick?: EventHandler;
             onkeyup?: Function;
         };
         li: any;
         nav: any;
-        option: any;
-        select: any;
+        option: {
+            children: string;
+
+            selected?: boolean;
+            value?: string;
+        };
+        select: {
+            children: any[];
+
+            onchange?: EventHandler;
+            oninput?: (event: InputEvent) => void;
+        };
         span: any;
         table: {
             children: any[];
@@ -87,7 +108,11 @@ declare module JSX
             class?: string;
         };
         td: {};
-        th: {};
+        th: {
+            children: string;
+
+            colspan?: string;
+        };
         tr: {};
         ul: any;
     }

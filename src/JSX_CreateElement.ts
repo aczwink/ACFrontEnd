@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,26 +21,25 @@ import { Component } from "./Component";
 import { VirtualInstance } from "./VirtualInstance";
 import { Instantiatable } from "./Injector";
 import { VirtualFragment } from "./VirtualFragment";
-import { VirtualTextNode } from "./VirtualTextNode";
+import { TransformRenderNodeToVirtualNode } from "./RenderNodeTransformer";
+import { VirtualConstNode } from "./VirtualConstNode";
 
 function TransformChildren(children: RenderNode[], parent: VirtualNode | null): VirtualNode[]
 {
-    return children.filter(child => child !== null).map(child =>
-    {
-        if((typeof child === "string") || (typeof child === "number") || (typeof child === "boolean"))
-            child = new VirtualTextNode(child);
-        if(Array.isArray(child))
-        {
-            child = new VirtualFragment(child);
-        }
-        return child;
-    }) as VirtualNode[];
+    return children.map(child => TransformRenderNodeToVirtualNode(child)).filter(child => child !== null) as VirtualNode[];
 }
 
 export function JSX_CreateElement(type: string | Instantiatable<Component> | Instantiatable<VirtualFragment>, properties?: any, ...children: RenderNode[]): VirtualNode
 {
     if(typeof(type) == "string")
     {
+        if(type == "const")
+        {
+            const vNode = new VirtualConstNode();
+            vNode.children = TransformChildren(children, vNode);
+            return vNode;
+        }
+
         if(type == "fragment")
         {
             const vNode =  new VirtualFragment();

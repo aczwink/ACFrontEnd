@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,37 +15,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
+
 import { Injectable } from "../Injector";
-import { VirtualNode, RenderNode } from "../VirtualNode";
+import { Component } from "../Component";
+import { RenderNode } from "../VirtualNode";
+import { JSX_CreateElement } from "../JSX_CreateElement";
+
+interface Image
+{
+    url: string;
+}
+
+interface Images
+{
+    imgClass?: string;
+    images: Image[];
+}
 
 @Injectable
-export class Select extends Component
+export class Gallery extends Component
 {
-    //Input
     input!: {
-        children: VirtualNode[];
-        onChanged: (newValue: string[]) => void;
+        images: Images;
     };
 
     //Protected methods
     protected Render(): RenderNode
     {
-        return <select onchange={this.OnSelectionChanged.bind(this)}>{...this.input.children}</select>;
-    }
-
-    //Event handlers
-    private OnSelectionChanged(event: Event)
-    {
-        const domNode = (event.target! as HTMLSelectElement);
-        const selection = [];
-        for (let index = 0; index < domNode.selectedOptions.length; index++)
-        {
-            const element = domNode.selectedOptions.item(index);
-            selection.push(element!.value);
-        }
-        
-        this.input.onChanged(selection);
+        const imgClass = this.input.images.imgClass ? this.input.images.imgClass : "";
+        return <fragment>
+            {this.input.images.images.map(image => <img class={imgClass} src={image.url} />)}
+        </fragment>;
     }
 }

@@ -27,6 +27,7 @@
     "webpack-cli": "^3.3.8"
   },
   "dependencies": {
+    "acts-util": "*",
     "reflect-metadata": "^0.1.13"
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Property } from "acts-util";
+
 import { Injectable } from "../../Injector";
-import { Observable } from "../../Observable";
 import { Routes } from "./Route";
 import { RouteHandler } from "./RouteHandler";
 import { RouterState, RouterStateNode } from "./RouterState";
@@ -29,7 +30,7 @@ export class Router
     constructor(routes: Routes)
     {
         this.TransformRoutes(routes);
-        this._state = new Observable<RouterState>(new RouterState(null, {}));
+        this._state = new Property<RouterState>(new RouterState(null, {}));
         this.UpdateState(window.location.href);
     }
 
@@ -40,9 +41,9 @@ export class Router
     }
 
     //Public methods
-    public RouteTo(route: string)
+    public RouteTo(url: string)
     {
-        this.UpdateState(route);
+        this.UpdateState(url);
     }
 
     //Private methods
@@ -84,6 +85,6 @@ export class Router
     }
 
     //Private members
-    private _state: Observable<RouterState>;
+    private _state: Property<RouterState>;
     private routes!: RouteHandler[];
 }

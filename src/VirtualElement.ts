@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ function MoveProperty(properties: any, fromKey: string, toKey: string)
     }
 }
 
-function SetPropertyOnBool(properties: any, key: string, valueOnTrue: any)
+function SetPropertyOnBool(properties: any, key: string, valueOnTrue: any = key)
 {
     if(key in properties)
     {
@@ -42,7 +42,8 @@ function RedirectProperties(properties: any)
     if(properties !== null)
     {
         MoveProperty(properties, "class", "className");
-        SetPropertyOnBool(properties, "disabled", "disabled");
+        SetPropertyOnBool(properties, "checked");
+        SetPropertyOnBool(properties, "disabled");
     }
     return properties;
 }
@@ -77,6 +78,8 @@ export class VirtualElement extends VirtualNode
                 if(this.domNode !== null)
                     this.UpdateObject(this.domNode, this.properties, newNode.properties);
                 this.properties = newNode.properties;
+                if(this.domNode !== null)
+                    this.SyncInputProperties();
                 
                 this.UpdateChildren(newNode);
                 return this;
@@ -95,6 +98,27 @@ export class VirtualElement extends VirtualNode
     private properties: any;
 
     //Private methods
+    /**
+     * Input DOM-Nodes maintain state themselves based on user-input.
+     * This state gets updated when the user interacts with the element and usually change events are used, to update Component's state.
+     * However, in a "non-fully-controlled"-component, this state may get out of sync with the DOM-Node.
+     * 
+     * This method syncs the properties of this node to the DOM-Node, such that they are equal at least on every update.
+     */
+    private SyncInputProperties()
+    {
+        if(this.tagName !== "input")
+            return;
+
+        const inputNode = this.domNode as HTMLInputElement;
+        switch(inputNode.type)
+        {
+            case "checkbox":
+                inputNode.checked = "checked" in this.properties;
+                break;
+        }
+    }
+
     private UpdateObject(object: any, oldProps: any, newProps: any)
 	{
 		var propsToSet = [];

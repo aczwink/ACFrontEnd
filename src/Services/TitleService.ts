@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,43 +15,47 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Injectable } from "../Injector";
 
-type ObservableSubscriber<T> = (newValue: T) => void;
-export class Observable<T>
+@Injectable
+export class TitleService
 {
-    constructor(value: T)
+    constructor()
     {
-        this.state = value;
-        this.observers = [];
+        this.titleFormat = "";
+        this.titleText = "";
     }
 
-    //Public methods
-    public Get(): T
+    //Properties
+    public get format()
     {
-        return this.state;
+        return this.titleFormat;
     }
 
-    public Set(value: T)
+    public set format(newFormat: string)
     {
-        const changed = this.state !== value;
-        this.state = value;
-
-        if(changed)
-            this.Emit();
+        this.titleFormat = newFormat;
+        this.UpdateDocumentTitle();
     }
 
-    public Subscribe(observer: ObservableSubscriber<T>)
+    public get title()
     {
-        this.observers.push(observer);
+        return this.titleText;
+    }
+
+    public set title(newTitle: string)
+    {
+        this.titleText = newTitle;
+        this.UpdateDocumentTitle();
     }
 
     //Private members
-    private state: T;
-    private observers: ObservableSubscriber<T>[];
+    private titleFormat: string;
+    private titleText: string;
 
     //Private methods
-    private Emit()
+    private UpdateDocumentTitle()
     {
-        this.observers.forEach(observer => observer( this.state ));
+        document.title = this.titleFormat.replace("%title%", this.titleText);
     }
 }
