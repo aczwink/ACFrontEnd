@@ -37,7 +37,7 @@ import { SelectableTable } from "./Components/SelectableTable";
 import { MaleIcon } from "./Icons/MaleIcon";
 import { FemaleIcon } from "./Icons/FemaleIcon";
 import { Router } from "./Services/Router/Router";
-import { Dictionary, PrimitiveDictionary } from "./Model/Dictionary";
+import { PrimitiveDictionary } from "./Model/Dictionary";
 import { ObservableEvent } from "./ObservableEvent";
 import { TitleService } from "./Services/TitleService";
 import { TabGroup, Tab, TabHeader } from "./Components/TabGroup";
@@ -47,6 +47,9 @@ import { CheckBox } from "./Components/CheckBox";
 import { IntegerSpinner } from "./Components/IntegerSpinner";
 import { StackChild, Stack } from "./Components/Stack";
 import { RouterButton } from "./Components/RouterButton";
+import { RouteGuard } from "./Services/Router/RouteGuard";
+import { Url } from "./Model/Url";
+import { RouterState } from "./Services/Router/RouterState";
 
 export
 {
@@ -57,7 +60,6 @@ export
     Component,
     DialogProperties,
     DialogRef,
-    Dictionary,
     FemaleIcon,
     FormField,
     Gallery,
@@ -76,10 +78,12 @@ export
     ProgressSpinner,
     RenderNode,
     Route,
+    RouteGuard,
     Router,
     RouterButton,
-    Routes,
     RouterComponent,
+    Routes,
+    RouterState,
     Select,
     SelectableTable,
     Stack,
@@ -89,5 +93,6 @@ export
     TabHeader,
     TimeUtil,
     TitleService,
-    VirtualNode
+    VirtualNode,
+    Url
 };

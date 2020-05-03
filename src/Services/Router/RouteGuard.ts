@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,16 +15,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Instantiatable } from "../../Injector";
-import { Component } from "../../Component";
-import { RouteGuard } from "./RouteGuard";
+import { RouterState } from "./RouterState";
 
-export interface Route
+export interface RouteGuard
 {
-    path: string;
-    component?: Instantiatable<Component>;
-    redirect?: string;
-    children?: Route[];
-    guards?: Instantiatable<RouteGuard>[];
+    CanActivate(): boolean;
+    OnActivationFailure(routerState: RouterState): void;
 }
-export type Routes = Route[];
+
+export class DefaultRouteGuard implements RouteGuard
+{
+    //Public methods
+    public CanActivate()
+    {
+        return true;
+    }
+
+    public OnActivationFailure(routerState: RouterState)
+    {
+    }
+}

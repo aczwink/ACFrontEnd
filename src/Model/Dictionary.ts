@@ -1,7 +1,4 @@
-export interface Dictionary<T>
-{
-    [key: string]: T;
-}
+import { Dictionary } from "acts-util";
 
 export interface PrimitiveDictionary extends Dictionary<string | number>
 {

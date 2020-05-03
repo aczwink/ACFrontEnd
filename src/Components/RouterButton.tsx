@@ -20,6 +20,7 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../Injector";
 import { RenderNode } from "../VirtualNode";
+import { Url } from "../Model/Url";
 
 @Injectable
 export class RouterButton extends Component

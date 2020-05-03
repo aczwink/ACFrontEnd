@@ -17,7 +17,7 @@
  * */
 import { Property } from "acts-util";
 
-import { Injectable } from "../../Injector";
+import { Injectable, Injector } from "../../Injector";
 import { Routes } from "./Route";
 import { RouteHandler } from "./RouteHandler";
 import { RouterState, RouterStateNode } from "./RouterState";
@@ -30,8 +30,11 @@ export class Router
     constructor(routes: Routes)
     {
         this.TransformRoutes(routes);
-        this._state = new Property<RouterState>(new RouterState(null, {}));
-        this.UpdateState(window.location.href);
+        Injector.Register(Router, this);
+
+        const state = this.CreateRouterState(new Url(window.location.href));
+        this._state = new Property<RouterState>(state);
+        state.Activate();
     }
 
     //Properties
@@ -41,15 +44,21 @@ export class Router
     }
 
     //Public methods
-    public RouteTo(url: string)
+    public RouteTo(url: string | Url)
     {
-        this.UpdateState(url);
+        if(typeof(url) === "string")
+            url = new Url(url);
+
+        const newState = this.CreateRouterState(url);
+        newState.Activate();
+        this._state.Set(newState);
+        this.AddStateToHistory(newState);
     }
 
     //Private methods
-    private AddStateToHistory()
+    private AddStateToHistory(routerState: RouterState)
     {
-        const url = this.state.Get().ToUrl().ToString();
+        const url = routerState.ToUrl().ToString();
         const state = {
 			type: "url",
 			url: url
@@ -57,7 +66,7 @@ export class Router
 		window.history.pushState(state, "", url);
     }
 
-    private CreateRouterState(url: Url): RouterState | null
+    private CreateRouterState(url: Url): RouterState
     {
         for (let i = 0; i < this.routes.length; i++)
         {
@@ -66,22 +75,12 @@ export class Router
             if(result !== null)
                 return result;
         }
-        return null;
+        throw Error("Can not find a route for url: " + url);
     }
 
     private TransformRoutes(routes: Routes)
     {
         this.routes = routes.map(route => new RouteHandler(route, null));
-    }
-
-    private UpdateState(urlString: string)
-    {
-        const url = new Url(urlString);
-        const newState = this.CreateRouterState(url);
-        if(newState === null)
-            throw Error("Can not find a route for url: " + url);
-        this._state.Set(newState);
-        this.AddStateToHistory();
     }
 
     //Private members

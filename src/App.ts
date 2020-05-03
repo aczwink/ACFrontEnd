@@ -55,7 +55,6 @@ export class App
     constructor(private properties: AppProperties)
     {
         this.router = new Router(properties.routes);
-        Injector.Register(Router, this.router);
 
         this.popupManager = new PopupManager(properties.mountPoint);
         Injector.Register(PopupManager, this.popupManager);

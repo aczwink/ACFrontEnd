@@ -36,11 +36,11 @@ export class LineEdit extends Component
     protected Render(): RenderNode
     {
         const type = this.input.password === true ? "password" : "text";
-        return <input type={type} value={this.input.value} onkeyup={this.OnKeyUp.bind(this)} />;
+        return <input type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;
     }
 
     //Event handlers
-    private OnKeyUp(event: Event)
+    private OnValueChanged(event: Event)
     {
         const newValue = (event.target! as HTMLInputElement).value;
         if(this.input.value !== newValue)

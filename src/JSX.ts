@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-type EventHandler = (event: Event) => void;
+type EventHandler<EventType = Event> = (event: EventType) => void;
 
 declare module JSX
 {
@@ -50,13 +50,16 @@ declare module JSX
         };
         button: {
             children: JsxNode;
-            onclick: EventHandler;
 
             class?: string;
             disabled?: boolean;
+            onclick?: EventHandler;
         };
         div: any;
-        form: any;
+        form: {
+            children: JsxNode;
+            onsubmit: EventHandler;
+        };
         h1: any;
         h2: {
             children: JsxNode;
@@ -99,7 +102,7 @@ declare module JSX
             children: any[];
 
             onchange?: EventHandler;
-            oninput?: (event: InputEvent) => void;
+            oninput?: EventHandler<InputEvent>;
         };
         span: any;
         table: {

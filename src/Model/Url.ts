@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Dictionary } from "acts-util";
+
 interface UrlParts
 {
     fullUrl: string;
@@ -24,9 +26,10 @@ interface UrlParts
 
 export class Url
 {
-    constructor(input: string);
-    constructor(input: string[]);
-    constructor(input?: any)
+    constructor(urlString: string);
+    constructor(path: string, queryParams: Dictionary<string>);
+    constructor(pathSegments: string[]);
+    constructor(input?: any, queryParams?: Dictionary<string>)
     {
         if(typeof(input) === "string")
         {
@@ -39,6 +42,11 @@ export class Url
             this._pathSegments = input;
             this.path = this._pathSegments.join("/");
         }
+
+        if(queryParams === undefined)
+            this._queryParams = {};
+        else
+            this._queryParams = queryParams;
     }
     
     //Properties
@@ -47,11 +55,21 @@ export class Url
         return this._pathSegments;
     }
 
+    public get queryParams()
+    {
+        return this._queryParams;
+    }
+
     //Public methods
     public ToString()
     {
         return this.ToAbsolutePath(this.path).fullUrl;
     }
+
+    //Private members
+    private path: string;
+    private _pathSegments: string[];
+    private _queryParams: Dictionary<string>;
 
     //Private methods
     private JoinPaths(first: string, second: string)
@@ -92,8 +110,4 @@ export class Url
 
         return this.ParseUrl(this.JoinPaths(root, path));
     }
-
-    //Private members
-    private path: string;
-    private _pathSegments: string[];
 }

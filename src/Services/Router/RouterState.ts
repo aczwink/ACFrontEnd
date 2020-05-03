@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Dictionary } from "acts-util";
 
 import { Route } from "./Route";
 import { Url } from "../../Model/Url";
-import { Dictionary } from "../../Model/Dictionary";
+import { Injector } from "../../Injector";
 
 export interface RouterStateNode
 {
@@ -28,16 +29,25 @@ export interface RouterStateNode
 
 export class RouterState
 {
-    constructor(root: RouterStateNode | null, routeParams: Dictionary<string>)
+    constructor(root: RouterStateNode, routeParams: Dictionary<string>, queryParams?: Dictionary<string>)
     {
         this._root = root;
         this._routeParams = routeParams;
+        if(queryParams === undefined)
+            this._queryParams = {};
+        else
+            this._queryParams = queryParams;
     }
 
     //Properties
-    get root(): RouterStateNode | null
+    get root(): RouterStateNode
     {
         return this._root;
+    }
+
+    public get queryParams()
+    {
+        return this._queryParams;
     }
 
     public get routeParams(): Dictionary<string>
@@ -46,8 +56,16 @@ export class RouterState
     }
 
     //Public methods
+    public Activate()
+    {
+        this.ActivateNode(this._root);
+    }
+
     public ToUrl(): Url
     {
+        if(this._root.route.path == "*")
+            return new Url("/");
+
         const finalSegments = [];
         let node: RouterStateNode | null | undefined = this._root;
         while((node !== null) && (node !== undefined))
@@ -58,7 +76,7 @@ export class RouterState
                 if(segment.startsWith(":"))
                 {
                     const key = segment.substring(1);
-                    segment = this._routeParams[key];
+                    segment = this._routeParams[key]!;
                 }
 
                 finalSegments.push(segment);
@@ -70,6 +88,27 @@ export class RouterState
     }
 
     //Private members
-    private _root: RouterStateNode | null;
+    private _root: RouterStateNode;
     private _routeParams: Dictionary<string>;
+    private _queryParams: Dictionary<string>;
+
+    //Private methods
+    private ActivateNode(node: RouterStateNode)
+    {
+        if(node.route.guards !== undefined)
+        {
+            for (const guard of node.route.guards)
+            {
+                const instance = Injector.Resolve(guard);
+                if(!instance.CanActivate())
+                {
+                    instance.OnActivationFailure(this);
+                    return;
+                }
+            }
+        }
+        
+        if(node.child !== undefined)
+            this.ActivateNode(node.child);
+    }
 }

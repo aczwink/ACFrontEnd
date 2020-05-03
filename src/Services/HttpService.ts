@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ export class HttpService
         {
             const parts = [];
             for (const key in queryParams)
-                parts.push(key + "=" + encodeURIComponent(queryParams[key]));
+                parts.push(key + "=" + encodeURIComponent(queryParams[key]!));
             url += "?" + parts.join("&");
         }
 
