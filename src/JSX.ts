@@ -50,6 +50,7 @@ declare module JSX
         };
         button: {
             children: JsxNode;
+            type: "button" | "submit";
 
             class?: string;
             disabled?: boolean;

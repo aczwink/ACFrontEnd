@@ -18,12 +18,19 @@
 import { Injectable } from "../Injector";
 import { PrimitiveDictionary } from "../Model/Dictionary";
 
+interface RequestHeaders
+{
+    Authorization?: string;
+    "Content-Type"?: "application/json";
+}
+
 export interface HttpRequest
 {
-    method: "GET" | "POST";
-    url: string;
     data: any;
-    responseType: "json";
+    headers: RequestHeaders;
+    method: "GET" | "POST";
+    responseType: "blob" | "json";
+    url: string;
 }
 
 @Injectable
@@ -41,20 +48,29 @@ export class HttpService
         }
 
         return this.Request({
-            method: "GET",
-            url: url,
             data: undefined,
-            responseType: "json"
+            headers: {},
+            method: "GET",
+            responseType: "json",
+            url: url
         });
     }
 
     public Post<T>(url: string, data: any): Promise<T>
     {
+        const headers: RequestHeaders = {};
+        if(data !== undefined)
+        {
+            data = JSON.stringify(data);
+            headers["Content-Type"] = "application/json";
+        }
+
         return this.Request({
-            method: "POST",
-            url: url,
             data: data,
-            responseType: "json"
+            headers: headers,
+            method: "POST",
+            responseType: "json",
+            url: url
         });
     }
 
@@ -87,14 +103,16 @@ export class HttpService
                 }
             }
         }
-
-        let data = undefined;
-        if(request.data !== undefined)
+        
+        for (const key in request.headers)
         {
-            data = JSON.stringify(request.data);
-            httpRequest.setRequestHeader("Content-Type", "application/json");
+            if (request.headers.hasOwnProperty(key))
+            {
+                const value = (request.headers as any)[key];
+                httpRequest.setRequestHeader(key, value);
+            }
         }
 
-        httpRequest.send(data);
+        httpRequest.send(request.data);
     }
 }

@@ -40,7 +40,7 @@ export class RouterButton extends Component
     //Protected methods
     protected Render(): RenderNode
     {
-        return <button onclick={this.OnActivated.bind(this)}>{this.input.children}</button>;
+        return <button type="button" onclick={this.OnActivated.bind(this)}>{this.input.children}</button>;
     }
 
     //Event handlers

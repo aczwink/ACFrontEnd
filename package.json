@@ -28,7 +28,7 @@
     "npx": "^10.2.2"
   },
   "dependencies": {
-    "acts-util": "*",
+    "acts-util-core": "*",
     "reflect-metadata": "^0.1.13"
   }
 }

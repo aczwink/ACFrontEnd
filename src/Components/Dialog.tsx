@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,13 +46,13 @@ export class Dialog extends Component
     {
         const header = <div>
             <h4>{this.input.title}</h4>
-            <button onclick={this.OnCancelActivated.bind(this)}>{"\u00d7"}</button>
+            <button type="button" onclick={this.OnCancelActivated.bind(this)}>{"\u00d7"}</button>
         </div>;
 
         const footer = <div>
             <div class="row">
-                <button onclick={this.OnOkActivated.bind(this)}>OK</button>
-                <button onclick={this.OnCancelActivated.bind(this)} class="outline">Cancel</button>
+                <button type="button" onclick={this.OnOkActivated.bind(this)}>OK</button>
+                <button type="button" onclick={this.OnCancelActivated.bind(this)} class="outline">Cancel</button>
             </div>
         </div>;
 
