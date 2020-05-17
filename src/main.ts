@@ -34,8 +34,6 @@ import { HttpService } from "./Services/HttpService";
 import { AutocompleteTextLineEdit } from "./Components/AutocompleteTextLineEdit";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
 import { SelectableTable } from "./Components/SelectableTable";
-import { MaleIcon } from "./Icons/MaleIcon";
-import { FemaleIcon } from "./Icons/FemaleIcon";
 import { Router } from "./Services/Router/Router";
 import { PrimitiveDictionary } from "./Model/Dictionary";
 import { ObservableEvent } from "./ObservableEvent";
@@ -60,7 +58,6 @@ export
     Component,
     DialogProperties,
     DialogRef,
-    FemaleIcon,
     FormField,
     Gallery,
     HttpService,
@@ -70,7 +67,6 @@ export
     IntegerSpinner,
     JSX_CreateElement,
     LineEdit,
-    MaleIcon,
     MatIcon,
     ObservableEvent,
     PopupManager,

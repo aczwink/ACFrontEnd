@@ -21,13 +21,8 @@ import { Component } from "./Component";
 import { VirtualInstance } from "./VirtualInstance";
 import { Instantiatable } from "./Injector";
 import { VirtualFragment } from "./VirtualFragment";
-import { TransformRenderNodeToVirtualNode } from "./RenderNodeTransformer";
 import { VirtualConstNode } from "./VirtualConstNode";
-
-function TransformChildren(children: RenderNode[], parent: VirtualNode | null): VirtualNode[]
-{
-    return children.map(child => TransformRenderNodeToVirtualNode(child)).filter(child => child !== null) as VirtualNode[];
-}
+import { TransformChildren } from "./RenderNodeTransformer";
 
 export function JSX_CreateElement(type: string | Instantiatable<Component> | Instantiatable<VirtualFragment>, properties?: any, ...children: RenderNode[]): VirtualNode
 {
@@ -36,21 +31,21 @@ export function JSX_CreateElement(type: string | Instantiatable<Component> | Ins
         if(type == "const")
         {
             const vNode = new VirtualConstNode();
-            vNode.children = TransformChildren(children, vNode);
+            vNode.children = TransformChildren(children);
             return vNode;
         }
 
         if(type == "fragment")
         {
             const vNode =  new VirtualFragment();
-            vNode.children = TransformChildren(children, vNode);
+            vNode.children = TransformChildren(children);
             return vNode;
         }
         
         const vNode = new VirtualElement(type, properties);
-        vNode.children = TransformChildren(children, vNode);
+        vNode.children = TransformChildren(children);
         return vNode;
     }
 
-    return new VirtualInstance(type as Instantiatable<Component>, properties, TransformChildren(children, null));
+    return new VirtualInstance(type as Instantiatable<Component>, properties, TransformChildren(children));
 }

@@ -45,7 +45,18 @@ declare module JSX
         const: {}; //special for VirtualConstNode
         fragment: {}; //special for VirtualFragment
 
-        a: any;
+        a: {
+            children: JsxNode;
+
+            href?: string;
+            onclick?: EventHandler<MouseEvent>;
+            target?: "_blank";
+            style?: string;
+        };
+        abbr: {
+            children: string;
+            title: string;
+        }
         br: {
         };
         button: {
@@ -68,7 +79,9 @@ declare module JSX
             class?: string;
         };
         h3: {
-            children: string;
+            children: JsxNode;
+
+            style?: string;
         }
         h4: any;
         hr: {
@@ -110,14 +123,28 @@ declare module JSX
             children: any[];
             
             class?: string;
+            id?: string;
         };
-        td: {};
+        td: {
+            children: JsxNode;
+
+            class?: string;
+            colspan?: string;
+
+            onclick?: EventHandler<MouseEvent>;
+        };
         th: {
-            children: string;
+            children: JsxNode;
 
             colspan?: string;
         };
-        tr: {};
+        tr: {
+            children: JsxNode;
+
+            class?: string;
+
+            oncontextmenu?: EventHandler<MouseEvent>;
+        };
         ul: any;
     }
 }

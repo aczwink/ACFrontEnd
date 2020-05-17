@@ -28,7 +28,12 @@ export function TransformRenderNodeToVirtualNode(renderNode: RenderNode): Virtua
         return new VirtualTextNode(renderNode);
         
     if(Array.isArray(renderNode))
-        return new VirtualFragment(renderNode);
+        return new VirtualFragment( TransformChildren(renderNode) );
 
     return renderNode;
+}
+
+export function TransformChildren(children: RenderNode[]): VirtualNode[]
+{
+    return children.map(child => TransformRenderNodeToVirtualNode(child)).filter(child => child !== null) as VirtualNode[];
 }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,7 @@
  * */
 import "reflect-metadata";
 import { Component } from "./Component";
+import { Dictionary } from "acts-util-core";
 
 export interface Instantiatable<T>
 {
@@ -35,6 +36,20 @@ export function Injectable<T extends Instantiatable<{}>>(constructor:T)
             super(...args);
         }
     };*/
+}
+
+interface MemberMetadata
+{
+    installDataBinding: boolean;
+}
+
+export function DontBind(target: any, key: string)
+{
+    if(target.__members === undefined)
+        target.__members = {};
+    const members: Dictionary<MemberMetadata> = target.__members;
+
+    members[key] = { installDataBinding: false };
 }
 
 export const Injector = new class
@@ -112,6 +127,7 @@ export const Injector = new class
     public InstallDataBindings(instance: Component, instanceAny: any)
     {
         const propertyKeys = Reflect.ownKeys(instanceAny);
+        const members: Dictionary<MemberMetadata>|undefined = (instance as any).__members;
         for (let i = 0; i < propertyKeys.length; i++)
         {
             const key = propertyKeys[i] as string;
@@ -120,6 +136,8 @@ export const Injector = new class
             if(key === "_vNode")
                 continue;
             if(key === "input")
+                continue;
+            if( (members !== undefined) && (key in members) && (members[key]!.installDataBinding === false) )
                 continue;
 
             this.InstallDataBinding(instance, instanceAny, key);

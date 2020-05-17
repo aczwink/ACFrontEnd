@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,7 @@ import { Component } from "../Component";
 import { VirtualInstance } from "../VirtualInstance";
 import { Dialog } from "../Components/Dialog";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
+import { Dictionary } from "acts-util-core";
 
 @Injectable
 export class PopupManager
@@ -51,6 +52,13 @@ export class PopupManager
         document.body.className = "scroll-lock";
 
         return dialogRef;
+    }
+
+    public OpenModeless(component: Instantiatable<Component>, properties: Dictionary<any>)
+    {
+        const instance = new VirtualInstance(component, properties, []);
+
+        instance.MountAsChildOf(this.mountPoint);
     }
 
     //Private methods

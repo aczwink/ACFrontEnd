@@ -44,9 +44,9 @@ export class Anchor extends Component
 
     //Event handlers
     private OnActivated(event: Event)
-    {        
-        this.router.RouteTo(this.input.route);
-		event.preventDefault();
+    {
+        event.preventDefault();
 		event.stopPropagation();
+        this.router.RouteTo(this.input.route);
     }
 }

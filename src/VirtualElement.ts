@@ -42,6 +42,7 @@ function RedirectProperties(properties: any)
     if(properties !== null)
     {
         MoveProperty(properties, "class", "className");
+        MoveProperty(properties, "colspan", "colSpan");
         SetPropertyOnBool(properties, "checked");
         SetPropertyOnBool(properties, "disabled");
     }
@@ -53,17 +54,33 @@ export class VirtualElement extends VirtualNode
     constructor(tagName: string, properties: any)
     {
         super();
-        this.tagName = tagName;
-        this.properties = RedirectProperties(properties);
+        this._tagName = tagName;
+        this._properties = RedirectProperties(properties);
+    }
+
+    //Properties
+    public get properties()
+    {
+        return this._properties;
+    }
+
+    public set properties(newProperties: any)
+    {
+        this._properties = newProperties;
+    }
+
+    public get tagName()
+    {
+        return this._tagName;
     }
 
     //Protected methods
     protected RealizeSelf(): void
     {
-        const element = document.createElement(this.tagName);
+        const element = document.createElement(this._tagName);
             
-        for(var key in this.properties)
-            (element as any)[key] = this.properties[key];
+        for(var key in this._properties)
+            (element as any)[key] = this._properties[key];
 
         this.domNode = element;
     }
@@ -72,12 +89,12 @@ export class VirtualElement extends VirtualNode
     {
         if(newNode instanceof VirtualElement)
         {
-            if(this.tagName == newNode.tagName)
+            if(this._tagName == newNode._tagName)
             {
                 //update self
                 if(this.domNode !== null)
-                    this.UpdateObject(this.domNode, this.properties, newNode.properties);
-                this.properties = newNode.properties;
+                    this.UpdateObject(this.domNode, this._properties, newNode._properties);
+                this._properties = newNode._properties;
                 if(this.domNode !== null)
                     this.SyncInputProperties();
                 
@@ -94,8 +111,8 @@ export class VirtualElement extends VirtualNode
     }
 
     //Private members
-    private tagName: string;
-    private properties: any;
+    private _tagName: string;
+    private _properties: any;
 
     //Private methods
     /**
@@ -107,34 +124,45 @@ export class VirtualElement extends VirtualNode
      */
     private SyncInputProperties()
     {
-        if(this.tagName !== "input")
+        if(this._tagName !== "input")
             return;
 
         const inputNode = this.domNode as HTMLInputElement;
         switch(inputNode.type)
         {
             case "checkbox":
-                inputNode.checked = "checked" in this.properties;
+                inputNode.checked = "checked" in this._properties;
                 break;
         }
     }
 
     private UpdateObject(object: any, oldProps: any, newProps: any)
 	{
-		var propsToSet = [];
-		var propsToUnset = [];
-		
-		for(var prop in newProps)
-		{
-			if((prop in oldProps) && (oldProps[prop] === newProps[prop]))
-				continue;
-			propsToSet.push(prop);
-		}
-		for(var prop in oldProps)
-		{
-			if(!(prop in newProps))
-				propsToUnset.push(prop);
-		}
+		var propsToSet: any[] = [];
+        var propsToUnset: any[] = [];
+
+        if( (oldProps === null) && (newProps !== null) )
+        {
+            propsToSet = Object.keys(newProps);
+        }
+        if( (oldProps !== null) && (newProps === null) )
+        {
+            propsToUnset = Object.keys(oldProps);
+        }
+        else if( (oldProps !== null) && (newProps !== null) )
+        {
+            for(var prop in newProps)
+            {
+                if((prop in oldProps) && (oldProps[prop] === newProps[prop]))
+                    continue;
+                propsToSet.push(prop);
+            }
+            for(var prop in oldProps)
+            {
+                if(!(prop in newProps))
+                    propsToUnset.push(prop);
+            }
+        }
 		propsToSet.forEach( prop => object[prop] = newProps[prop] );
 		propsToUnset.forEach( prop => object[prop] = null );
     }

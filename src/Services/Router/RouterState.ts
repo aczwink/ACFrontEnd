@@ -84,7 +84,7 @@ export class RouterState
 
             node = node.child;
         }
-        return new Url(finalSegments);
+        return new Url(finalSegments, this._queryParams);
     }
 
     //Private members

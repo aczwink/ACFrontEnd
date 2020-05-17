@@ -21,32 +21,45 @@ import { Dictionary } from "acts-util-core";
 interface UrlParts
 {
     fullUrl: string;
+    protocol: string;
+    host: string;
     path: string;
+    queryParams: Dictionary<string>;
 }
 
 export class Url
 {
     constructor(urlString: string);
     constructor(path: string, queryParams: Dictionary<string>);
-    constructor(pathSegments: string[]);
-    constructor(input?: any, queryParams?: Dictionary<string>)
+    constructor(pathSegments: string[], queryParams: Dictionary<string>);
+    constructor(input: string|string[], queryParams?: Dictionary<string>)
     {
-        if(typeof(input) === "string")
+        if(Array.isArray(input))
         {
-            const path = this.ParseUrl(input).path;
-            this.path = this.ToAbsolutePath(path).path;
-            this._pathSegments = this.SplitPathIntoSegments(this.path);
-        }
-        else
-        {
+            this.protocol = "http:";
+            this.host = window.location.host;
+
             this._pathSegments = input;
             this.path = this._pathSegments.join("/");
+
+            this._queryParams = {};
+        }
+        else
+        {
+            //full url or path
+            const urlParseResult = this.ParseUrl(input);
+
+            this.protocol = urlParseResult.protocol;
+            this.host = urlParseResult.host;
+
+            this.path = this.ToAbsolutePath(urlParseResult.path).path;
+            this._pathSegments = this.SplitPathIntoSegments(this.path);
+
+            this._queryParams = urlParseResult.queryParams;
         }
 
-        if(queryParams === undefined)
-            this._queryParams = {};
-        else
-            this._queryParams = queryParams;
+        if(queryParams !== undefined)
+            Object.assign(this._queryParams, queryParams);
     }
     
     //Properties
@@ -63,10 +76,19 @@ export class Url
     //Public methods
     public ToString()
     {
-        return this.ToAbsolutePath(this.path).fullUrl;
+        const queryParams = [];
+        for (const key in this._queryParams)
+        {
+            if (this._queryParams.hasOwnProperty(key))
+                queryParams.push(key + "=" + this._queryParams[key]);
+        }
+        const url = this.protocol + "//" + this.host + "/" + this.path + (queryParams.length > 0 ? "?" + queryParams.join("&") : "");
+        return url;
     }
 
     //Private members
+    private protocol: string;
+    private host: string;
     private path: string;
     private _pathSegments: string[];
     private _queryParams: Dictionary<string>;
@@ -87,9 +109,19 @@ export class Url
         const parser = document.createElement("a");
         parser.href = url;
 
+        const queryParamsParts = parser.search.length > 0 ? parser.search.substr(1).split("&") : [];
+        const queryParams: Dictionary<string> = {};
+        queryParamsParts.forEach(kv => {
+            const split = kv.split("=")
+            queryParams[split[0]] = split[1];
+        });
+
         return {
             fullUrl: parser.href,
-            path: decodeURI(parser.pathname)
+            protocol: parser.protocol,
+            host: parser.host,
+            path: decodeURI(parser.pathname),
+            queryParams: queryParams
         };
     }
 
