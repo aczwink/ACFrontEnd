@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Injector } from "acts-util-core";
 
 import { MountPoint, DOM } from "./DOM";
 
@@ -62,6 +63,18 @@ export abstract class VirtualNode
                 this.AddChild(child);
             }
         }
+    }
+
+    public get injector()
+    {
+        if(this._injector === undefined)
+            return this.parent!.injector;
+        return this._injector;
+    }
+
+    public set injector(newInjector: Injector)
+    {
+        this._injector = newInjector;
     }
 
     //Public methods
@@ -115,6 +128,7 @@ export abstract class VirtualNode
             }
         }
         this.mounted = false;
+        this.OnUnmounted();
     }
 
     public Update(newVNode: VirtualNode | null): VirtualNode | null
@@ -138,6 +152,7 @@ export abstract class VirtualNode
      * If this has not been realized, dom node is always null.
      */
     protected domNode: Node | null;
+    protected _injector?: Injector;
 
     //Protected abstract
     protected abstract RealizeSelf(): void;
@@ -173,6 +188,11 @@ export abstract class VirtualNode
 		}
         for(; i < newNode._children.length; i++)
             this.AddChild(newNode._children[i]);
+    }
+
+    //Event handlers
+    protected OnUnmounted()
+    {
     }
 
     //Private members

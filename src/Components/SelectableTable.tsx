@@ -21,7 +21,7 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { VirtualElement } from "../VirtualElement";
 import { VirtualNode } from "../main";
 import { VirtualFragment } from "../VirtualFragment";
-import { DontBind } from "../Injector";
+import { DontBind } from "../ComponentManager";
 
 export class SelectableTable<RowKeyType> extends Component
 {

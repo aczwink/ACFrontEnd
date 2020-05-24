@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,47 +15,78 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Instantiatable, Injector, ResolutionStrategy } from "acts-util-core";
+
 import { Component } from "../Component";
 import { Router } from "../Services/Router/Router";
-import { Injectable, Instantiatable } from "../Injector";
+import { Injectable } from "../ComponentManager";
 import { VirtualInstance } from "../VirtualInstance";
 import { RouterStateNode } from "../Services/Router/RouterState";
 import { RenderNode } from "../VirtualNode";
+import { Subscription } from "acts-util-core/dist/Observable";
 
 @Injectable
 export class RouterComponent extends Component
 {
     //Constructor
-    constructor(private router: Router)
+    constructor(private router: Router, private injector: Injector)
     {
         super();
+
+        this.component = null;
     }
 
     //Protected methods
     protected Render(): RenderNode
-    {
-        const value = this.router.state.Get();
-        if(value.root === null)
+    {        
+        if(this.component === null)
             return null;
-        const component = this.FindComponent(value.root);
-        if(component === null)
-            return null;
-        return new VirtualInstance(component, null, []);
+        return new VirtualInstance(this.component, null, []);
     }
 
+    //Private members
+    private component: Instantiatable<Component> | null;
+    private subscription?: Subscription;
+
     //Private methods
-    private FindComponent(node: RouterStateNode): Instantiatable<Component> | null
+    private FindComponentNode(node: RouterStateNode | null): RouterStateNode | null
     {
+        if(node === null)
+            return null;
+
         if(node.route.component !== undefined)
-            return node.route.component;
+            return node;
         if(node.child !== undefined)
-            return this.FindComponent(node.child);
+            return this.FindComponentNode(node.child);
         return null;
     }
 
     //Event handlers
     public OnInitiated()
     {
-        this.router.state.Subscribe(() => this.Update());
+        this.OnRouterStateChanged();
+        this.subscription = this.router.state.Subscribe(this.OnRouterStateChanged.bind(this));
+    }
+
+    private OnRouterStateChanged()
+    {
+        const routerStateNode = this.injector.Resolve(RouterStateNode, ResolutionStrategy.ParentUpwards);
+        console.log(routerStateNode);
+
+        const node = this.FindComponentNode(routerStateNode);
+        if(node === null)
+            this.injector.RegisterInstance(RouterStateNode, null);
+        else
+        {
+            this.component = node.route.component || null;
+            this.injector.RegisterInstance(RouterStateNode, node.child || null);
+        }
+
+        this.Update();
+    }
+
+    public OnUnmounted()
+    {
+        this.subscription?.Unsubscribe();
     }
 }

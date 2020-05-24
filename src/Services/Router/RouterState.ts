@@ -19,12 +19,18 @@ import { Dictionary } from "acts-util-core";
 
 import { Route } from "./Route";
 import { Url } from "../../Model/Url";
-import { Injector } from "../../Injector";
+import { RootInjector } from "../../App";
 
-export interface RouterStateNode
+export class RouterStateNode
 {
     route: Route;
     child?: RouterStateNode;
+
+    constructor(route: Route, child?: RouterStateNode)
+    {
+        this.route = route;
+        this.child = child;
+    }
 }
 
 export class RouterState
@@ -99,7 +105,7 @@ export class RouterState
         {
             for (const guard of node.route.guards)
             {
-                const instance = Injector.Resolve(guard);
+                const instance = RootInjector.Resolve(guard);
                 if(!instance.CanActivate())
                 {
                     instance.OnActivationFailure(this);

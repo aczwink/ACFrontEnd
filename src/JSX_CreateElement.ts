@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Instantiatable } from "acts-util-core";
+
 import { VirtualNode, RenderNode } from "./VirtualNode";
 import { VirtualElement } from "./VirtualElement";
 import { Component } from "./Component";
 import { VirtualInstance } from "./VirtualInstance";
-import { Instantiatable } from "./Injector";
 import { VirtualFragment } from "./VirtualFragment";
 import { VirtualConstNode } from "./VirtualConstNode";
 import { TransformChildren } from "./RenderNodeTransformer";

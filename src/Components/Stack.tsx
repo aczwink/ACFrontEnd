@@ -17,7 +17,7 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../Injector";
+import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
 
 export class StackChild extends Component

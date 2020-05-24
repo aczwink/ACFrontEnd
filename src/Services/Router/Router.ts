@@ -17,11 +17,12 @@
  * */
 import { Property } from "acts-util-core";
 
-import { Injectable, Injector } from "../../Injector";
+import { Injectable } from "../../ComponentManager";
 import { Routes } from "./Route";
 import { RouteHandler } from "./RouteHandler";
 import { RouterState, RouterStateNode } from "./RouterState";
 import { Url } from "../../Model/Url";
+import { RootInjector } from "../../App";
 
 
 @Injectable
@@ -30,11 +31,11 @@ export class Router
     constructor(routes: Routes)
     {
         this.TransformRoutes(routes);
-        Injector.Register(Router, this);
+        RootInjector.RegisterInstance(Router, this);
 
         const state = this.CreateRouterState(new Url(window.location.href));
+        this.UpdateRouterState(state);
         this._state = new Property<RouterState>(state);
-        state.Activate();
     }
 
     //Properties
@@ -50,7 +51,7 @@ export class Router
             url = new Url(url);
 
         const newState = this.CreateRouterState(url);
-        newState.Activate();
+        this.UpdateRouterState(newState);
         this._state.Set(newState);
         this.AddStateToHistory(newState);
     }
@@ -86,4 +87,11 @@ export class Router
     //Private members
     private _state: Property<RouterState>;
     private routes!: RouteHandler[];
+
+    //Private methods
+    private UpdateRouterState(state: RouterState)
+    {
+        state.Activate();
+        RootInjector.RegisterInstance(RouterStateNode, state.root);
+    }
 }

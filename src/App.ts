@@ -15,8 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Injector, Instantiatable } from "acts-util-core";
+
+export const RootInjector = new Injector;
+
+
 import { Component } from "./Component";
-import { Injector, Instantiatable } from "./Injector";
+import { ComponentManager } from "./ComponentManager";
 import { Router } from "./Services/Router/Router";
 import { Routes } from "./Services/Router/Route";
 import { PopupManager } from "./Services/PopupManager";
@@ -37,6 +42,8 @@ class VirtualRoot extends VirtualNode
     constructor(mountPoint: HTMLElement)
     {
         super(mountPoint);
+
+        this.injector = RootInjector;
     }
 
     protected RealizeSelf(): void
@@ -57,9 +64,9 @@ export class App
         this.router = new Router(properties.routes);
 
         this.popupManager = new PopupManager(properties.mountPoint);
-        Injector.Register(PopupManager, this.popupManager);
+        RootInjector.RegisterInstance(PopupManager, this.popupManager);
 
-        Injector.Resolve<TitleService>(TitleService).format = "%title% | " + properties.title + " " + properties.version;
+        RootInjector.Resolve(TitleService).format = "%title% | " + properties.title + " " + properties.version;
 
         this.root = new VirtualRoot(this.properties.mountPoint);
 
@@ -69,7 +76,7 @@ export class App
     //Event handlers
     private OnWindowLoaded()
     {
-        const rootComponent = Injector.CreateComponent(this.properties.rootComponentClass);
+        const rootComponent = ComponentManager.CreateComponent(this.properties.rootComponentClass, RootInjector);
         if(rootComponent.vNode !== null)
             this.root.AddChild(rootComponent.vNode);
     }

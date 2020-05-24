@@ -15,27 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import "reflect-metadata";
 import { Component } from "./Component";
-import { Dictionary } from "acts-util-core";
+import { Dictionary, Instantiatable, Injector } from "acts-util-core";
+import { RootInjector } from "./App";
 
-export interface Instantiatable<T>
-{
-    new(...args: any[]): T;
-}
-
-let injectables = new Map<Function, any>();
 export function Injectable<T extends Instantiatable<{}>>(constructor:T)
 {
-    injectables.set(constructor, null);
+    RootInjector.RegisterProvider(constructor, constructor);
     return constructor;
-    /*return class extends constructor
-    {
-        constructor(...args:any[])
-        {
-            super(...args);
-        }
-    };*/
 }
 
 interface MemberMetadata
@@ -52,12 +39,12 @@ export function DontBind(target: any, key: string)
     members[key] = { installDataBinding: false };
 }
 
-export const Injector = new class
+export const ComponentManager = new class
 {
     //Public methods
-    public CreateComponent<T>(componentType: Instantiatable<Component>): Component
+    public CreateComponent<T>(componentType: Instantiatable<Component>, injector: Injector): Component
     {
-        const instance = this.CreateInstance(componentType); //components are always instantiated
+        const instance = injector.CreateInstance(componentType); //components are always instantiated
         const instanceAny = instance as any;
 
         //set input
@@ -68,41 +55,8 @@ export const Injector = new class
         return instance;
     }
 
-    public Register<T>(type: Instantiatable<T>, instance: T)
-    {
-        injectables.set(type, instance);
-    }
-
-    public Resolve<T>(target: Instantiatable<T>): T
-    {
-        let instance = injectables.get(target);
-        if(instance === undefined)
-        {
-            throw new Error("Unknown injectable: " + target);
-        }
-        if(instance === null)
-        {
-            const newInstance = this.CreateInstance(target);
-            this.Register(target, newInstance);
-            instance = newInstance;
-        }
-        return instance as unknown as T;
-    }
-
-    public ResolveInjections<T>(target: Instantiatable<T>): any
-    {
-        const argsTypes = Reflect.getMetadata('design:paramtypes', target) || [];
-        const injections = argsTypes.map((argType : any) => this.Resolve(argType));
-        return injections;
-    }
-
     //Private methods
     //TODO: why can't these be private?
-    public CreateInstance<T>(target: Instantiatable<T>): T
-    {
-        return new target(...this.ResolveInjections(target));
-    }
-
     public InstallDataBinding(instance: Component, instanceAny: any, propertyName: string)
     {
         let value: any = instanceAny[propertyName];

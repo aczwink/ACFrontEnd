@@ -73,6 +73,10 @@ export abstract class Component
         this.Update();
     }
 
+    public OnUnmounted()
+    {
+    }
+
     //Private members
     private _vNode: VirtualNode | null;
 }

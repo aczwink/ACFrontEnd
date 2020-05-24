@@ -17,7 +17,7 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../Injector";
+import { Injectable } from "../ComponentManager";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
 import { RenderNode } from "../VirtualNode";
 import { ProgressSpinner } from "./ProgressSpinner";

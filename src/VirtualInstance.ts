@@ -15,9 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Instantiatable, Injector } from "acts-util-core";
+
 import { Component } from "./Component";
 import { VirtualNode } from "./VirtualNode";
-import { Instantiatable, Injector } from "./Injector";
+import { ComponentManager } from "./ComponentManager";
 import { EqualsAny } from "./JSTypes";
 
 interface Dictionary
@@ -47,8 +49,13 @@ export class VirtualInstance extends VirtualNode
     //Protected methods
     protected RealizeSelf(): void
     {
-        this.injections = Injector.ResolveInjections(this.type);
-        this.instance = Injector.CreateComponent(this.type);
+        const ownInjector = new Injector;
+        ownInjector.parent = this.injector;
+        this.injector = ownInjector;
+        ownInjector.RegisterInstance(Injector, ownInjector);
+
+        this.injections = this.injector.ResolveInjections(this.type);
+        this.instance = ComponentManager.CreateComponent(this.type, this.injector);
 
         //set children
         this.PassInputArgs(this.args);
@@ -107,12 +114,19 @@ export class VirtualInstance extends VirtualNode
 		*/
     }
 
+    //Event handlers
+    protected OnUnmounted()
+    {
+        if(this.instance !== null)
+            this.instance.OnUnmounted();
+    }
+
     //Private methods
     private InjectionsChanged(): boolean
     {
         if(this.instance !== null)
         {
-            const newInjections = Injector.ResolveInjections(this.type);
+            const newInjections = this.injector.ResolveInjections(this.type);
             return !EqualsAny(this.injections, newInjections);
         }
 

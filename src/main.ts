@@ -25,7 +25,7 @@ import { Route, Routes } from "./Services/Router/Route";
 import { Anchor } from "./Components/Anchor";
 import { MatIcon } from "./Components/MatIcon";
 import { PopupManager } from "./Services/PopupManager";
-import { Injectable, Instantiatable, Injector } from "./Injector";
+import { Injectable, ComponentManager } from "./ComponentManager";
 import { FormField } from "./Components/FormField";
 import { DialogProperties, DialogRef } from "./Controller/DialogRef";
 import { LineEdit } from "./Components/LineEdit";
@@ -62,8 +62,7 @@ export
     Gallery,
     HttpService,
     Injectable,
-    Injector,
-    Instantiatable,
+    ComponentManager,
     IntegerSpinner,
     JSX_CreateElement,
     LineEdit,

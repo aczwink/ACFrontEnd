@@ -15,12 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Injectable, Instantiatable, Injector } from "../Injector";
+import { Dictionary, Instantiatable } from "acts-util-core";
+
+import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
 import { VirtualInstance } from "../VirtualInstance";
 import { Dialog } from "../Components/Dialog";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
-import { Dictionary } from "acts-util-core";
+import { RootInjector } from "../App";
 
 @Injectable
 export class PopupManager
@@ -37,7 +39,7 @@ export class PopupManager
         this.modalStack.push(modal);
 
         const dialogRef = new DialogRef( this.CloseModal.bind(this, modal) );
-        Injector.Register(DialogRef, dialogRef);
+        RootInjector.RegisterInstance(DialogRef, dialogRef);
 
         if(this.modalContainer === undefined)
         {
