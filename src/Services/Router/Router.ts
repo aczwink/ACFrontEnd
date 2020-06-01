@@ -34,8 +34,8 @@ export class Router
         RootInjector.RegisterInstance(Router, this);
 
         const state = this.CreateRouterState(new Url(window.location.href));
-        this.UpdateRouterState(state);
         this._state = new Property<RouterState>(state);
+        this.UpdateRouterState(state);
     }
 
     //Properties
@@ -91,7 +91,7 @@ export class Router
     //Private methods
     private UpdateRouterState(state: RouterState)
     {
-        state.Activate();
-        RootInjector.RegisterInstance(RouterStateNode, state.root);
+        if(state.Activate())
+            RootInjector.RegisterInstance(RouterStateNode, state.root);
     }
 }

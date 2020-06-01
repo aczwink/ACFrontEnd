@@ -2,7 +2,7 @@ const webpack = require("webpack");
 const fs = require("fs");
 
 module.exports = {
-    mode: "production",
+    mode: "development",
 
     entry: "./src/main.ts",
     output: {
@@ -13,7 +13,6 @@ module.exports = {
     devtool: 'inline-source-map', // Enable sourcemaps for debugging webpack's output.
 
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".ts", ".tsx", ".js"]
     },
 

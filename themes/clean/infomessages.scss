@@ -1,0 +1,15 @@
+div#infoMessagesContainer
+{
+    position: fixed;
+    top: 5%;
+    right: 2%;
+}
+
+div.infoMessage
+{
+    border: 1px solid $shadow-color;
+	border-radius: 0.25rem;
+	background-color: $bright-color;
+    z-index: 2000;
+    padding: 0.5rem;
+}

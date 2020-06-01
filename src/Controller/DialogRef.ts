@@ -22,6 +22,7 @@ import { ObservableEvent } from "../ObservableEvent";
 export interface DialogProperties
 {
     title: string;
+    input?: any;
 }
 
 export class DialogRef

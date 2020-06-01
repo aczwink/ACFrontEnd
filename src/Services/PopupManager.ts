@@ -23,34 +23,33 @@ import { VirtualInstance } from "../VirtualInstance";
 import { Dialog } from "../Components/Dialog";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
 import { RootInjector } from "../App";
+import { VirtualNode } from "../VirtualNode";
+import { VirtualElement } from "../VirtualElement";
+import { PopupRef } from "../Controller/PopupRef";
+
+interface PopupContainer
+{
+    container: VirtualElement;
+    popups: VirtualNode[];
+}
 
 @Injectable
 export class PopupManager
 {
-    constructor(private mountPoint: HTMLElement)
+    constructor(private root: VirtualNode, private mountPoint: HTMLElement)
     {
-        this.modalStack = [];
+        this.popupContainers = {};
     }
 
     //Public methods
     public OpenDialog(component: Instantiatable<Component>, dialogTemplate: DialogProperties)
     {
-        const modal = new VirtualInstance(Dialog, dialogTemplate, [ new VirtualInstance(component, null, []) ]);
-        this.modalStack.push(modal);
+        const modal = new VirtualInstance(Dialog, dialogTemplate, [ new VirtualInstance(component, dialogTemplate.input || null, []) ]);
+        const ref = this.OpenPopup("modalContainer", modal, { className: "show" });
 
-        const dialogRef = new DialogRef( this.CloseModal.bind(this, modal) );
+        const dialogRef = new DialogRef( this.CloseModal.bind(this, ref) );
         RootInjector.RegisterInstance(DialogRef, dialogRef);
 
-        if(this.modalContainer === undefined)
-        {
-            this.modalContainer = document.createElement("div");
-            this.modalContainer.id = "modalContainer";
-
-            this.mountPoint.appendChild(this.modalContainer);
-        }
-
-        modal.MountAsChildOf(this.modalContainer);
-		this.modalContainer.className = "show";
         document.body.className = "scroll-lock";
 
         return dialogRef;
@@ -63,21 +62,51 @@ export class PopupManager
         instance.MountAsChildOf(this.mountPoint);
     }
 
-    //Private methods
-    private CloseModal(modal: VirtualInstance)
+    public OpenPopup(containerId: string, popupNode: VirtualNode, properties?: any): PopupRef
     {
-        var idx = this.modalStack.indexOf(modal);
-        this.modalStack.splice(idx, 1);
-
-        modal.Unmount();
-        if(!this.modalContainer!.hasChildNodes())
+        let container = this.popupContainers[containerId];
+        if(container === undefined)
         {
-			this.modalContainer!.className = "";
+            properties.id = containerId;
+            container = {
+                container: new VirtualElement("div", properties),
+                popups: []
+            };
+            this.popupContainers[containerId] = container;
+            const adder = () => this.root.AddChild(container!.container);
+            adder.CallImmediate();
+        }
+        container.popups.push(popupNode);
+        container.container.children = container.popups;
+
+        return new PopupRef( this.ClosePopup.bind(this, containerId, popupNode) );
+    }
+
+    //Private methods
+    private CloseModal(ref: PopupRef)
+    {
+        ref.Close();
+
+        if(this.popupContainers["modalContainer"] === undefined)
+        {
             document.body.className = "";
         }
     }
 
+    private ClosePopup(containerId: string, popupNode: VirtualNode)
+    {
+        const container = this.popupContainers[containerId]!;
+
+        container.popups.Remove(container.popups.indexOf(popupNode));
+        container.container.children = container.popups;
+        
+        if(container.popups.length === 0)
+        {
+            this.root.RemoveChild(container.container);
+            delete this.popupContainers[containerId];
+        }
+    }
+
     //Private members
-    private modalStack: Array<any>;
-    private modalContainer?: HTMLElement;
+    private popupContainers: Dictionary<PopupContainer>;
 }

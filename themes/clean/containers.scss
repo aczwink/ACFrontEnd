@@ -34,7 +34,7 @@ div.evenlySpacedRow
 	justify-content: space-evenly;
 }
 
-div.infoMessage, div.tooltip
+div.tooltip
 {
 	position: absolute;
 	border: 1px solid $shadow-color;
@@ -46,13 +46,6 @@ div.infoMessage, div.tooltip
 	{
 		padding: 0.5rem 0.75rem
 	}
-}
-
-div.infoMessage
-{
-	top: 5%;
-	right: 2%;
-	position: fixed;
 }
 
 div.tooltip

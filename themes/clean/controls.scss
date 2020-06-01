@@ -7,6 +7,11 @@ button
 	border: 1px solid transparent;
 }
 
+button.danger
+{
+	background-color: var(--danger-color);
+}
+
 button:hover:not(:disabled), button:focus
 {
 	background-color: darken($primary-color, 7.5%);

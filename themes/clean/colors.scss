@@ -1,3 +1,8 @@
+$primary-color: #007fff;
+
+$bright-color: #fff;
+$dark-color: #191919;
+
 $text-color: $dark-color;
 $shadow-color: rgba(0, 0, 0, 0.075);
 
@@ -29,3 +34,14 @@ $text-color-highlighted: $bright-color;
 $ui-area-background-color: $gray-bright-color;
 $ui-area-background-color-highlighted: lighten($gray-meddark-color, 10%);
 $control-background-color: $bright-color;
+
+:root
+{
+    --danger-color: #ff3030;
+    --background-color: #{$bright-color};
+}
+
+.theme-dark
+{
+    --background-color: #{$gray-dark-color};
+}

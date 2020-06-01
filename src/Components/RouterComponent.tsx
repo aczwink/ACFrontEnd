@@ -71,11 +71,13 @@ export class RouterComponent extends Component
     private OnRouterStateChanged()
     {
         const routerStateNode = this.injector.Resolve(RouterStateNode, ResolutionStrategy.ParentUpwards);
-        console.log(routerStateNode);
 
         const node = this.FindComponentNode(routerStateNode);
         if(node === null)
+        {
+            this.component = null;
             this.injector.RegisterInstance(RouterStateNode, null);
+        }
         else
         {
             this.component = node.route.component || null;

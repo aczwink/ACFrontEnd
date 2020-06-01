@@ -113,6 +113,15 @@ export abstract class VirtualNode
         this.Mount({ mountPointNode: mountPoint, reference: "appendChild" });
     }
 
+    public RemoveChild(child: VirtualNode)
+    {
+        if(this._children === undefined)
+            throw new Error("HERE");
+
+        this._children.splice(this._children.indexOf(child), 1);
+        child.Unmount();
+    }
+
     public Unmount()
     {
         if(this.domNode !== null)
@@ -321,15 +330,6 @@ export abstract class VirtualNode
         }
     }
 
-    private RemoveChild(child: VirtualNode)
-    {
-        if(this._children === undefined)
-            throw new Error("HERE");
-
-        this._children.splice(this._children.indexOf(child), 1);
-        child.Unmount();
-    }
-
     private Replace(newVNode: VirtualNode)
     {
         if(this.parent === null)
@@ -340,13 +340,6 @@ export abstract class VirtualNode
 
     private ReplaceChild(oldChild: VirtualNode, newChild: VirtualNode)
     {
-        if( oldChild.domNode !== null)
-        {
-            newChild.EnsureRealized();
-            if(newChild.domNode !== null)
-                throw new Error("HERE");
-        }
-
         const next = oldChild._nextSibling;
         this.RemoveChild(oldChild);
 

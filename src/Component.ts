@@ -17,6 +17,7 @@
  * */
 import { VirtualNode, RenderNode } from "./VirtualNode";
 import { TransformRenderNodeToVirtualNode } from "./RenderNodeTransformer";
+import { VirtualConstNode } from "./VirtualConstNode";
 
 export abstract class Component
 {
@@ -38,16 +39,18 @@ export abstract class Component
     protected abstract Render(): RenderNode;
 
     //Public methods
-    Update()
+    public Update()
     {
-        this.NextTick(this.UpdateSync.bind(this));
+        this.UpdateSync.bind(this).CallImmediate();
     }
 
-    UpdateSync()
+    public UpdateSync()
     {
         const newNode = this.Render();
-        const newVirtualNode = TransformRenderNodeToVirtualNode(newNode);
-
+        let newVirtualNode = TransformRenderNodeToVirtualNode(newNode);
+        if(newVirtualNode === null) //components can't have a null child, because they can't update themselves without their parent being updated
+            newVirtualNode = new VirtualConstNode();
+        
         if(this._vNode === null) //special case: component was never used before
         {
             this._vNode = newVirtualNode;
@@ -55,12 +58,6 @@ export abstract class Component
         }
 
         this._vNode = this._vNode.Update(newVirtualNode);
-    }
-
-    //Private methods
-    private NextTick(func: Function)
-    {
-        setTimeout(func, 0);
     }
 
     //Event handlers

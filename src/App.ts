@@ -18,6 +18,7 @@
 import { Injector, Instantiatable } from "acts-util-core";
 
 export const RootInjector = new Injector;
+RootInjector.RegisterInstance(Injector, RootInjector);
 
 
 import { Component } from "./Component";
@@ -63,12 +64,12 @@ export class App
     {
         this.router = new Router(properties.routes);
 
-        this.popupManager = new PopupManager(properties.mountPoint);
-        RootInjector.RegisterInstance(PopupManager, this.popupManager);
-
         RootInjector.Resolve(TitleService).format = "%title% | " + properties.title + " " + properties.version;
 
         this.root = new VirtualRoot(this.properties.mountPoint);
+
+        this.popupManager = new PopupManager(this.root, properties.mountPoint);
+        RootInjector.RegisterInstance(PopupManager, this.popupManager);
 
         window.addEventListener("load", this.OnWindowLoaded.bind(this), false);
     }

@@ -5,8 +5,10 @@
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "build": "tsc && npx webpack",
-    "buildThemes": "sass ./themes/clean/clean_light.scss dist/clean_light.css"
+    "compile": "tsc",
+    "build-debug": "npx webpack --config webpack.config.debug.js",
+    "build": "npx webpack",
+    "build-themes": "sass ./themes/clean/main.scss dist/clean.css"
   },
   "repository": {
     "type": "git",

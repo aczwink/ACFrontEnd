@@ -64,7 +64,7 @@ export class RouterState
     //Public methods
     public Activate()
     {
-        this.ActivateNode(this._root);
+        return this.ActivateNode(this._root);
     }
 
     public ToUrl(): Url
@@ -99,7 +99,7 @@ export class RouterState
     private _queryParams: Dictionary<string>;
 
     //Private methods
-    private ActivateNode(node: RouterStateNode)
+    private ActivateNode(node: RouterStateNode): boolean
     {
         if(node.route.guards !== undefined)
         {
@@ -109,12 +109,13 @@ export class RouterState
                 if(!instance.CanActivate())
                 {
                     instance.OnActivationFailure(this);
-                    return;
+                    return false;
                 }
             }
         }
         
         if(node.child !== undefined)
-            this.ActivateNode(node.child);
+            return this.ActivateNode(node.child);
+        return true;
     }
 }

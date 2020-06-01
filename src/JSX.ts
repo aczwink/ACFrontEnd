@@ -48,6 +48,7 @@ declare module JSX
         a: {
             children: JsxNode;
 
+            class?: string;
             href?: string;
             onclick?: EventHandler<MouseEvent>;
             target?: "_blank";
@@ -65,7 +66,8 @@ declare module JSX
 
             class?: string;
             disabled?: boolean;
-            onclick?: EventHandler;
+            onclick?: EventHandler<MouseEvent>;
+            style?: string;
         };
         div: any;
         form: {
@@ -86,6 +88,13 @@ declare module JSX
         h4: any;
         hr: {
         };
+
+        iframe: {
+            src: string;
+
+            style?: string;
+        };
+
         img: {
             src: string;
             

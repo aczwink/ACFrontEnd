@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import {App} from "./App";
+import {App, RootInjector} from "./App";
 import {Component} from "./Component";
 import {JSX_CreateElement} from "./JSX_CreateElement";
 import { VirtualNode, RenderNode } from "./VirtualNode";
@@ -48,6 +48,8 @@ import { RouterButton } from "./Components/RouterButton";
 import { RouteGuard } from "./Services/Router/RouteGuard";
 import { Url } from "./Model/Url";
 import { RouterState } from "./Services/Router/RouterState";
+import { InfoMessageManager } from "./Services/InfoMessageManager";
+import { PaginationComponent } from "./Components/PaginationComponent";
 
 export
 {
@@ -61,6 +63,7 @@ export
     FormField,
     Gallery,
     HttpService,
+    InfoMessageManager,
     Injectable,
     ComponentManager,
     IntegerSpinner,
@@ -68,10 +71,12 @@ export
     LineEdit,
     MatIcon,
     ObservableEvent,
+    PaginationComponent,
     PopupManager,
     PrimitiveDictionary,
     ProgressSpinner,
     RenderNode,
+    RootInjector,
     Route,
     RouteGuard,
     Router,

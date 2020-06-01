@@ -43,7 +43,13 @@ export class HttpService
         {
             const parts = [];
             for (const key in queryParams)
-                parts.push(key + "=" + encodeURIComponent(queryParams[key]!));
+            {
+                const value = queryParams[key];
+                if(value === undefined)
+                    throw new Error("Query param '" + key + "' can't be undefined");
+
+                parts.push(key + "=" + encodeURIComponent(value));
+            }
             url += "?" + parts.join("&");
         }
 

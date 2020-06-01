@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,3 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+
+import { Injectable } from "../ComponentManager";
+import { Component } from "../Component";
+import { RenderNode } from "../VirtualNode";
+import { JSX_CreateElement } from "../JSX_CreateElement";
+
+@Injectable
+export class InfoMessage extends Component
+{
+    //Input
+    input!: {
+        children: RenderNode;
+    };
+
+    protected Render(): RenderNode
+    {
+        return <div class="infoMessage">{this.input.children}</div>;
+    }
+}
