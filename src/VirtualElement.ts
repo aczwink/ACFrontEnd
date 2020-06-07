@@ -43,6 +43,7 @@ function RedirectProperties(properties: any)
     {
         MoveProperty(properties, "class", "className");
         MoveProperty(properties, "colspan", "colSpan");
+        MoveProperty(properties, "tabindex", "tabIndex");
         SetPropertyOnBool(properties, "checked");
         SetPropertyOnBool(properties, "disabled");
     }

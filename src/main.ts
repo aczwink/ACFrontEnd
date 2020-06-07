@@ -50,11 +50,13 @@ import { Url } from "./Model/Url";
 import { RouterState } from "./Services/Router/RouterState";
 import { InfoMessageManager } from "./Services/InfoMessageManager";
 import { PaginationComponent } from "./Components/PaginationComponent";
+import { AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "./Components/AutoCompleteMultiSelectBox";
 
 export
 {
     Anchor,
     App,
+    AutoCompleteMultiSelectBox,
     AutocompleteTextLineEdit,
     CheckBox,
     Component,
@@ -68,6 +70,7 @@ export
     ComponentManager,
     IntegerSpinner,
     JSX_CreateElement,
+    KeyDisplayValuePair,
     LineEdit,
     MatIcon,
     ObservableEvent,

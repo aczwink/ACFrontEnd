@@ -58,8 +58,7 @@ export class PopupManager
     public OpenModeless(component: Instantiatable<Component>, properties: Dictionary<any>)
     {
         const instance = new VirtualInstance(component, properties, []);
-
-        instance.MountAsChildOf(this.mountPoint);
+        this.root.AddChild(instance);
     }
 
     public OpenPopup(containerId: string, popupNode: VirtualNode, properties?: any): PopupRef

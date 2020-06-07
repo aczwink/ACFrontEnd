@@ -1,0 +1,28 @@
+{
+  "name": "acfrontend-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "tsc",
+    "build": "npx webpack",
+    "run": "node serve.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aczwink/ACFrontEnd.git"
+  },
+  "author": "Amir Czwink",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "npx": "^10.2.2",
+    "typescript": "^3.9.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "acfrontend": "*",
+    "acts-util-core": "*",
+    "express": "^4.17.1"
+  }
+}

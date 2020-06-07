@@ -109,11 +109,26 @@ declare module JSX
             placeholder?: string;
             value?: number | string;
 
+            onblur?: EventHandler<FocusEvent>;
             onchange?: EventHandler;
             onclick?: EventHandler;
-            onkeyup?: Function;
+            onfocus?: EventHandler<FocusEvent>;
+            onkeydown?: EventHandler<KeyboardEvent>;
+            onkeyup?: EventHandler<KeyboardEvent>;
         };
-        li: any;
+
+        li: {
+            children: JsxNode;
+
+            class?: string;
+            tabindex?: number;
+
+            onblur?: EventHandler<FocusEvent>;
+            onfocus?: EventHandler<FocusEvent>;
+            onkeyup?: EventHandler<KeyboardEvent>;
+            onmousedown?: EventHandler<MouseEvent>;
+        };
+
         nav: any;
         option: {
             children: string;
@@ -121,6 +136,9 @@ declare module JSX
             selected?: boolean;
             value?: string;
         };
+        p: {
+            children: string;
+        }
         select: {
             children: any[];
 
