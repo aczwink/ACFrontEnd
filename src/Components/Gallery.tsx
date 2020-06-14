@@ -20,8 +20,10 @@ import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
 import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
+import { PopupManager } from "../Services/PopupManager";
+import { GalleryModal } from "./GalleryModal";
 
-interface Image
+export interface Image
 {
     url: string;
 }
@@ -39,12 +41,25 @@ export class Gallery extends Component
         images: Images;
     };
 
+    constructor(private popupManager: PopupManager)
+    {
+        super();
+    }
+
     //Protected methods
     protected Render(): RenderNode
     {
         const imgClass = this.input.images.imgClass ? this.input.images.imgClass : "";
         return <fragment>
-            {this.input.images.images.map(image => <img class={imgClass} src={image.url} />)}
+            {this.input.images.images.map( (image, index) => <img onclick={this.OnImageClicked.bind(this, index)} class={imgClass} src={image.url} />)}
         </fragment>;
+    }
+
+    //Event handlers
+    private OnImageClicked(imgIndex: number, event: MouseEvent)
+    {
+        event.stopPropagation();
+
+        this.popupManager.OpenModal(GalleryModal, { className: "galleryModal", input: { startImageIndex: imgIndex, images: this.input.images.images} });
     }
 }

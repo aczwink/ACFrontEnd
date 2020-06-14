@@ -51,9 +51,11 @@ export class Router
             url = new Url(url);
 
         const newState = this.CreateRouterState(url);
-        this.UpdateRouterState(newState);
-        this._state.Set(newState);
-        this.AddStateToHistory(newState);
+        if(this.UpdateRouterState(newState))
+        {
+            this._state.Set(newState);
+            this.AddStateToHistory(newState);
+        }
     }
 
     //Private methods
@@ -92,6 +94,12 @@ export class Router
     private UpdateRouterState(state: RouterState)
     {
         if(state.Activate())
+        {
+            RootInjector.RegisterInstance(RouterState, state);
             RootInjector.RegisterInstance(RouterStateNode, state.root);
+
+            return true;
+        }
+        return false;
     }
 }

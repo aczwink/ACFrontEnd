@@ -38,20 +38,11 @@ export class VirtualInstance extends VirtualNode
         this._subChildren = subChildren;
         this.instance = null;
         this.injections = undefined;
+
+        this.EnsureHasOwnInjector();
     }
 
     //Properties
-    public get injector()
-    {
-        if(this._injector === undefined)
-        {
-            const ownInjector = new Injector;
-            ownInjector.parent = super.injector;
-            this._injector = ownInjector;
-        }
-        return this._injector;
-    }
-
     public get input()
     {
         return this.args;
@@ -60,10 +51,10 @@ export class VirtualInstance extends VirtualNode
     //Protected methods
     protected RealizeSelf(): void
     {
-        this.injector.RegisterInstance(Injector, this.injector);
+        this.injector!.RegisterInstance(Injector, this.injector);
 
-        this.injections = this.injector.ResolveInjections(this.type);
-        this.instance = ComponentManager.CreateComponent(this.type, this.injector);
+        this.injections = this.injector!.ResolveInjections(this.type);
+        this.instance = ComponentManager.CreateComponent(this.type, this.injector!);
 
         //set children
         this.PassInputArgs(this.args);
@@ -134,7 +125,7 @@ export class VirtualInstance extends VirtualNode
     {
         if(this.instance !== null)
         {
-            const newInjections = this.injector.ResolveInjections(this.type);
+            const newInjections = this.injector!.ResolveInjections(this.type);
             return !EqualsAny(this.injections, newInjections);
         }
 

@@ -28,7 +28,7 @@ export class VirtualTextNode extends VirtualNode
     //Protected methods
     protected RealizeSelf(): void
     {
-        this.domNode = document.createTextNode(this.text.toString());
+        this._domNode = document.createTextNode(this.text.toString());
     }
 
     protected UpdateSelf(newNode: VirtualNode): VirtualNode
@@ -36,8 +36,8 @@ export class VirtualTextNode extends VirtualNode
         if(newNode instanceof VirtualTextNode)
         {
             this.text = newNode.text;
-            if(this.domNode !== null)
-                this.domNode.nodeValue = newNode.text.toString();
+            if(this._domNode !== null)
+                this._domNode.nodeValue = newNode.text.toString();
             return this;
         }
         return newNode;

@@ -1,0 +1,91 @@
+div.tooltip
+{
+	position: absolute;
+	border: 1px solid $shadow-color;
+	border-radius: 0.25rem;
+	background-color: $bright-color;
+	z-index: 2000;
+	
+	> div:last-child /* body */
+	{
+		padding: 0.5rem 0.75rem
+	}
+
+	> .arrow
+	{
+		position: relative;
+		background: $background-color;
+	}
+	
+	> .arrow:after, > .arrow:before
+	{
+		border: solid transparent;
+		content: " ";
+		height: 0;
+		width: 0;
+		position: absolute;
+		pointer-events: none;
+	}
+	
+	> .arrow.up:after, > .arrow.up:before
+	{
+		bottom: 100%;
+		left: 50%;
+	}
+	
+	> .arrow.right:after, > .arrow.right:before
+	{
+		left: 100%;
+		top: 50%;
+	}
+	
+	> .arrow:after
+	{
+		border-color: transparent;
+		border-width: calc(0.4rem - 1px);
+	}
+	
+	> .arrow.up:after
+	{
+		border-bottom-color: $bright-color;
+		margin-left: calc(-0.4rem + 1px);
+	}
+	
+	> .arrow.right:after
+	{
+		border-left-color: $bright-color;
+		margin-top: calc(-0.4rem + 1px);
+	}
+	
+	> .arrow:before
+	{
+		border-color: transparent;
+		border-width: 0.4rem;
+	}
+	
+	> .arrow.up:before
+	{
+		border-bottom-color: $shadow-color;
+		margin-left: -0.4rem;
+		bottom: calc(100% + 1px);
+	}
+	
+	> .arrow.right:before
+	{
+		border-left-color: $shadow-color;
+		margin-top: -0.4rem;
+		left: calc(100% + 1px);
+	}
+}
+
+div.tooltip.below
+{
+	transform: translateX(-50%);
+	margin-top: 0.5rem;
+}
+
+div.tooltip.leftOf
+{
+	transform: translate(-100%, -50%);
+	margin-left: -0.5rem;
+}

@@ -29,18 +29,18 @@ export abstract class VirtualNode
     constructor(domNode?: Node)
     {
         this._nextSibling = null;
-        this.parent = null;
+        this._parent = null;
         this._prevSibling = null;
 
         if(domNode === undefined)
         {
-            this.domNode = null;
+            this._domNode = null;
             this.mounted = false;
             this.realized = false;
         }
         else
         {
-            this.domNode = domNode;
+            this._domNode = domNode;
             this.mounted = true;
             this.realized = true;
         }
@@ -65,14 +65,23 @@ export abstract class VirtualNode
         }
     }
 
+    public get domNode()
+    {
+        return this._domNode;
+    }
+
     public get injector()
     {
         if(this._injector === undefined)
-            return this.parent!.injector;
+        {
+            if(this._parent === null)
+                return undefined;
+            return this._parent.injector;
+        }
         return this._injector;
     }
 
-    public set injector(newInjector: Injector)
+    public set injector(newInjector: Injector|undefined)
     {
         this._injector = newInjector;
     }
@@ -98,11 +107,17 @@ export abstract class VirtualNode
         }
     }
 
+    public EnsureHasOwnInjector()
+    {
+        this._injector = new Injector;
+        this.ReparentInjectors();
+    }
+
     public Mount(mountPoint: MountPoint): void
     {
         this.EnsureRealized();
-        if(this.domNode !== null)
-            DOM.Mount(this.domNode, mountPoint);
+        if(this._domNode !== null)
+            DOM.Mount(this._domNode, mountPoint);
         else
             this.MountChildren(mountPoint);
         this.mounted = true;
@@ -124,9 +139,9 @@ export abstract class VirtualNode
 
     public Unmount()
     {
-        if(this.domNode !== null)
+        if(this._domNode !== null)
         {
-            DOM.Unmount(this.domNode);
+            DOM.Unmount(this._domNode);
         }
         else if(this._children !== undefined)
         {
@@ -160,7 +175,7 @@ export abstract class VirtualNode
      * Currently this is only true for VirtualInstance and VirtualFragment.
      * If this has not been realized, dom node is always null.
      */
-    protected domNode: Node | null;
+    protected _domNode: Node | null;
     protected _injector?: Injector;
 
     //Protected abstract
@@ -210,7 +225,7 @@ export abstract class VirtualNode
      * This is currently only true for VirtualTextNode
      */
     private _children?: Array<VirtualNode>;
-    private parent: VirtualNode | null;
+    private _parent: VirtualNode | null;
     private mounted: boolean;
     private realized: boolean;
     private _nextSibling: VirtualNode | null;
@@ -222,6 +237,12 @@ export abstract class VirtualNode
         this._nextSibling = newNext;
         if( newNext !== null)
             newNext._prevSibling = this;
+    }
+
+    private set parent(newParent: VirtualNode)
+    {
+        this._parent = newParent;
+        this.ReparentInjectors();
     }
 
     private set previousSibling(newPrev: VirtualNode | null)
@@ -251,18 +272,18 @@ export abstract class VirtualNode
             this.RealizeSelf();
             this.realized = true;
         }
-        if( this.domNode !== null )
-            this.MountChildren({ mountPointNode: this.domNode, reference: "appendChild" });
+        if( this._domNode !== null )
+            this.MountChildren({ mountPointNode: this._domNode, reference: "appendChild" });
     }
 
     private FindMountPoint(checkChildren: boolean = true) : MountPoint | null
     {
         //check this
-        if( this.mounted && (this.domNode !== null) )
+        if( this.mounted && (this._domNode !== null) )
         {
-            if(this.domNode.parentNode === null)
+            if(this._domNode.parentNode === null)
                 throw new Error("CAN'T BE");
-            return { mountPointNode: this.domNode.parentNode, referenceNode: this.domNode, reference: "before" };
+            return { mountPointNode: this._domNode.parentNode, referenceNode: this._domNode, reference: "before" };
         }
 
         //check children
@@ -282,12 +303,12 @@ export abstract class VirtualNode
         }
 
         //try parent
-        if(this.parent !== null)
+        if(this._parent !== null)
         {
-            if(this.parent.domNode !== null)
-                return { mountPointNode: this.parent.domNode, reference: "appendChild" };
+            if(this._parent._domNode !== null)
+                return { mountPointNode: this._parent._domNode, reference: "appendChild" };
 
-            return this.parent.FindMountPoint(false);
+            return this._parent.FindMountPoint(false);
         }
 
         return null;
@@ -330,12 +351,32 @@ export abstract class VirtualNode
         }
     }
 
+    private ReparentInjectors()
+    {
+        if(this._injector === undefined)
+        {
+            if(this.children !== undefined)
+            {
+                for (const child of this.children)
+                    child.ReparentInjectors();
+            }
+        }
+        else
+        {
+            const parentInjector = this._parent === null ? null : this._parent.injector;
+            if(parentInjector === undefined)
+                this._injector.parent = null;
+            else
+                this._injector.parent = parentInjector;
+        }
+    }
+
     private Replace(newVNode: VirtualNode)
     {
-        if(this.parent === null)
+        if(this._parent === null)
             throw new Error("HERE");
 
-        this.parent.ReplaceChild(this, newVNode);
+        this._parent.ReplaceChild(this, newVNode);
     }
 
     private ReplaceChild(oldChild: VirtualNode, newChild: VirtualNode)

@@ -15,25 +15,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component, RenderNode, RouterComponent, JSX_CreateElement, Anchor } from "acfrontend";
 
-export class RootComponent extends Component
+import { Component, RenderNode, Stepper, JSX_CreateElement } from "acfrontend";
+
+export class WizardComponent extends Component
 {
     protected Render(): RenderNode
     {
-        return <fragment>
-            <div class="vertNav">
-                <ul>
-                    <li><Anchor route="/forms">Forms</Anchor></li>
-                    <li><Anchor route="/gallery">Gallery</Anchor></li>
-                    <li><Anchor route="/tooltips">Tooltips</Anchor></li>
-                    <li><Anchor route="/wizards">Wizards</Anchor></li>
-                </ul>
-            </div>
-            <div class="indentedForVertNav">
-                <h1>ACFrontEnd examples</h1>
-                <RouterComponent />
-            </div>
-        </fragment>;
+        return <Stepper>
+        </Stepper>;
     }
 }

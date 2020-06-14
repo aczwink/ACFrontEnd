@@ -15,25 +15,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component, RenderNode, RouterComponent, JSX_CreateElement, Anchor } from "acfrontend";
 
-export class RootComponent extends Component
+import { Component, RenderNode, Gallery, JSX_CreateElement } from "acfrontend";
+
+export class GalleryComponent extends Component
 {
     protected Render(): RenderNode
     {
-        return <fragment>
-            <div class="vertNav">
-                <ul>
-                    <li><Anchor route="/forms">Forms</Anchor></li>
-                    <li><Anchor route="/gallery">Gallery</Anchor></li>
-                    <li><Anchor route="/tooltips">Tooltips</Anchor></li>
-                    <li><Anchor route="/wizards">Wizards</Anchor></li>
-                </ul>
-            </div>
-            <div class="indentedForVertNav">
-                <h1>ACFrontEnd examples</h1>
-                <RouterComponent />
-            </div>
-        </fragment>;
+        const images = {
+            images: this.GetRandomPics(6)
+        };
+        return <Gallery images={images} />;
+    }
+
+    //Private methods
+    private GetRandomPics(count: number)
+    {
+        const images = [];
+
+        for(let i = 0; i < count; i++)
+        {
+            images.push({ url: "https://picsum.photos/seed/" + (i+1) + "/536/354" });
+        }
+
+        return images;
     }
 }

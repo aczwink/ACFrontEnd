@@ -21,8 +21,6 @@ import { RenderNode } from "../VirtualNode";
 import { TransformChildren } from "../RenderNodeTransformer";
 import { VirtualInstance } from "../VirtualInstance";
 import { InfoMessage } from "../Components/InfoMessage";
-import { VirtualElement } from "../VirtualElement";
-import { PopupRef } from "../Controller/PopupRef";
 import { PopupManager } from "./PopupManager";
 
 interface InfoMessageOptions
@@ -42,8 +40,6 @@ export class InfoMessageManager
     {
         const message = new VirtualInstance(InfoMessage, null, TransformChildren([renderNode]));
         const ref = this.popupManager.OpenPopup("infoMessagesContainer", message);
-        
-        message.injector.RegisterInstance(PopupRef, ref);
 
         if(options.duration !== undefined)
             setTimeout(ref.Close.bind(ref), options.duration);

@@ -19,8 +19,14 @@
 import { Routes } from "acfrontend";
 import { HomeComponent } from "./HomeComponent";
 import { FormsComponent } from "./FormsComponent";
+import { GalleryComponent } from "./GalleryComponent";
+import { TooltipComponent } from "./TooltipComponent";
+import { WizardComponent } from "./WizardComponent";
 
 export const routes: Routes = [
     { path: "forms", component: FormsComponent },
+    { path: "gallery", component: GalleryComponent },
+    { path: "tooltips", component: TooltipComponent },
+    { path: "wizards", component: WizardComponent },
     { path: "", component: HomeComponent },
 ];

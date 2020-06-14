@@ -68,7 +68,7 @@ export class App
 
         this.root = new VirtualRoot(this.properties.mountPoint);
 
-        this.popupManager = new PopupManager(this.root, properties.mountPoint);
+        this.popupManager = new PopupManager(this.root);
         RootInjector.RegisterInstance(PopupManager, this.popupManager);
 
         window.addEventListener("load", this.OnWindowLoaded.bind(this), false);

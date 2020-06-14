@@ -67,6 +67,8 @@ declare module JSX
             class?: string;
             disabled?: boolean;
             onclick?: EventHandler<MouseEvent>;
+            onmouseenter?: EventHandler<MouseEvent>;
+            onmouseout?: EventHandler<MouseEvent>;
             style?: string;
         };
         div: any;
@@ -92,6 +94,7 @@ declare module JSX
         iframe: {
             src: string;
 
+            allowfullscreen?: boolean;
             style?: string;
         };
 
@@ -99,6 +102,7 @@ declare module JSX
             src: string;
             
             class?: string;
+            onclick?: EventHandler<MouseEvent>;
             style?: string;
         };
         input: {

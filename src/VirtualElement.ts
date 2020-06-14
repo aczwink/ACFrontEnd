@@ -37,6 +37,16 @@ function SetPropertyOnBool(properties: any, key: string, valueOnTrue: any = key)
     }
 }
 
+function SetPropertyOnBoolAndMove(properties: any, fromKey: string, toKey: string, valueOnTrue: any)
+{
+    if(fromKey in properties)
+    {
+        if(properties[fromKey])
+            properties[toKey] = valueOnTrue;
+        delete properties[fromKey];
+    }
+}
+
 function RedirectProperties(properties: any)
 {
     if(properties !== null)
@@ -44,6 +54,7 @@ function RedirectProperties(properties: any)
         MoveProperty(properties, "class", "className");
         MoveProperty(properties, "colspan", "colSpan");
         MoveProperty(properties, "tabindex", "tabIndex");
+        SetPropertyOnBoolAndMove(properties, "allowfullscreen", "allowFullscreen", true);
         SetPropertyOnBool(properties, "checked");
         SetPropertyOnBool(properties, "disabled");
     }
@@ -52,11 +63,14 @@ function RedirectProperties(properties: any)
 
 export class VirtualElement extends VirtualNode
 {
-    constructor(tagName: string, properties: any)
+    constructor(tagName: string, properties: any, children?: VirtualNode[])
     {
         super();
         this._tagName = tagName;
         this._properties = RedirectProperties(properties);
+
+        if(children !== undefined)
+            this.children = children;
     }
 
     //Properties
@@ -83,7 +97,7 @@ export class VirtualElement extends VirtualNode
         for(var key in this._properties)
             (element as any)[key] = this._properties[key];
 
-        this.domNode = element;
+        this._domNode = element;
     }
 
     protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
@@ -93,10 +107,10 @@ export class VirtualElement extends VirtualNode
             if(this._tagName == newNode._tagName)
             {
                 //update self
-                if(this.domNode !== null)
-                    this.UpdateObject(this.domNode, this._properties, newNode._properties);
+                if(this._domNode !== null)
+                    this.UpdateObject(this._domNode, this._properties, newNode._properties);
                 this._properties = newNode._properties;
-                if(this.domNode !== null)
+                if(this._domNode !== null)
                     this.SyncInputProperties();
                 
                 this.UpdateChildren(newNode);
@@ -128,7 +142,7 @@ export class VirtualElement extends VirtualNode
         if(this._tagName !== "input")
             return;
 
-        const inputNode = this.domNode as HTMLInputElement;
+        const inputNode = this._domNode as HTMLInputElement;
         switch(inputNode.type)
         {
             case "checkbox":

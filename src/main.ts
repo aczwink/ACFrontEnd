@@ -51,6 +51,9 @@ import { RouterState } from "./Services/Router/RouterState";
 import { InfoMessageManager } from "./Services/InfoMessageManager";
 import { PaginationComponent } from "./Components/PaginationComponent";
 import { AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "./Components/AutoCompleteMultiSelectBox";
+import { PopupRef } from "./Controller/PopupRef";
+import { TooltipManager } from "./Services/TooltipManager";
+import { Stepper } from "./Components/Stepper";
 
 export
 {
@@ -76,6 +79,7 @@ export
     ObservableEvent,
     PaginationComponent,
     PopupManager,
+    PopupRef,
     PrimitiveDictionary,
     ProgressSpinner,
     RenderNode,
@@ -91,11 +95,13 @@ export
     SelectableTable,
     Stack,
     StackChild,
+    Stepper,
     Tab,
     TabGroup,
     TabHeader,
     TimeUtil,
     TitleService,
+    TooltipManager,
     VirtualNode,
     Url
 };

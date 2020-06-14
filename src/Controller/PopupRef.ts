@@ -16,10 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { MulticastObservable } from "acts-util-core";
+import { SubscriberFunction } from "acts-util-core/dist/Observable";
+
 export class PopupRef
 {
-    constructor(private closer: Function)
+    constructor(private closer: Function, subscriber: SubscriberFunction<KeyboardEvent>)
     {
+        this._keydownEvents = new MulticastObservable<KeyboardEvent>(subscriber);
+    }
+
+    //Properties
+    public get keydownEvents()
+    {
+        return this._keydownEvents;
     }
     
     //Public methods
@@ -27,4 +37,7 @@ export class PopupRef
     {
         this.closer();
     }
+
+    //Private members
+    private _keydownEvents: MulticastObservable<KeyboardEvent>;
 }

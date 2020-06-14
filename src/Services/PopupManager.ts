@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary, Instantiatable } from "acts-util-core";
+import { Dictionary, Instantiatable, Observer } from "acts-util-core";
 
 import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
@@ -31,12 +31,19 @@ interface PopupContainer
 {
     container: VirtualElement;
     popups: VirtualNode[];
+    popupRefs: PopupRef[];
+}
+
+interface ModalProperties
+{
+    className?: string;
+    input?: Dictionary<any>;
 }
 
 @Injectable
 export class PopupManager
 {
-    constructor(private root: VirtualNode, private mountPoint: HTMLElement)
+    constructor(private root: VirtualNode)
     {
         this.popupContainers = {};
     }
@@ -45,40 +52,71 @@ export class PopupManager
     public OpenDialog(component: Instantiatable<Component>, dialogTemplate: DialogProperties)
     {
         const modal = new VirtualInstance(Dialog, dialogTemplate, [ new VirtualInstance(component, dialogTemplate.input || null, []) ]);
-        const ref = this.OpenPopup("modalContainer", modal, { className: "show" });
+        const ref = this.OpenModalInternal(modal);
 
         const dialogRef = new DialogRef( this.CloseModal.bind(this, ref) );
         RootInjector.RegisterInstance(DialogRef, dialogRef);
 
-        document.body.className = "scroll-lock";
-
         return dialogRef;
     }
 
-    public OpenModeless(component: Instantiatable<Component>, properties: Dictionary<any>)
+    public OpenModal(component: Instantiatable<Component>, properties: ModalProperties)
     {
-        const instance = new VirtualInstance(component, properties, []);
-        this.root.AddChild(instance);
+        const className = "modal " + (properties.className || "");
+        const modal = new VirtualElement("div", { className: className });
+
+        const ref = this.OpenModalInternal(modal);
+        modal.children = [
+            new VirtualElement("button", {textContent: "\u00d7", onclick: ref.Close.bind(ref)}),
+            new VirtualInstance(component, properties.input || null)
+        ];
+
+        ref.keydownEvents.Subscribe({ next: event => {
+            if(event.keyCode === 27) //escape
+                ref.Close();
+        }});
+
+        return ref;
+    }
+
+    public OpenModeless(content: Instantiatable<Component> | VirtualNode, properties?: Dictionary<any>)
+    {
+        if(!(content instanceof VirtualNode))
+            content = new VirtualInstance(content, properties || null, []);
+        const ref = new PopupRef( () => this.root.RemoveChild(content as VirtualNode), this.OnNewKeyBoardSubscriber.bind(this, "") );
+        this.root.AddChild(content);
+
+        return ref;
     }
 
     public OpenPopup(containerId: string, popupNode: VirtualNode, properties?: any): PopupRef
     {
         let container = this.popupContainers[containerId];
+
+        const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
+        popupNode.EnsureHasOwnInjector();
+        popupNode.injector!.RegisterInstance(PopupRef, ref);
+
         if(container === undefined)
         {
             properties.id = containerId;
             container = {
                 container: new VirtualElement("div", properties),
-                popups: []
+                popups: [],
+                popupRefs: []
             };
             this.popupContainers[containerId] = container;
-            const adder = () => this.root.AddChild(container!.container);
+            const adder = () => {
+                this.root.AddChild(container!.container);
+            };
             adder.CallImmediate();
         }
         container.popups.push(popupNode);
         container.container.children = container.popups;
 
-        return new PopupRef( this.ClosePopup.bind(this, containerId, popupNode) );
+        container.popupRefs.push(ref);
+
+        return ref;
     }
 
     //Private methods
@@ -106,6 +144,39 @@ export class PopupManager
         }
     }
 
+    private OpenModalInternal(modal: VirtualNode)
+    {
+        const containerId = "modalContainer";
+        const ref = this.OpenPopup(containerId, modal, { className: "show", onclick: () => this.CloseModal(ref) });
+
+        document.body.className = "scroll-lock";
+
+        return ref;
+    }
+
     //Private members
     private popupContainers: Dictionary<PopupContainer>;
+
+    //Event handlers
+    private OnContainerKeyDown(containerId: string, observer: Observer<KeyboardEvent>, event: Event)
+    {
+        const container = this.popupContainers[containerId]!;
+        const top = container.popupRefs[container.popupRefs.length -1];
+
+        observer.next(event as KeyboardEvent);
+    }
+
+    private OnNewKeyBoardSubscriber(containerId: string, observer: Observer<KeyboardEvent>)
+    {
+        const container = this.popupContainers[containerId]!;
+        const func = this.OnContainerKeyDown.bind(this, containerId, observer);
+        document.addEventListener("keydown", func);
+
+        return {
+            Unsubscribe()
+            {
+                container.container.domNode!.removeEventListener("keydown", func);
+            }
+        };
+    }
 }
