@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,11 +26,13 @@ export class MatIcon extends Component
     //Input
     input!: {
         children: RenderText;
+        class?: string;
     };
 
     //Protected methods
     protected Render(): RenderNode
     {
-        return <div class="material-icons">{this.input.children}</div>;
+        const additionalClasses = this.input.class === undefined ? "" : " " + this.input.class;
+        return <div class={"material-icons" + additionalClasses}>{this.input.children}</div>;
     }
 }
