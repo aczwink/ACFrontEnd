@@ -28,7 +28,7 @@ export interface HttpRequest
 {
     data: any;
     headers: RequestHeaders;
-    method: "GET" | "POST";
+    method: "DELETE" | "GET" | "POST";
     responseType: "blob" | "json";
     url: string;
 }
@@ -37,6 +37,17 @@ export interface HttpRequest
 export class HttpService
 {
     //Public methods
+    public Delete<T>(url: string): Promise<T>
+    {
+        return this.Request({
+            data: undefined,
+            headers: {},
+            method: "DELETE",
+            responseType: "json",
+            url: url
+        });
+    }
+
     public Get<T>(url: string, queryParams?: PrimitiveDictionary): Promise<T>
     {
         if(queryParams !== undefined)

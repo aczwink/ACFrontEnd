@@ -37,8 +37,9 @@ $control-background-color: $bright-color;
 
 :root
 {
-    --danger-color: #ff3030;
     --background-color: #{$bright-color};
+    --danger-color: #ff3030;
+    --primary-color: #{$primary-color};
 }
 
 .theme-dark

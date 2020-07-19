@@ -51,8 +51,9 @@ declare module JSX
             class?: string;
             href?: string;
             onclick?: EventHandler<MouseEvent>;
-            target?: "_blank";
             style?: string;
+            target?: "_blank";
+            title?: string;
         };
         abbr: {
             children: string;
@@ -70,6 +71,7 @@ declare module JSX
             onmouseenter?: EventHandler<MouseEvent>;
             onmouseout?: EventHandler<MouseEvent>;
             style?: string;
+            title?: string;
         };
         div: any;
         form: {
@@ -121,6 +123,11 @@ declare module JSX
             onkeyup?: EventHandler<KeyboardEvent>;
         };
 
+        label: {
+            children: JsxNode;
+            class: string;
+        };
+
         li: {
             children: JsxNode;
 
@@ -155,6 +162,13 @@ declare module JSX
             
             class?: string;
             id?: string;
+        };
+        textarea: {
+            children: string;
+            cols: string;
+            rows: string;
+
+            oninput: EventHandler<InputEvent>;
         };
         td: {
             children: JsxNode;

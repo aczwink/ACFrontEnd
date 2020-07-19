@@ -54,6 +54,8 @@ import { AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "./Components/Au
 import { PopupRef } from "./Controller/PopupRef";
 import { TooltipManager } from "./Services/TooltipManager";
 import { Stepper } from "./Components/Stepper";
+import { Switch } from "./Components/Switch";
+import { Textarea } from "./Components/Textarea";
 
 export
 {
@@ -96,9 +98,11 @@ export
     Stack,
     StackChild,
     Stepper,
+    Switch,
     Tab,
     TabGroup,
     TabHeader,
+    Textarea,
     TimeUtil,
     TitleService,
     TooltipManager,
