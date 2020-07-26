@@ -17,11 +17,26 @@ div.column
 	align-items: center;
 }
 
+div.column.expanding
+{
+	flex-grow: 1;
+}
+
 div.row, div.equallySpacedRow, div.evenlySpacedRow
 {
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
+}
+
+div.row.full-width
+{
+	width: 100%;
+}
+
+div.row.evenly-spaced
+{
+	justify-content: space-evenly;
 }
 
 div.equallySpacedRow

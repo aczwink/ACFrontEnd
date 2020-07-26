@@ -166,9 +166,9 @@ declare module JSX
         textarea: {
             children: string;
             cols: string;
+            oninput?: EventHandler<InputEvent>;
+            readonly?: boolean;
             rows: string;
-
-            oninput: EventHandler<InputEvent>;
         };
         td: {
             children: JsxNode;

@@ -25,6 +25,51 @@ import { VirtualFragment } from "./VirtualFragment";
 import { VirtualConstNode } from "./VirtualConstNode";
 import { TransformChildren } from "./RenderNodeTransformer";
 
+function MoveProperty(properties: any, fromKey: string, toKey: string)
+{
+    if(fromKey in properties)
+    {
+        properties[toKey] = properties[fromKey];
+        delete properties[fromKey];
+    }
+}
+
+function SetPropertyOnBool(properties: any, key: string, valueOnTrue: any = key)
+{
+    if(key in properties)
+    {
+        if(properties[key])
+            properties[key] = valueOnTrue;
+        else
+            delete properties[key];
+    }
+}
+
+function SetPropertyOnBoolAndMove(properties: any, fromKey: string, toKey: string, valueOnTrue: any)
+{
+    if(fromKey in properties)
+    {
+        if(properties[fromKey])
+            properties[toKey] = valueOnTrue;
+        delete properties[fromKey];
+    }
+}
+
+function RedirectProperties(properties: any)
+{
+    if(properties !== null)
+    {
+        SetPropertyOnBoolAndMove(properties, "allowfullscreen", "allowFullscreen", true);
+        SetPropertyOnBool(properties, "checked");
+        MoveProperty(properties, "class", "className");
+        MoveProperty(properties, "colspan", "colSpan");
+        SetPropertyOnBool(properties, "disabled");
+        MoveProperty(properties, "readonly", "readOnly");
+        MoveProperty(properties, "tabindex", "tabIndex");
+    }
+    return properties;
+}
+
 export function JSX_CreateElement(type: string | Instantiatable<Component> | Instantiatable<VirtualFragment>, properties?: any, ...children: RenderNode[]): VirtualNode
 {
     if(typeof(type) == "string")
@@ -43,7 +88,7 @@ export function JSX_CreateElement(type: string | Instantiatable<Component> | Ins
             return vNode;
         }
         
-        const vNode = new VirtualElement(type, properties);
+        const vNode = new VirtualElement(type, RedirectProperties(properties));
         vNode.children = TransformChildren(children);
         return vNode;
     }

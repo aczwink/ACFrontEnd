@@ -27,12 +27,17 @@ export class Textarea extends Component
     input!: {
         value: string;
         onChanged: (newValue: string) => void;
+        columns?: number;
+        rows?: number;
     };
 
     //Protected methods
     protected Render(): RenderNode
     {
-        return <textarea cols="80" rows="24" oninput={this.OnValueChanged.bind(this)}>{this.input.value}</textarea>
+        const cols = (this.input.columns || 80).toString();
+        const rows = (this.input.rows || 24).toString();
+
+        return <textarea cols={cols} rows={rows} oninput={this.OnValueChanged.bind(this)}>{this.input.value}</textarea>
     }
 
     //Event handlers

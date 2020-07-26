@@ -147,7 +147,10 @@ export class PopupManager
     private OpenModalInternal(modal: VirtualNode)
     {
         const containerId = "modalContainer";
-        const ref = this.OpenPopup(containerId, modal, { className: "show", onclick: () => this.CloseModal(ref) });
+        const ref = this.OpenPopup(containerId, modal, { className: "show", onclick: (event: MouseEvent) => {
+            if(event.target === event.currentTarget)
+                this.CloseModal(ref)
+        }});
 
         document.body.className = "scroll-lock";
 

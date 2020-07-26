@@ -17,57 +17,13 @@
  * */
 import { VirtualNode } from "./VirtualNode";
 
-function MoveProperty(properties: any, fromKey: string, toKey: string)
-{
-    if(fromKey in properties)
-    {
-        properties[toKey] = properties[fromKey];
-        delete properties[fromKey];
-    }
-}
-
-function SetPropertyOnBool(properties: any, key: string, valueOnTrue: any = key)
-{
-    if(key in properties)
-    {
-        if(properties[key])
-            properties[key] = valueOnTrue;
-        else
-            delete properties[key];
-    }
-}
-
-function SetPropertyOnBoolAndMove(properties: any, fromKey: string, toKey: string, valueOnTrue: any)
-{
-    if(fromKey in properties)
-    {
-        if(properties[fromKey])
-            properties[toKey] = valueOnTrue;
-        delete properties[fromKey];
-    }
-}
-
-function RedirectProperties(properties: any)
-{
-    if(properties !== null)
-    {
-        MoveProperty(properties, "class", "className");
-        MoveProperty(properties, "colspan", "colSpan");
-        MoveProperty(properties, "tabindex", "tabIndex");
-        SetPropertyOnBoolAndMove(properties, "allowfullscreen", "allowFullscreen", true);
-        SetPropertyOnBool(properties, "checked");
-        SetPropertyOnBool(properties, "disabled");
-    }
-    return properties;
-}
-
 export class VirtualElement extends VirtualNode
 {
     constructor(tagName: string, properties: any, children?: VirtualNode[])
     {
         super();
         this._tagName = tagName;
-        this._properties = RedirectProperties(properties);
+        this._properties = properties;
 
         if(children !== undefined)
             this.children = children;
