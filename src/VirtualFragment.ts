@@ -26,6 +26,11 @@ export class VirtualFragment extends VirtualNode
     }
 
     //Protected methods
+    protected CloneSelf(): VirtualNode
+    {
+        return new VirtualFragment();
+    }
+
     protected RealizeSelf(): void
     {
     }

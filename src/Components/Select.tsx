@@ -19,6 +19,8 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { VirtualNode, RenderNode } from "../VirtualNode";
+import { VirtualElement } from "../VirtualElement";
+import { VirtualFragment } from "../VirtualFragment";
 
 @Injectable
 export class Select extends Component
@@ -32,7 +34,32 @@ export class Select extends Component
     //Protected methods
     protected Render(): RenderNode
     {
-        return <select onchange={this.OnSelectionChanged.bind(this)}>{...this.input.children}</select>;
+        return <select onchange={this.OnSelectionChanged.bind(this)}>
+            <option disabled selected={!this.IsChildSelected(this.input.children)}>Select an option</option>
+            {...this.input.children.map(child => child.Clone())}
+        </select>;
+    }
+
+    //Private methods
+    private IsChildSelected(children: VirtualNode[])
+    {
+        for (const child of children)
+        {
+            if(child instanceof VirtualElement)
+            {
+                if(child.properties.selected)
+                    return true;
+            }
+            else if(child instanceof VirtualFragment)
+            {
+                if( (child.children !== undefined) && this.IsChildSelected(child.children))
+                    return true;
+            }
+            else
+                throw new Error("A select can only have option-children");
+        }
+
+        return false;
     }
 
     //Event handlers

@@ -46,6 +46,12 @@ export class VirtualElement extends VirtualNode
     }
 
     //Protected methods
+    protected CloneSelf(): VirtualNode
+    {
+        const props = this.properties === null ? null : this.properties.DeepClone();
+        return new VirtualElement(this._tagName, props);
+    }
+
     protected RealizeSelf(): void
     {
         const element = document.createElement(this._tagName);

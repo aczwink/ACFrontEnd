@@ -19,21 +19,21 @@ import { RenderNode, VirtualNode } from "./VirtualNode";
 import { VirtualTextNode } from "./VirtualTextNode";
 import { VirtualFragment } from "./VirtualFragment";
 
-export function TransformRenderNodeToVirtualNode(renderNode: RenderNode): VirtualNode | null
+export function TransformRenderNodeToVirtualNode(renderNode: RenderNode, cloneVNodes: boolean = false): VirtualNode | null
 {
-    if(renderNode === undefined)
+    if( (renderNode === undefined) || (renderNode === null) )
         return null;
 
     if((typeof renderNode === "string") || (typeof renderNode === "number") || (typeof renderNode === "boolean"))
         return new VirtualTextNode(renderNode);
         
     if(Array.isArray(renderNode))
-        return new VirtualFragment( TransformChildren(renderNode) );
-
-    return renderNode;
+        return new VirtualFragment( TransformChildren(renderNode, cloneVNodes) );
+        
+    return cloneVNodes ? renderNode.Clone() : renderNode;
 }
 
-export function TransformChildren(children: RenderNode[]): VirtualNode[]
+export function TransformChildren(children: RenderNode[], cloneVNodes: boolean = false): VirtualNode[]
 {
-    return children.map(child => TransformRenderNodeToVirtualNode(child)).filter(child => child !== null) as VirtualNode[];
+    return children.map(child => TransformRenderNodeToVirtualNode(child, cloneVNodes)).filter(child => child !== null) as VirtualNode[];
 }

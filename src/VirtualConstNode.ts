@@ -25,6 +25,11 @@ export class VirtualConstNode extends VirtualNode
     }
 
     //Protected methods
+    protected CloneSelf(): VirtualNode
+    {
+        return new VirtualConstNode();
+    }
+
     protected RealizeSelf(): void
     {
     }

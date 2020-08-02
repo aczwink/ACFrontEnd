@@ -143,7 +143,7 @@ declare module JSX
         nav: any;
         option: {
             children: string;
-
+            disabled?: boolean;
             selected?: boolean;
             value?: string;
         };

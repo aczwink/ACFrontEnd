@@ -70,7 +70,7 @@ export abstract class VirtualNode
         return this._domNode;
     }
 
-    public get injector()
+    public get injector(): Injector | undefined
     {
         if(this._injector === undefined)
         {
@@ -81,21 +81,22 @@ export abstract class VirtualNode
         return this._injector;
     }
 
-    public set injector(newInjector: Injector|undefined)
-    {
-        this._injector = newInjector;
-    }
-
     //Public methods
     public AddChild(newChild: VirtualNode)
     {
+        if(newChild._parent !== null)
+            throw new Error("Can't add child that already has a parent");
+
         if(this._children === undefined)
             this._children = [];
 
         if(this._children.length > 0)
             newChild.previousSibling = this._children[this._children.length - 1];
+        else
+            newChild.previousSibling = null;
+        newChild.nextSibling = null;
 
-        newChild.parent = this;
+        newChild._parent = this;
         this._children.push(newChild);
 
         if(this.mounted)
@@ -107,10 +108,25 @@ export abstract class VirtualNode
         }
     }
 
+    public Clone()
+    {
+        const clone = this.CloneSelf();
+        if(this.children !== undefined)
+            clone.children = this.children.map(child => child.Clone());
+        return clone;
+    }
+
     public EnsureHasOwnInjector()
     {
         this._injector = new Injector;
-        this.ReparentInjectors();
+        this._injector.parent = () => {
+            if(this._parent === null)
+                return null;
+            const parentInjector = this._parent.injector
+            if(parentInjector === undefined)
+                return null;
+            return parentInjector;
+        };
     }
 
     public Mount(mountPoint: MountPoint): void
@@ -121,6 +137,7 @@ export abstract class VirtualNode
         else
             this.MountChildren(mountPoint);
         this.mounted = true;
+        this.OnMounted();
     }
 
     public MountAsChildOf(mountPoint: Node)
@@ -132,9 +149,10 @@ export abstract class VirtualNode
     {
         if(this._children === undefined)
             throw new Error("HERE");
-
-        this._children.splice(this._children.indexOf(child), 1);
-        child.Unmount();
+        const index = this._children.indexOf(child);
+        if(index === -1)
+            throw new Error("Can't remove child if it isn't a child");
+        this.RemoveChildByIndex(index);
     }
 
     public Unmount()
@@ -179,11 +197,12 @@ export abstract class VirtualNode
     protected _injector?: Injector;
 
     //Protected abstract
+    protected abstract CloneSelf(): VirtualNode;
     protected abstract RealizeSelf(): void;
     protected abstract UpdateSelf(newNode: VirtualNode | null): VirtualNode | null;
 
     //Protected methods
-    protected UpdateChildren(newNode: VirtualNode | null)
+    protected UpdateChildren(newNode: VirtualNode | null) //HERE
 	{
         if(newNode === null)
         {
@@ -202,19 +221,27 @@ export abstract class VirtualNode
 		{
 			if(i >= newNode._children.length)
 			{
-                //drop child
-                this._children[i].Unmount();
-				this._children.splice(i, 1);
+                this.RemoveChildByIndex(i);
 				i--;
 			}
             else
                 this._children[i] = this._children[i].Update(newNode._children[i])!;
-		}
-        for(; i < newNode._children.length; i++)
-            this.AddChild(newNode._children[i]);
+        }
+
+        while(this.children!.length < newNode.children!.length)
+        {
+            const newChild = newNode._children[i];
+            newNode.RemoveChild(newChild);
+
+            this.AddChild(newChild);
+        }
     }
 
     //Event handlers
+    protected OnMounted()
+    {
+    }
+    
     protected OnUnmounted()
     {
     }
@@ -226,10 +253,10 @@ export abstract class VirtualNode
      */
     private _children?: Array<VirtualNode>;
     private _parent: VirtualNode | null;
-    private mounted: boolean;
-    private realized: boolean;
     private _nextSibling: VirtualNode | null;
     private _prevSibling: VirtualNode | null;
+    private mounted: boolean;
+    private realized: boolean;
 
     //Private properties
     private set nextSibling(newNext: VirtualNode | null)
@@ -237,12 +264,6 @@ export abstract class VirtualNode
         this._nextSibling = newNext;
         if( newNext !== null)
             newNext._prevSibling = this;
-    }
-
-    private set parent(newParent: VirtualNode)
-    {
-        this._parent = newParent;
-        this.ReparentInjectors();
     }
 
     private set previousSibling(newPrev: VirtualNode | null)
@@ -253,6 +274,22 @@ export abstract class VirtualNode
     }
 
     //Private methods
+    private DropChild(child: VirtualNode)
+    {
+        if(child._prevSibling === null)
+        {
+            if(child._nextSibling !== null)
+                child._nextSibling.previousSibling = null;
+        }
+        else
+            child._prevSibling.nextSibling = child._nextSibling;
+
+        child._parent = null;
+        child._prevSibling = null;
+        child._nextSibling = null;
+        child.Unmount();
+    }
+
     private DropAllChildren()
     {
         if(this._children === undefined)
@@ -260,7 +297,7 @@ export abstract class VirtualNode
         for (let index = 0; index < this._children.length; index++)
         {
             const child = this._children[index];
-            child.Unmount();
+            this.DropChild(child);
         }
         this._children = undefined;
     }
@@ -316,6 +353,9 @@ export abstract class VirtualNode
 
     private InsertChildBefore(referenceChild: VirtualNode, newChild: VirtualNode)
     {
+        if(newChild._parent !== null)
+            throw new Error("Can't add child that already has a parent");
+            
         if(this._children === undefined)
             this._children = [];
 
@@ -324,7 +364,7 @@ export abstract class VirtualNode
         newChild.previousSibling = (refIndex == 0) ? null : this._children[refIndex];
         newChild.nextSibling = referenceChild;
 
-        newChild.parent = this;
+        newChild._parent = this;
         this._children.splice(refIndex, 0, newChild);
 
         if(this.mounted)
@@ -351,30 +391,19 @@ export abstract class VirtualNode
         }
     }
 
-    private ReparentInjectors()
+    private RemoveChildByIndex(index: number)
     {
-        if(this._injector === undefined)
-        {
-            if(this.children !== undefined)
-            {
-                for (const child of this.children)
-                    child.ReparentInjectors();
-            }
-        }
-        else
-        {
-            const parentInjector = this._parent === null ? null : this._parent.injector;
-            if(parentInjector === undefined)
-                this._injector.parent = null;
-            else
-                this._injector.parent = parentInjector;
-        }
+        const child = this._children![index];
+        this._children!.Remove(index);
+        this.DropChild(child);
     }
 
     private Replace(newVNode: VirtualNode)
     {
         if(this._parent === null)
             throw new Error("HERE");
+        if(newVNode._parent !== null)
+            newVNode._parent.RemoveChild(newVNode);
 
         this._parent.ReplaceChild(this, newVNode);
     }

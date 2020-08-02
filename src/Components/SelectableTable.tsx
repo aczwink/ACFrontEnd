@@ -52,7 +52,7 @@ export class SelectableTable<RowKeyType> extends Component
             <tr>
                 {this.input.columns.map( col => <th>{col}</th>)}
             </tr>
-            {this.input.children.map(row => this.RenderChild(row))}
+            {...this.input.children.map(row => this.RenderChild(row))}
         </table>;
     }
 
@@ -95,7 +95,7 @@ export class SelectableTable<RowKeyType> extends Component
 
             this.rowCounter++;
 
-            return child;
+            return child.Clone();
         }
         throw new Error("Children of SelectableTable must be tr-s")
     }

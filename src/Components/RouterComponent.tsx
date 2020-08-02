@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Instantiatable, Injector, ResolutionStrategy } from "acts-util-core";
+import { Instantiatable, Injector, ResolutionStrategy, Subscription } from "acts-util-core";
 
 import { Component } from "../Component";
 import { Router } from "../Services/Router/Router";
@@ -23,7 +23,6 @@ import { Injectable } from "../ComponentManager";
 import { VirtualInstance } from "../VirtualInstance";
 import { RouterStateNode } from "../Services/Router/RouterState";
 import { RenderNode } from "../VirtualNode";
-import { Subscription } from "acts-util-core/dist/Observable";
 
 @Injectable
 export class RouterComponent extends Component

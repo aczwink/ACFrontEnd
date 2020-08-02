@@ -40,11 +40,17 @@ export interface AppProperties
 
 class VirtualRoot extends VirtualNode
 {
-    constructor(mountPoint: HTMLElement)
+    constructor(mountPoint: Node)
     {
         super(mountPoint);
 
-        this.injector = RootInjector;
+        this._injector = RootInjector;
+    }
+
+    //Protected methods
+    protected CloneSelf(): VirtualNode
+    {
+        return new VirtualRoot(this.domNode!);
     }
 
     protected RealizeSelf(): void

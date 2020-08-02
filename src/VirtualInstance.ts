@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Instantiatable, Injector } from "acts-util-core";
+import { Instantiatable, Injector, EqualsAny } from "acts-util-core";
 
 import { Component } from "./Component";
 import { VirtualNode } from "./VirtualNode";
 import { ComponentManager } from "./ComponentManager";
-import { EqualsAny } from "./JSTypes";
 
 interface Dictionary
 {
@@ -49,6 +48,12 @@ export class VirtualInstance extends VirtualNode
     }
 
     //Protected methods
+    protected CloneSelf(): VirtualNode
+    {
+        const subChildren = this._subChildren === undefined ? undefined : this._subChildren.map(child => child.Clone());
+        return new VirtualInstance(this.type, this.args === null ? null : this.args.DeepClone(), subChildren);
+    }
+
     protected RealizeSelf(): void
     {
         this.injector!.RegisterInstance(Injector, this.injector);

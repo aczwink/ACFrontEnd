@@ -37,15 +37,27 @@ export interface HttpRequest
 export class HttpService
 {
     //Public methods
-    public Delete<T>(url: string): Promise<T>
+    public DataRequest<T>(url: string, httpMethod: "DELETE" | "POST", data: any): Promise<T>
     {
+        const headers: RequestHeaders = {};
+        if(data !== undefined)
+        {
+            data = JSON.stringify(data);
+            headers["Content-Type"] = "application/json";
+        }
+
         return this.Request({
-            data: undefined,
-            headers: {},
-            method: "DELETE",
+            data: data,
+            headers: headers,
+            method: httpMethod,
             responseType: "json",
             url: url
         });
+    }
+
+    public Delete<T>(url: string, data: any): Promise<T>
+    {
+        return this.DataRequest<T>(url, "DELETE", data);
     }
 
     public Get<T>(url: string, queryParams?: PrimitiveDictionary): Promise<T>
@@ -75,20 +87,7 @@ export class HttpService
 
     public Post<T>(url: string, data: any): Promise<T>
     {
-        const headers: RequestHeaders = {};
-        if(data !== undefined)
-        {
-            data = JSON.stringify(data);
-            headers["Content-Type"] = "application/json";
-        }
-
-        return this.Request({
-            data: data,
-            headers: headers,
-            method: "POST",
-            responseType: "json",
-            url: url
-        });
+        return this.DataRequest<T>(url, "POST", data);
     }
 
     public Request(request: HttpRequest): Promise<any>

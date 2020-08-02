@@ -26,6 +26,11 @@ export class VirtualTextNode extends VirtualNode
     }
 
     //Protected methods
+    protected CloneSelf(): VirtualNode
+    {
+        return new VirtualTextNode(this.text);
+    }
+
     protected RealizeSelf(): void
     {
         this._domNode = document.createTextNode(this.text.toString());
