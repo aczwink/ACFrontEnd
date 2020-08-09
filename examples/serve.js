@@ -23,9 +23,12 @@ var app = express();
 
 var public = __dirname;
 
-app.use(express.static(public));
+app.use(express.static(public, {
+    maxAge: 1000,
+}));
 app.get('*', function(req, res) {
     res.sendFile(path.join(public, 'index.htm'));
 });
 
 app.listen(4200);
+console.log("visit http://localhost:4200");

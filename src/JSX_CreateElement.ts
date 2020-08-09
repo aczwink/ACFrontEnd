@@ -93,5 +93,5 @@ export function JSX_CreateElement(type: string | Instantiatable<Component> | Ins
         return vNode;
     }
 
-    return new VirtualInstance(type as Instantiatable<Component>, properties, TransformChildren(children));
+    return new VirtualInstance(type as unknown as Instantiatable<Component<any, VirtualNode[]>>, properties, TransformChildren(children));
 }

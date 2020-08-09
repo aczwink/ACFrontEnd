@@ -19,48 +19,38 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
+import { VirtualInstance } from "../VirtualInstance";
+import { VirtualNode } from "../main";
 
-export class Tab extends Component
+type TabInput = { key: string; };
+export class Tab extends Component<TabInput, string>
 {
-    input!:
-    {
-        key: string;
-        children: RenderNode;
-    }
-
     //Protected methods
     protected Render(): RenderNode
     {
-        return this.input.children;
+        return this.children[0];
     }
 }
 
-export class TabHeader extends Component
+export class TabHeader extends Component<{}, VirtualNode[]>
 {
-    input!:
-    {
-        children: RenderNode[];
-    }
-
     //Protected methods
     protected Render(): RenderNode
     {
         return <div class="subPageNav">
-            {...this.input.children}
+            {...this.children}
         </div>;
     }
 }
 
-@Injectable
-export class TabGroup extends Component
-{
-    input!:
-    {
-        activeKey: string;
-        activeKeyChanged: (newKey: string) => void;
-        children: Tab[];
-    }
+type TabGroupInput = {
+    activeKey: string;
+    activeKeyChanged: (newKey: string) => void;
+}
 
+@Injectable
+export class TabGroup extends Component<TabGroupInput, VirtualInstance<Tab, TabInput, string>[]>
+{
     //Protected methods
     protected Render(): RenderNode
     {
@@ -70,14 +60,14 @@ export class TabGroup extends Component
     //Private methods
     private FindActiveTab()
     {
-        return this.input.children.find( tab => tab.input.key === this.input.activeKey );
+        return this.children.find( tab => tab.input.key === this.input.activeKey );
     }
 
     private RenderHeader()
     {
         const activeTab = this.FindActiveTab();
 
-        return this.input.children.map(tab => {
+        return this.children.map(tab => {
             const className = tab === activeTab ? "active" : "";
             return <li class={className}>
                 <a onclick={this.input.activeKeyChanged.bind(this, tab.input.key)}>{tab}</a>

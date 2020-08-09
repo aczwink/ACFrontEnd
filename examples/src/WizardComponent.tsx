@@ -16,13 +16,122 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, RenderNode, Stepper, JSX_CreateElement } from "acfrontend";
+import { Component, RenderNode, Stepper, JSX_CreateElement, StepperPage, FormField, LineEdit, IntegerSpinner, DataBindingProxy } from "acfrontend";
+import { ObservableObject } from "acts-util-core";
 
-export class WizardComponent extends Component
+interface SharedState
+{
+    name: string;
+    age: number;
+}
+
+export class FirstPageComponent extends Component< { state: SharedState } >
 {
     protected Render(): RenderNode
     {
-        return <Stepper>
+        return <fragment>
+            <FormField hint="Name">
+                <LineEdit value={this.input.state.name}
+                    onChanged={ newValue => this.input.state.name = newValue } />
+            </FormField>
+        </fragment>
+    }
+}
+
+export class SecondPageComponent extends Component< { state: DataBindingProxy<SharedState> } >
+{
+    protected Render(): RenderNode
+    {
+        return <fragment>
+            Hi, {this.input.state.name}!
+
+            <FormField hint="Whats your age?">
+                <IntegerSpinner value={this.input.state.age} onChanged={newValue => this.input.state.age = newValue} />
+            </FormField>
+
+            {this.input.state.age < 18 ? "Sorry, but you must be at least 18 to register!" : ""}
+        </fragment>;
+    }
+
+    //Event handlers
+    public OnInitiated()
+    {
+        this.input.state.Bind(this);
+    }
+
+    public OnUnmounted()
+    {
+        this.input.state.Unbind(this);
+    }
+}
+
+export class ThirdPageComponent extends Component<{ onValidationChange: (newValue: boolean) => void }>
+{
+    constructor()
+    {
+        super();
+
+        this.answer = "";
+    }
+    
+    protected Render(): RenderNode
+    {
+        return <fragment>
+            Just to be sure you're not a bot.
+            What is 4x * 5y (in alphabetical order without spaces)?
+            <FormField hint="...">
+                <LineEdit value={this.answer} onChanged={newValue => {
+                    this.answer = newValue;
+                    this.input.onValidationChange(this.answer === "20xy");
+                }} />
+            </FormField>
+        </fragment>
+    }
+
+    //Private members
+    private answer: string;
+}
+
+export class WizardComponent extends Component
+{
+    constructor()
+    {
+        super();
+
+        this.sharedState = this.CreateDataBindingProxy({
+            name: "",
+            age: 18,
+        });
+        this.customValidator = false;
+    }
+
+    //Protected methods
+    protected Render(): RenderNode
+    {
+        return <Stepper onAccept={this.OnAccept.bind(this)}>
+            <StepperPage title="Page one" validate={() => this.sharedState.name.trim().length > 0}>
+                <FirstPageComponent state={this.sharedState} />
+            </StepperPage>
+            <StepperPage title="Page two" validate={() => this.sharedState.age >= 18}>
+                <SecondPageComponent state={this.sharedState} />
+            </StepperPage>
+            <StepperPage title="Page three" validate={() => this.customValidator}>
+                <ThirdPageComponent onValidationChange={newValue => this.customValidator = newValue} />
+            </StepperPage>
         </Stepper>;
+    }
+
+    //Private members
+    private sharedState: DataBindingProxy<SharedState>;
+    private customValidator: boolean;
+
+    //Event handlers
+    public OnInitiated()
+    {
+    }
+
+    private OnAccept()
+    {
+        alert("Registering " + this.sharedState.name + " with age " + this.sharedState.age);
     }
 }

@@ -21,17 +21,17 @@ import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Select } from "./Select";
 
-export class PaginationComponent extends Component
+type PaginationComponentInput = {
+    count: number;
+    offset: number;
+    size: number;
+
+    onOffsetChanged: (newOffset: number) => void;
+    onSizeChanged: (newSize: number) => void;
+};
+
+export class PaginationComponent extends Component<PaginationComponentInput>
 {
-    input!: {
-        count: number;
-        offset: number;
-        size: number;
-
-        onOffsetChanged: (newOffset: number) => void;
-        onSizeChanged: (newSize: number) => void;
-    };
-
     //Protected methods
     protected Render(): RenderNode
     {

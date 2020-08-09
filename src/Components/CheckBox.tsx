@@ -20,15 +20,14 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
 
-@Injectable
-export class CheckBox extends Component
-{
-    //Input
-    input!: {
-        value: boolean;
-        onChanged: (newValue: boolean) => void;
-    };
+type CheckBoxInput = {
+    value: boolean;
+    onChanged: (newValue: boolean) => void;
+};
 
+@Injectable
+export class CheckBox extends Component<CheckBoxInput>
+{
     //Protected methods
     protected Render(): RenderNode
     {

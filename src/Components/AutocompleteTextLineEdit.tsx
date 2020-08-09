@@ -20,18 +20,18 @@ import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { ProgressSpinner } from "../main";
 
-export class AutocompleteTextLineEdit extends Component
+type AutocompleteTextLineEditInput = {
+    value: string;
+    hint?: string;
+    loadTimeout?: number;
+    minChars?: number;
+
+    onChanged: (newValue: string) => void;
+    onLoadSuggestions: (searchText: string) => Promise<string[]>;
+};
+
+export class AutocompleteTextLineEdit extends Component<AutocompleteTextLineEditInput>
 {
-    input!: {
-        value: string;
-        hint?: string;
-        loadTimeout?: number;
-        minChars?: number;
-
-        onChanged: (newValue: string) => void;
-        onLoadSuggestions: (searchText: string) => Promise<string[]>;
-    };
-
     constructor()
     {
         super();
@@ -54,7 +54,7 @@ export class AutocompleteTextLineEdit extends Component
                 onfocus={() => this.focused = true}
                 onkeydown={this.OnKeyDown.bind(this)}
                 onkeyup={this.OnKeyUp.bind(this)} />
-            {...this.RenderSuggestions()}
+            {this.RenderSuggestions()}
         </span>;
     }
 

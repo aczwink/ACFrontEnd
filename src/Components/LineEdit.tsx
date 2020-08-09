@@ -20,18 +20,17 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
 
+type LineEditInput = {
+    value: string;
+
+    password?: boolean;
+
+    onChanged: (newValue: string) => void;
+};
+
 @Injectable
-export class LineEdit extends Component
+export class LineEdit extends Component<LineEditInput>
 {
-    //Input
-    input!: {
-        value: string;
-
-        password?: boolean;
-
-        onChanged: (newValue: string) => void;
-    };
-
     //Protected methods
     protected Render(): RenderNode
     {

@@ -19,8 +19,10 @@
 import { Component } from "../Component";
 import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
+import { VirtualChildNode } from "../VirtualInstance";
+import { StepperPage } from "./StepperPage";
 
-export class Stepper extends Component
+export class Stepper extends Component<{ onAccept: () => void }, VirtualChildNode<StepperPage>[]>
 {
     constructor()
     {
@@ -31,31 +33,66 @@ export class Stepper extends Component
 
     protected Render(): RenderNode
     {
-        let prevButtonText;
+        const pages = this.children;
+        const currentPage = pages[this.currentPage];
+
+        let prevButton;
         if(this.currentPage == 0)
-            prevButtonText = "Cancel";
+            prevButton = null;
         else
-            prevButtonText = "Previous";
+            prevButton = <button type="button" class="outline" onclick={this.OnPrevious.bind(this)}>Previous</button>;
 
         let nextButtonText;
+        if(this.currentPage == pages.length - 1)
+            nextButtonText = "Finish";
+        else
+            nextButtonText = "Next";
         
-        //if(this.currentPage == this.__pages.length - 1)
-        nextButtonText = "Finish";
-        //else
-        nextButtonText = "Next";
-        
-        return <div class="wizard">
+        return <div class="stepper">
+            <h4>{currentPage.input.title}</h4>
+
+            <div>{currentPage.Clone()}</div>
+
             <div>
                 <div class="row">
-                    <button type="button" class="outline">{prevButtonText}</button>
-                    <button type="button">{nextButtonText}</button>
+                    {prevButton}
+                    <button type="button" disabled={!currentPage.input.validate()} onclick={this.OnNext.bind(this)}>{nextButtonText}</button>
+                </div>
+                <div class="row">
+                    <ul class="wizardStepper">
+                        {...this.children.map( (_value, index) => this.RenderStepperDot(index) )}
+                    </ul>
                 </div>
             </div>
         </div>;
-
-        //on: { click: this.__OnPrevious.bind(this)} }
     }
 
     //Private members
     private currentPage: number;
+
+    //Private methods
+    private RenderStepperDot(index: number)
+    {
+        let className = "";
+        if(index < this.currentPage)
+            className = "finished";
+        else if(index == this.currentPage)
+            className = "active";
+        return <li class={className}> </li>;
+    }
+
+    //Event handlers
+    private OnNext()
+    {
+        if(this.currentPage < this.children.length - 1)
+            this.currentPage++;
+        else
+            this.input.onAccept();
+    }
+
+    private OnPrevious()
+	{
+		if(this.currentPage > 0)
+			this.currentPage--;
+	}
 }

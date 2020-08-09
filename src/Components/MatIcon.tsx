@@ -21,18 +21,12 @@ import { Injectable } from "../ComponentManager";
 import { RenderText, RenderNode } from "../VirtualNode";
 
 @Injectable
-export class MatIcon extends Component
+export class MatIcon extends Component<{ class?: string; }, RenderText>
 {
-    //Input
-    input!: {
-        children: RenderText;
-        class?: string;
-    };
-
     //Protected methods
     protected Render(): RenderNode
     {
         const additionalClasses = this.input.class === undefined ? "" : " " + this.input.class;
-        return <div class={"material-icons" + additionalClasses}>{this.input.children}</div>;
+        return <div class={"material-icons" + additionalClasses}>{this.children}</div>;
     }
 }

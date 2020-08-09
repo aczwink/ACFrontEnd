@@ -20,19 +20,18 @@ type EventHandler<EventType = Event> = (event: EventType) => void;
 
 declare module JSX
 {
-    /*
     //We would need that this interface extends VirtualNode.
-    However, we can not use imports in this file -.-
-    it therefore does not work.
-    interface Element
+    //However, we can not use imports in this file -.-
+    //it therefore does not work.
+    /*interface Element
     {
-    }
-    */
-   type JsxNode = any;
+    }*/
+    type Element = any;
+    type JsxNode = JSX.Element;
 
     interface ElementAttributesProperty
     {
-        input:any; //for components the name of the member that defines the attributes types
+        __jsxProperties: any; //for components the name of the member that defines the attributes types
     }
 
     interface ElementChildrenAttribute
@@ -113,6 +112,7 @@ declare module JSX
             checked?: boolean;
             disabled?: boolean;
             placeholder?: string;
+            step?: string;
             value?: number | string;
 
             onblur?: EventHandler<FocusEvent>;

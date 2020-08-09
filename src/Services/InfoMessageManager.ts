@@ -18,7 +18,7 @@
 
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
-import { TransformChildren } from "../RenderNodeTransformer";
+import { TransformChildren, TransformRenderNodeToVirtualNode } from "../RenderNodeTransformer";
 import { VirtualInstance } from "../VirtualInstance";
 import { InfoMessage } from "../Components/InfoMessage";
 import { PopupManager } from "./PopupManager";
@@ -38,7 +38,7 @@ export class InfoMessageManager
     //Public methods
     public ShowMessage(renderNode: RenderNode, options: InfoMessageOptions)
     {
-        const message = new VirtualInstance(InfoMessage, null, TransformChildren([renderNode]));
+        const message = new VirtualInstance(InfoMessage, null, TransformRenderNodeToVirtualNode(renderNode));
         const ref = this.popupManager.OpenPopup("infoMessagesContainer", message);
 
         if(options.duration !== undefined)

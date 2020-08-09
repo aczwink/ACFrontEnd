@@ -18,23 +18,18 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderText, RenderNode } from "../VirtualNode";
+import { RenderNode } from "../VirtualNode";
+import { VirtualNode } from "../main";
 
 @Injectable
-export class FormField extends Component
+export class FormField extends Component<{ hint: string; }, VirtualNode[]>
 {
-    //Input
-    input!: {
-        children: RenderText;
-        hint: string;
-    };
-
     //Protected methods
     protected Render(): RenderNode
     {
         return <div class="formElement">
             <span>{this.input.hint}</span>
-            {this.input.children}
+            {this.children.map(child => child.Clone())}
         </div>;
     }
 }

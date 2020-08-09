@@ -18,19 +18,14 @@
 
 import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
+import { RenderNode, VirtualNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 @Injectable
-export class InfoMessage extends Component
+export class InfoMessage extends Component<null, VirtualNode>
 {
-    //Input
-    input!: {
-        children: RenderNode;
-    };
-
     protected Render(): RenderNode
     {
-        return <div class="infoMessage">{this.input.children}</div>;
+        return <div class="infoMessage">{this.children}</div>;
     }
 }

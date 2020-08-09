@@ -19,18 +19,12 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../ComponentManager";
-import { RenderNode, VirtualNode } from "../VirtualNode";
+import { RenderNode, VirtualNode, RenderText } from "../VirtualNode";
 import { TransformRenderNodeToVirtualNode, TransformChildren } from "../RenderNodeTransformer";
 
 @Injectable
-export class Anchor extends Component
+export class Anchor extends Component<{ route: string; }, RenderText | VirtualNode | (VirtualNode | RenderText)[]>
 {
-    //Input
-    input!: {
-        children: RenderNode | RenderNode[];
-        route: string;
-    };
-
     //Constructor
     constructor(private router: Router)
     {
@@ -40,7 +34,7 @@ export class Anchor extends Component
     //Protected methods
     protected Render(): RenderNode
     {
-        const children = Array.isArray(this.input.children) ? TransformChildren(this.input.children, true) : [TransformRenderNodeToVirtualNode(this.input.children, true)];
+        const children = Array.isArray(this.children) ? TransformChildren(this.children, true) : [TransformRenderNodeToVirtualNode(this.children, true)];
 
         return <a href={this.input.route} onclick={this.OnActivated.bind(this)}>{...children}</a>;
     }

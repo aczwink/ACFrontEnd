@@ -40,11 +40,11 @@ export class RouterComponent extends Component
     {        
         if(this.component === null)
             return null;
-        return new VirtualInstance(this.component, null, []);
+        return new VirtualInstance(this.component as Instantiatable<Component<null, undefined>>, null);
     }
 
     //Private members
-    private component: Instantiatable<Component> | null;
+    private component: Instantiatable<Component<null | {}>> | null;
     private subscription?: Subscription;
 
     //Private methods

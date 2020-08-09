@@ -19,31 +19,22 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
+import { VirtualNode } from "../main";
+import { VirtualInstance } from "../VirtualInstance";
 
-export class StackChild extends Component
+type StackChildInput = { key: string; };
+export class StackChild extends Component<StackChildInput, VirtualNode>
 {
-    input!:
-    {
-        key: string;
-        children: RenderNode;
-    }
-
     //Protected methods
     protected Render(): RenderNode
     {
-        return this.input.children;
+        return this.children[0];
     }
 }
 
 @Injectable
-export class Stack extends Component
+export class Stack extends Component<{ activeKey: string; }, VirtualInstance<StackChild, StackChildInput, VirtualNode>[]>
 {
-    input!:
-    {
-        activeKey: string;
-        children: StackChild[];
-    }
-
     //Protected methods
     protected Render(): RenderNode
     {
@@ -53,6 +44,6 @@ export class Stack extends Component
     //Private methods
     private FindActiveChild()
     {
-        return this.input.children.find( child => child.input.key === this.input.activeKey );
+        return this.children.find( child => child.input.key === this.input.activeKey );
     }
 }

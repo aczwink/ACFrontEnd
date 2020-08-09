@@ -18,8 +18,20 @@
 import { VirtualNode, RenderNode } from "./VirtualNode";
 import { TransformRenderNodeToVirtualNode } from "./RenderNodeTransformer";
 import { VirtualConstNode } from "./VirtualConstNode";
+import { PrimitiveDictionary } from "./main";
 
-export abstract class Component
+interface BindUnbind
+{
+    Bind(component: Component): void;
+    Unbind(component: Component): void;
+}
+
+export type DataBindingProxy<T> = BindUnbind & T;
+
+type GetTypeOfArray<T> = T extends Array<infer U> ? U : T;
+type CreateJSXProps<InputType, ChildrenType> = ChildrenType extends undefined ? InputType: (InputType & { children: ChildrenType });
+
+export abstract class Component<InputType = null | {}, ChildrenType = undefined>
 {
     //Constructor
     constructor()
@@ -28,15 +40,12 @@ export abstract class Component
     }
 
     //Properties
-    get vNode(): VirtualNode | null
+    public get vNode(): VirtualNode | null
     {
         if( (this._vNode === null) )
             this.UpdateSync();
         return this._vNode;
     }
-
-    //Abstract
-    protected abstract Render(): RenderNode;
 
     //Public methods
     public Update()
@@ -60,6 +69,80 @@ export abstract class Component
         this._vNode = this._vNode.Update(newVirtualNode);
     }
 
+    //Protected properties
+    protected get children(): GetTypeOfArray<ChildrenType>[]
+    {
+        if(Array.isArray(this._children))
+            return this._children;
+        return [this._children] as any;
+    }
+
+    protected get input()
+    {
+        return this._input;
+    }
+
+    //Protected abstract
+    protected abstract Render(): RenderNode;
+
+    //Protected methods
+    protected BindProperty<T>(object: T, propertyName: string | number | symbol)
+    {
+        const instanceAny = object as any;
+        
+        let value: any = instanceAny[propertyName];
+        delete instanceAny[propertyName];
+
+        Object.defineProperty(instanceAny, propertyName, {			
+			get: () =>
+			{
+				return value;
+			},
+			
+			set: (newValue) =>
+			{
+				const oldValue = value;
+                value = newValue;
+                if(oldValue !== newValue)
+                    this.Update();
+			}
+		});
+    }
+
+    protected CreateDataBindingProxy<T extends PrimitiveDictionary>(object: T): DataBindingProxy<T>
+    {
+        const keys = Reflect.ownKeys(object) as (number | string)[];
+
+        const components: Component<any, any>[] = [this];
+        const result: BindUnbind = {
+            //Public methods
+            Bind(component: Component)
+            {
+                components.push(component);
+            },
+            Unbind(component: Component)
+            {
+                components.Remove(components.indexOf(component));
+            },
+        };
+        for (const key of keys)
+        {
+            Object.defineProperty(result, key, {
+                get: () => object[key],
+                set: (newValue) => {
+                    if(object[key] !== newValue)
+                    {
+                        (object as any)[key] = newValue;
+                        components.forEach( component => component.Update() );
+                    }
+                },
+                enumerable: true,
+            });
+        }
+
+        return result as DataBindingProxy<T>;
+    }
+
     //Event handlers
     public OnInitiated()
     {
@@ -76,4 +159,8 @@ export abstract class Component
 
     //Private members
     private _vNode: VirtualNode | null;
+    private _input!: InputType;
+    private _children!: ChildrenType;
+
+    protected __jsxProperties!: CreateJSXProps<InputType, ChildrenType>;
 }

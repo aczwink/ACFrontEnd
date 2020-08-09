@@ -20,13 +20,13 @@ import { Component } from "../Component";
 import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
-export class Switch extends Component
-{
-    input!: {
-        checked: boolean;
-        onChanged: (newValue: boolean) => void;
-    };
+type SwitchInput = {
+    checked: boolean;
+    onChanged: (newValue: boolean) => void;
+};
 
+export class Switch extends Component<SwitchInput>
+{
     protected Render(): RenderNode
     {
         return <label class="switch">

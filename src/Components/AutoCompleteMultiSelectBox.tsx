@@ -26,18 +26,17 @@ export interface KeyDisplayValuePair<KeyType>
     displayValue: string;
 }
 
-export class AutoCompleteMultiSelectBox<KeyType> extends Component
+type AutoCompleteMultiSelectBoxInput<KeyType> = {
+    selection: KeyDisplayValuePair<KeyType>[];
+    loadTimeout?: number;
+    minChars?: number;
+
+    onChanged: (newValue: KeyDisplayValuePair<KeyType>[]) => void;
+    onLoadSuggestions: (searchText: string) => Promise<KeyDisplayValuePair<KeyType>[]>;
+}
+
+export class AutoCompleteMultiSelectBox<KeyType> extends Component<AutoCompleteMultiSelectBoxInput<KeyType>>
 {
-    input!:
-    {
-        selection: KeyDisplayValuePair<KeyType>[];
-        loadTimeout?: number;
-        minChars?: number;
-
-        onChanged: (newValue: KeyDisplayValuePair<KeyType>[]) => void;
-        onLoadSuggestions: (searchText: string) => Promise<KeyDisplayValuePair<KeyType>[]>;
-    }
-
     constructor()
     {
         super();

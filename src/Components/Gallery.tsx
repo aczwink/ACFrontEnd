@@ -35,12 +35,8 @@ interface Images
 }
 
 @Injectable
-export class Gallery extends Component
+export class Gallery extends Component<{ images: Images; }>
 {
-    input!: {
-        images: Images;
-    };
-
     constructor(private popupManager: PopupManager)
     {
         super();

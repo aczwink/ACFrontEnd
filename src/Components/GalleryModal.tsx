@@ -23,14 +23,14 @@ import { Image } from "./Gallery";
 import { Injectable } from "../ComponentManager";
 import { PopupRef } from "../Controller/PopupRef";
 
-@Injectable
-export class GalleryModal extends Component
-{
-    input!: {
-        startImageIndex: number;
-        images: Image[];
-    }
+type GalleryModalInput = {
+    startImageIndex: number;
+    images: Image[];
+};
 
+@Injectable
+export class GalleryModal extends Component<GalleryModalInput>
+{
     constructor(private popupRef: PopupRef)
     {
         super();

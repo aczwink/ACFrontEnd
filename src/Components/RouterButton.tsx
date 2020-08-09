@@ -20,17 +20,11 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
-import { Url } from "../Model/Url";
+import { VirtualNode } from "../main";
 
 @Injectable
-export class RouterButton extends Component
+export class RouterButton extends Component<{ route: string; }, string | VirtualNode | VirtualNode[]>
 {
-    //Input
-    input!: {
-        children: RenderNode | RenderNode[];
-        route: string;
-    };
-
     //Constructor
     constructor(private router: Router)
     {
@@ -40,7 +34,7 @@ export class RouterButton extends Component
     //Protected methods
     protected Render(): RenderNode
     {
-        return <button type="button" onclick={this.OnActivated.bind(this)}>{this.input.children}</button>;
+        return <button type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
     }
 
     //Event handlers

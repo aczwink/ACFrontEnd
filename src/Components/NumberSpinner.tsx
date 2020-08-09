@@ -20,24 +20,25 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
 
-type IntegerSpinnerInput = {
+type NumberEditInput = {
     value: number;
+    step: number | "any";
     onChanged: (newValue: number) => void;
 };
 
 @Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export class NumberSpinner extends Component<NumberEditInput>
 {
     //Protected methods
     protected Render(): RenderNode
     {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} />;
+        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} step={this.input.step.toString()} />;
     }
 
     //Event handlers
     private OnChanged(event: Event)
     {
         const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        this.input.onChanged(parseFloat(newValue));
     }
 }

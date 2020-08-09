@@ -26,9 +26,9 @@ interface Dictionary
     [key: string]: any;
 }
 
-export class VirtualInstance extends VirtualNode
+export class VirtualInstance<ComponentType extends Component<InputType, ChildrenType>, InputType = Dictionary | null, ChildrenType = undefined> extends VirtualNode
 {
-    constructor(type: Instantiatable<Component>, args: Dictionary | null, subChildren?: VirtualNode[])
+    constructor(type: Instantiatable<ComponentType>, args: InputType, subChildren?: ChildrenType)
     {
         super();
 
@@ -50,8 +50,8 @@ export class VirtualInstance extends VirtualNode
     //Protected methods
     protected CloneSelf(): VirtualNode
     {
-        const subChildren = this._subChildren === undefined ? undefined : this._subChildren.map(child => child.Clone());
-        return new VirtualInstance(this.type, this.args === null ? null : this.args.DeepClone(), subChildren);
+        const subChildren = this._subChildren === undefined ? undefined : (this._subChildren as unknown as VirtualNode[]).map(child => child.Clone());
+        return new VirtualInstance(this.type, this.args === null ? null : (this.args as any).Clone(), subChildren as any);
     }
 
     protected RealizeSelf(): void
@@ -59,12 +59,12 @@ export class VirtualInstance extends VirtualNode
         this.injector!.RegisterInstance(Injector, this.injector);
 
         this.injections = this.injector!.ResolveInjections(this.type);
-        this.instance = ComponentManager.CreateComponent(this.type, this.injector!);
+        (this as any).instance = ComponentManager.CreateComponent(this.type, this.injector!);
 
-        //set children
         this.PassInputArgs(this.args);
+        this.PassChildren();
 
-        this.instance.OnInitiated();
+        this.instance!.OnInitiated();
 
         if((this.instance === null) || (this.instance.vNode === null) )
             this.children = undefined;
@@ -101,8 +101,9 @@ export class VirtualInstance extends VirtualNode
 
                         this.args = newNode.args;
                         this._subChildren = newNode._subChildren;
-                        const input = (this.instance as any).input;
-                        input.children = this._subChildren;
+
+                        this.PassChildren();
+
                         if(issueUpdate)
                             this.instance.Update();
                         return this;
@@ -137,29 +138,31 @@ export class VirtualInstance extends VirtualNode
         return false;
     }
 
+    private PassChildren()
+    {
+        (this.instance as any)._children = this._subChildren;
+    }
+
     private PassInputArgs(args: Dictionary | null)
     {
+        const input: Dictionary = {};
         if(args !== null)
         {
-            const input = (this.instance as any).input;
             for (const key in args)
             {
                 input[key] = args[key]
             }
-            input.children = this._subChildren;
         }
-        else
-        {
-            (this.instance as any).input = {
-                children: this._subChildren
-            };
-        }
+
+        (this.instance as any)._input = input;
     }
     
     //Private members
-    private type: Instantiatable<Component>;
-    private args: Dictionary | null;
-    private _subChildren?: Array<VirtualNode>;
-    private instance: Component | null;
+    private type: Instantiatable<ComponentType>;
+    private args: InputType;
+    private _subChildren?: ChildrenType;
+    private instance: ComponentType | null;
     private injections: any;
 }
+
+export type VirtualChildNode<ComponentType> = ComponentType extends Component<infer InputType, infer ChildrenType> ? VirtualInstance<ComponentType, InputType, ChildrenType> : never;

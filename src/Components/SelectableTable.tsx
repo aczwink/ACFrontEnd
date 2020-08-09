@@ -23,18 +23,16 @@ import { VirtualNode } from "../main";
 import { VirtualFragment } from "../VirtualFragment";
 import { DontBind } from "../ComponentManager";
 
-export class SelectableTable<RowKeyType> extends Component
-{
-    //Input
-    input!: {
-        children: VirtualNode[];
-        columns: string[];
-        multiSelections: boolean,
-        rowKeys: RowKeyType[];
-        selectedRowKeys: RowKeyType[];
-        selectionChanged: (selection: RowKeyType[]) => void;
-    };
+type SelectableTableInput<RowKeyType> = {
+    columns: string[];
+    multiSelections: boolean,
+    rowKeys: RowKeyType[];
+    selectedRowKeys: RowKeyType[];
+    selectionChanged: (selection: RowKeyType[]) => void;
+};
 
+export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<RowKeyType>, VirtualNode[]>
+{
     constructor()
     {
         super();
@@ -52,7 +50,7 @@ export class SelectableTable<RowKeyType> extends Component
             <tr>
                 {this.input.columns.map( col => <th>{col}</th>)}
             </tr>
-            {...this.input.children.map(row => this.RenderChild(row))}
+            {...this.children.map(row => this.RenderChild(row))}
         </table>;
     }
 

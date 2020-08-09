@@ -26,6 +26,7 @@ import { RootInjector } from "../App";
 import { VirtualNode } from "../VirtualNode";
 import { VirtualElement } from "../VirtualElement";
 import { PopupRef } from "../Controller/PopupRef";
+import { RenderNode } from "../main";
 
 interface PopupContainer
 {
@@ -34,10 +35,10 @@ interface PopupContainer
     popupRefs: PopupRef[];
 }
 
-interface ModalProperties
+interface ModalProperties<InputType>
 {
     className?: string;
-    input?: Dictionary<any>;
+    input: InputType;
 }
 
 @Injectable
@@ -51,7 +52,7 @@ export class PopupManager
     //Public methods
     public OpenDialog(component: Instantiatable<Component>, dialogTemplate: DialogProperties)
     {
-        const modal = new VirtualInstance(Dialog, dialogTemplate, [ new VirtualInstance(component, dialogTemplate.input || null, []) ]);
+        const modal = new VirtualInstance<Dialog, DialogProperties, VirtualNode>(Dialog, dialogTemplate, new VirtualInstance(component, dialogTemplate.input || null));
         const ref = this.OpenModalInternal(modal);
 
         const dialogRef = new DialogRef( this.CloseModal.bind(this, ref) );
@@ -60,7 +61,7 @@ export class PopupManager
         return dialogRef;
     }
 
-    public OpenModal(component: Instantiatable<Component>, properties: ModalProperties)
+    public OpenModal<InputType, ChildrenType>(component: Instantiatable<Component<InputType, ChildrenType>>, properties: ModalProperties<InputType>)
     {
         const className = "modal " + (properties.className || "");
         const modal = new VirtualElement("div", { className: className });
@@ -68,7 +69,7 @@ export class PopupManager
         const ref = this.OpenModalInternal(modal);
         modal.children = [
             new VirtualElement("button", {textContent: "\u00d7", onclick: ref.Close.bind(ref)}),
-            new VirtualInstance(component, properties.input || null)
+            new VirtualInstance<Component<InputType, ChildrenType>, InputType, ChildrenType>(component, properties.input)
         ];
 
         ref.keydownEvents.Subscribe({ next: event => {
@@ -82,7 +83,7 @@ export class PopupManager
     public OpenModeless(content: Instantiatable<Component> | VirtualNode, properties?: Dictionary<any>)
     {
         if(!(content instanceof VirtualNode))
-            content = new VirtualInstance(content, properties || null, []);
+            content = new VirtualInstance(content, properties || null);
         const ref = new PopupRef( () => this.root.RemoveChild(content as VirtualNode), this.OnNewKeyBoardSubscriber.bind(this, "") );
         this.root.AddChild(content);
 

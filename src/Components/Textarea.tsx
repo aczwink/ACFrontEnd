@@ -20,17 +20,16 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { RenderNode } from "../VirtualNode";
 
-@Injectable
-export class Textarea extends Component
-{
-    //Input
-    input!: {
-        value: string;
-        onChanged: (newValue: string) => void;
-        columns?: number;
-        rows?: number;
-    };
+type TextAreaInput = {
+    value: string;
+    onChanged: (newValue: string) => void;
+    columns?: number;
+    rows?: number;
+};
 
+@Injectable
+export class Textarea extends Component<TextAreaInput>
+{
     //Protected methods
     protected Render(): RenderNode
     {

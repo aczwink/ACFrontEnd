@@ -17,7 +17,7 @@
  * */
 
 import {App, RootInjector} from "./App";
-import {Component} from "./Component";
+import {Component, DataBindingProxy} from "./Component";
 import {JSX_CreateElement} from "./JSX_CreateElement";
 import { VirtualNode, RenderNode } from "./VirtualNode";
 import { RouterComponent } from "./Components/RouterComponent";
@@ -56,6 +56,8 @@ import { TooltipManager } from "./Services/TooltipManager";
 import { Stepper } from "./Components/Stepper";
 import { Switch } from "./Components/Switch";
 import { Textarea } from "./Components/Textarea";
+import { StepperPage } from "./Components/StepperPage";
+import { NumberSpinner } from "./Components/NumberSpinner";
 
 export
 {
@@ -65,6 +67,7 @@ export
     AutocompleteTextLineEdit,
     CheckBox,
     Component,
+    DataBindingProxy,
     DialogProperties,
     DialogRef,
     FormField,
@@ -78,6 +81,7 @@ export
     KeyDisplayValuePair,
     LineEdit,
     MatIcon,
+    NumberSpinner,
     ObservableEvent,
     PaginationComponent,
     PopupManager,
@@ -98,6 +102,7 @@ export
     Stack,
     StackChild,
     Stepper,
+    StepperPage,
     Switch,
     Tab,
     TabGroup,

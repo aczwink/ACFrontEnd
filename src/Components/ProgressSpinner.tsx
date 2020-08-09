@@ -19,7 +19,7 @@ import { Component } from "../Component";
 import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
-export class ProgressSpinner extends Component
+export class ProgressSpinner extends Component<{}>
 {
     protected Render(): RenderNode
     {

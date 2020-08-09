@@ -23,20 +23,14 @@ import { VirtualElement } from "../VirtualElement";
 import { VirtualFragment } from "../VirtualFragment";
 
 @Injectable
-export class Select extends Component
+export class Select extends Component<{ onChanged: (newValue: string[]) => void; }, VirtualNode[]>
 {
-    //Input
-    input!: {
-        children: VirtualNode[];
-        onChanged: (newValue: string[]) => void;
-    };
-
     //Protected methods
     protected Render(): RenderNode
     {
         return <select onchange={this.OnSelectionChanged.bind(this)}>
-            <option disabled selected={!this.IsChildSelected(this.input.children)}>Select an option</option>
-            {...this.input.children.map(child => child.Clone())}
+            <option disabled selected={!this.IsChildSelected(this.children)}>Select an option</option>
+            {...this.children.map(child => child.Clone())}
         </select>;
     }
 

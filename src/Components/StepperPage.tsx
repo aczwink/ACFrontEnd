@@ -15,29 +15,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+
 import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
+import { RenderNode, VirtualNode } from "../VirtualNode";
 
-type IntegerSpinnerInput = {
-    value: number;
-    onChanged: (newValue: number) => void;
+export type StepperPageInput = {
+    title: string;
+    validate: () => boolean;
 };
-
-@Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export class StepperPage extends Component<StepperPageInput, VirtualNode>
 {
-    //Protected methods
     protected Render(): RenderNode
     {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} />;
-    }
-
-    //Event handlers
-    private OnChanged(event: Event)
-    {
-        const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        return this.children[0].Clone();
     }
 }

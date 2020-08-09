@@ -23,7 +23,7 @@ import { RouteGuard } from "./RouteGuard";
 export interface Route
 {
     path: string;
-    component?: Instantiatable<Component>;
+    component?: Instantiatable<Component<null | {}>>;
     redirect?: string;
     children?: Route[];
     guards?: Instantiatable<RouteGuard>[];

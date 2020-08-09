@@ -42,45 +42,20 @@ export function DontBind(target: any, key: string)
 export const ComponentManager = new class
 {
     //Public methods
-    public CreateComponent<T>(componentType: Instantiatable<Component>, injector: Injector): Component
+    public CreateComponent<InputType, ChildrenType>(componentType: Instantiatable<Component<InputType, ChildrenType>>, injector: Injector): Component<InputType, ChildrenType>
     {
         const instance = injector.CreateInstance(componentType); //components are always instantiated
-        const instanceAny = instance as any;
 
-        //set input
-        instanceAny.input = {};
-
-        this.InstallDataBindings(instance, instanceAny);
+        this.InstallDataBindings(instance);
         
         return instance;
     }
 
     //Private methods
     //TODO: why can't these be private?
-    public InstallDataBinding(instance: Component, instanceAny: any, propertyName: string)
+    public InstallDataBindings<InputType, ChildrenType>(instance: Component<InputType, ChildrenType>)
     {
-        let value: any = instanceAny[propertyName];
-        delete instanceAny[propertyName];
-
-        Object.defineProperty(instanceAny, propertyName, {			
-			get: () =>
-			{
-				return value;
-			},
-			
-			set: (newValue) =>
-			{
-				const oldValue = value;
-                value = newValue;
-                if(oldValue !== newValue)
-                    instance.Update();
-			}
-		});
-    }
-
-    public InstallDataBindings(instance: Component, instanceAny: any)
-    {
-        const propertyKeys = Reflect.ownKeys(instanceAny);
+        const propertyKeys = Reflect.ownKeys(instance);
         const members: Dictionary<MemberMetadata>|undefined = (instance as any).__members;
         for (let i = 0; i < propertyKeys.length; i++)
         {
@@ -94,7 +69,7 @@ export const ComponentManager = new class
             if( (members !== undefined) && (key in members) && (members[key]!.installDataBinding === false) )
                 continue;
 
-            this.InstallDataBinding(instance, instanceAny, key);
+            (instance as any).BindProperty(instance, key);
         }
     }
 }

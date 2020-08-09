@@ -19,20 +19,12 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
-import { RenderNode } from "../VirtualNode";
+import { RenderNode, VirtualNode } from "../VirtualNode";
 import { ProgressSpinner } from "./ProgressSpinner";
 
-interface DialogPropertiesWithChildren extends DialogProperties
-{
-    children: RenderNode;
-}
-
 @Injectable
-export class Dialog extends Component
+export class Dialog extends Component<DialogProperties, VirtualNode>
 {
-    //Input
-    input!: DialogPropertiesWithChildren;
-
     constructor(private dialogRef: DialogRef)
     {
         super();
@@ -60,7 +52,7 @@ export class Dialog extends Component
 
         return <div class={"dialog" + (this.waiting ? " waiting" : "")}>
             {header}
-            {this.input.children}
+            {this.children}
             {footer}
             {loader}
         </div>;
