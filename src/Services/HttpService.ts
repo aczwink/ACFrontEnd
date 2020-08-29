@@ -21,14 +21,17 @@ import { PrimitiveDictionary } from "../Model/Dictionary";
 interface RequestHeaders
 {
     Authorization?: string;
-    "Content-Type"?: "application/json";
+    "Content-Type"?: "application/json" | "multipart/form-data";
 }
+
+type HttpDataMethod = "DELETE" | "POST" | "PUT";
+type HttpMethod = "GET" | HttpDataMethod;
 
 export interface HttpRequest
 {
     data: any;
     headers: RequestHeaders;
-    method: "DELETE" | "GET" | "POST";
+    method: HttpMethod;
     responseType: "blob" | "json";
     url: string;
 }
@@ -37,13 +40,21 @@ export interface HttpRequest
 export class HttpService
 {
     //Public methods
-    public DataRequest<T>(url: string, httpMethod: "DELETE" | "POST", data: any): Promise<T>
+    public DataRequest<T>(url: string, httpMethod: HttpDataMethod, data: any | FormData): Promise<T>
     {
         const headers: RequestHeaders = {};
         if(data !== undefined)
         {
-            data = JSON.stringify(data);
-            headers["Content-Type"] = "application/json";
+            if(data instanceof FormData)
+            {
+                //let XmlHttpRequest do this since it also sets the boundary
+                //headers["Content-Type"] = "multipart/form-data";
+            }
+            else
+            {
+                data = JSON.stringify(data);
+                headers["Content-Type"] = "application/json";
+            }
         }
 
         return this.Request({

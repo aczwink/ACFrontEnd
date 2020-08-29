@@ -100,6 +100,8 @@ export class PopupManager
 
         if(container === undefined)
         {
+            if(properties === undefined)
+                properties = {};
             properties.id = containerId;
             container = {
                 container: new VirtualElement("div", properties),

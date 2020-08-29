@@ -104,10 +104,12 @@ declare module JSX
             
             class?: string;
             onclick?: EventHandler<MouseEvent>;
+            onmouseenter?: EventHandler<MouseEvent>;
+            onmouseleave?: EventHandler<MouseEvent>;
             style?: string;
         };
         input: {
-            type: "checkbox" | "datetime-local" | "number" | "password" | "text",
+            type: "checkbox" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
 
             checked?: boolean;
             disabled?: boolean;
@@ -166,6 +168,7 @@ declare module JSX
         textarea: {
             children: string;
             cols: string;
+            onkeydown?: EventHandler<KeyboardEvent>;
             oninput?: EventHandler<InputEvent>;
             readonly?: boolean;
             rows: string;

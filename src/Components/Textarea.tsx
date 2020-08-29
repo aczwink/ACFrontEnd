@@ -24,6 +24,7 @@ type TextAreaInput = {
     value: string;
     onChanged: (newValue: string) => void;
     columns?: number;
+    onKeyDown?: EventHandler<KeyboardEvent>;
     rows?: number;
 };
 
@@ -36,7 +37,7 @@ export class Textarea extends Component<TextAreaInput>
         const cols = (this.input.columns || 80).toString();
         const rows = (this.input.rows || 24).toString();
 
-        return <textarea cols={cols} rows={rows} oninput={this.OnValueChanged.bind(this)}>{this.input.value}</textarea>
+        return <textarea cols={cols} rows={rows} onkeydown={this.input.onKeyDown} oninput={this.OnValueChanged.bind(this)}>{this.input.value}</textarea>
     }
 
     //Event handlers

@@ -58,6 +58,8 @@ import { Switch } from "./Components/Switch";
 import { Textarea } from "./Components/Textarea";
 import { StepperPage } from "./Components/StepperPage";
 import { NumberSpinner } from "./Components/NumberSpinner";
+import { CookieService } from "./Services/CookieService";
+import { FileSelect } from "./Components/FileSelect";
 
 export
 {
@@ -67,9 +69,11 @@ export
     AutocompleteTextLineEdit,
     CheckBox,
     Component,
+    CookieService,
     DataBindingProxy,
     DialogProperties,
     DialogRef,
+    FileSelect,
     FormField,
     Gallery,
     HttpService,

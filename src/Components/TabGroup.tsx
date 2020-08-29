@@ -70,7 +70,7 @@ export class TabGroup extends Component<TabGroupInput, VirtualInstance<Tab, TabI
         return this.children.map(tab => {
             const className = tab === activeTab ? "active" : "";
             return <li class={className}>
-                <a onclick={this.input.activeKeyChanged.bind(this, tab.input.key)}>{tab}</a>
+                <a onclick={this.input.activeKeyChanged.bind(this, tab.input.key)}>{tab.Clone()}</a>
             </li>}
         );
     }

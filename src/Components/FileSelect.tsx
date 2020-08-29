@@ -15,35 +15,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
-import { VirtualNode } from "../main";
-import { VirtualInstance } from "../VirtualInstance";
 
-type StackChildInput = { key: string; };
-export class StackChild extends Component<StackChildInput, VirtualNode>
-{
-    //Protected methods
-    protected Render(): RenderNode
-    {
-        return this.children[0];
-    }
-}
+import { Injectable } from "../ComponentManager";
+import { Component } from "../Component";
+import { RenderNode } from "../VirtualNode";
+import { JSX_CreateElement } from "../JSX_CreateElement";
+
+type FileSelectInput = {
+    onChanged: (newValue: File | null) => void;
+};
 
 @Injectable
-export class Stack extends Component<{ activeKey: string; }, VirtualInstance<StackChild, StackChildInput, VirtualNode>[]>
+export class FileSelect extends Component<FileSelectInput>
 {
     //Protected methods
     protected Render(): RenderNode
     {
-        return <const>{this.FindActiveChild()}</const>;
+        return <input type="file" onchange={this.OnValueChanged.bind(this)} />;
     }
 
-    //Private methods
-    private FindActiveChild()
+    //Event handlers
+    private OnValueChanged(event: Event)
     {
-        return this.children.find( child => child.input.key === this.input.activeKey )?.Clone();
+        const newValue = (event.target! as HTMLInputElement).files!.item(0);
+        this.input.onChanged(newValue);
     }
 }
