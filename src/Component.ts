@@ -109,9 +109,9 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
 		});
     }
 
-    protected CreateDataBindingProxy<T extends PrimitiveDictionary>(object: T): DataBindingProxy<T>
+    protected CreateDataBindingProxy<T extends object>(object: T): DataBindingProxy<T>
     {
-        const keys = Reflect.ownKeys(object) as (number | string)[];
+        const keys = Reflect.ownKeys(object);
 
         const components: Component<any, any>[] = [this];
         const result: BindUnbind = {
@@ -128,9 +128,9 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
         for (const key of keys)
         {
             Object.defineProperty(result, key, {
-                get: () => object[key],
+                get: () => (object as any)[key],
                 set: (newValue) => {
-                    if(object[key] !== newValue)
+                    if((object as any)[key] !== newValue)
                     {
                         (object as any)[key] = newValue;
                         components.forEach( component => component.Update() );

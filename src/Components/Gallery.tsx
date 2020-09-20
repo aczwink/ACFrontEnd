@@ -23,7 +23,7 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { PopupManager } from "../Services/PopupManager";
 import { GalleryModal } from "./GalleryModal";
 
-export interface Image
+export interface GalleryImage
 {
     url: string;
 }
@@ -31,7 +31,7 @@ export interface Image
 interface Images
 {
     imgClass?: string;
-    images: Image[];
+    images: GalleryImage[];
 }
 
 @Injectable

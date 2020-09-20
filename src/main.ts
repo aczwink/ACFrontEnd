@@ -60,6 +60,7 @@ import { StepperPage } from "./Components/StepperPage";
 import { NumberSpinner } from "./Components/NumberSpinner";
 import { CookieService } from "./Services/CookieService";
 import { FileSelect } from "./Components/FileSelect";
+import { GalleryModal } from "./Components/GalleryModal";
 
 export
 {
@@ -76,6 +77,7 @@ export
     FileSelect,
     FormField,
     Gallery,
+    GalleryModal,
     HttpService,
     InfoMessageManager,
     Injectable,

@@ -36,7 +36,7 @@ export class Url
     {
         if(Array.isArray(input))
         {
-            this.protocol = "http:";
+            this.protocol = window.location.protocol;
             this.host = window.location.host;
 
             this._pathSegments = input;

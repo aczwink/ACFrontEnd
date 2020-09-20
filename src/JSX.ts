@@ -104,6 +104,7 @@ declare module JSX
             
             class?: string;
             onclick?: EventHandler<MouseEvent>;
+            oncontextmenu?: EventHandler<MouseEvent>;
             onmouseenter?: EventHandler<MouseEvent>;
             onmouseleave?: EventHandler<MouseEvent>;
             style?: string;

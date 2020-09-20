@@ -19,25 +19,34 @@
 import { Component } from "../Component";
 import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Image } from "./Gallery";
+import { GalleryImage } from "./Gallery";
 import { Injectable } from "../ComponentManager";
 import { PopupRef } from "../Controller/PopupRef";
+import { Subject } from "acts-util-core";
 
-type GalleryModalInput = {
+type GalleryModalInput<T extends GalleryImage> = {
     startImageIndex: number;
-    images: Image[];
+    images: T[];
 };
 
 @Injectable
-export class GalleryModal extends Component<GalleryModalInput>
+export class GalleryModal<T extends GalleryImage = GalleryImage> extends Component<GalleryModalInput<T>>
 {
     constructor(private popupRef: PopupRef)
     {
         super();
 
         this.currentImageIndex = 0;
+        this._currentImage = new Subject<T>();
     }
 
+    //Properties
+    public get currentImage()
+    {
+        return this._currentImage;
+    }
+
+    //Protected methods
     protected Render(): RenderNode
     {
         let leftStyle = "";
@@ -51,12 +60,19 @@ export class GalleryModal extends Component<GalleryModalInput>
         return <div>
             <button type="button" class="leftArrow" style={leftStyle} onclick={this.OnGoLeft.bind(this)}>{"\u2190"}</button>
             <img src={this.input.images[this.currentImageIndex].url} />
+            {this.RenderImageControls()}
             <button type="button" class="rightArrow" style={rightStyle} onclick={this.OnGoRight.bind(this)}>{"\u2192"}</button>
         </div>;
     }
 
+    protected RenderImageControls()
+    {
+        return null;
+    }
+
     //Private members
     private currentImageIndex: number;
+    private _currentImage: Subject<T>;
 
     //Private methods
     private HasNextImage()
@@ -69,6 +85,11 @@ export class GalleryModal extends Component<GalleryModalInput>
         return this.currentImageIndex > 0;
     }
 
+    private UpdateCurrentImage()
+    {
+        this._currentImage.Next(this.input.images[this.currentImageIndex]);
+    }
+
     //Event handlers
     private OnGoLeft(event: Event)
 	{
@@ -76,6 +97,7 @@ export class GalleryModal extends Component<GalleryModalInput>
         event.stopPropagation();
 
         this.currentImageIndex -= 1;
+        this.UpdateCurrentImage();
 	}
 	
 	private OnGoRight(event: Event)
@@ -83,12 +105,14 @@ export class GalleryModal extends Component<GalleryModalInput>
         event.preventDefault();
         event.stopPropagation();
         
-		this.currentImageIndex += 1;
+        this.currentImageIndex += 1;
+        this.UpdateCurrentImage();
     }
 
     public OnInitiated()
     {
         this.currentImageIndex = this.input.startImageIndex;
+        this.UpdateCurrentImage();
         this.popupRef.keydownEvents.Subscribe({ next: this.OnKeyDown.bind(this) })
     }
 
