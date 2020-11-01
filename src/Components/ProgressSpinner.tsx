@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,12 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 export class ProgressSpinner extends Component<{}>
 {
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <div class="loadingSpinner" />;
     }

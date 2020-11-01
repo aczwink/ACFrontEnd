@@ -19,11 +19,6 @@ import { Injector } from "acts-util-core";
 
 import { MountPoint, DOM } from "./DOM";
 
-export type RenderText = string | number | boolean;
-type RenderOther = null | undefined;
-
-export type RenderNode = VirtualNode | RenderText | RenderOther;
-
 export abstract class VirtualNode
 {
     constructor(domNode?: Node)
@@ -116,6 +111,16 @@ export abstract class VirtualNode
         return clone;
     }
 
+    public Destroy()
+    {
+        if(this._domNode !== null)
+            throw new Error("Can't destroy virtual node that is still in the dom");
+        if( (this._nextSibling !== null) || (this._prevSibling !== null) || (this._parent !== null) )
+            throw new Error("Can't destroy virtual node that is still mounted in a virtual tree");
+
+        this.DropAllChildren();
+    }
+
     public EnsureHasOwnInjector()
     {
         this._injector = new Injector;
@@ -202,7 +207,7 @@ export abstract class VirtualNode
     protected abstract UpdateSelf(newNode: VirtualNode | null): VirtualNode | null;
 
     //Protected methods
-    protected UpdateChildren(newNode: VirtualNode | null) //HERE
+    protected UpdateChildren(newNode: VirtualNode | null)
 	{
         if(newNode === null)
         {
@@ -217,27 +222,41 @@ export abstract class VirtualNode
             this._children = [];
 
         //update nodes
-        let i;
-        const newChildren = newNode._children.Clone();
-
-        for(i = 0; i < Math.min(this._children.length, newChildren.length); i++)
-        {
-            this._children[i] = this._children[i].Update(newChildren[i])!;
-        }
+        const newChildren = newNode._children;
 
         //remove additional nodes
-		for(; i < this._children.length; i++)
+        const nRemove = this._children.length - newChildren.length;
+		for(let i = 0; i < nRemove; i++)
 		{
-            this.RemoveChildByIndex(i);
+            this.RemoveChildByIndex(newChildren.length);
         }
 
         //add new additional nodes
-        for(; this.children!.length < newChildren.length; i++)
+        const nNew = newChildren.length - this.children!.length;
+        for(let i = 0; i < nNew; i++)
         {
-            const newChild = newChildren[i];
+            const newChild = newChildren[this.children!.length];
             newNode.RemoveChild(newChild);
 
             this.AddChild(newChild);
+        }
+
+        //update nodes in between
+        const nUpdates = this._children.length - nNew;
+        let i = 0;
+        for(let k = 0; k < nUpdates; k++)
+        {
+            const oldChild = this._children[i];
+            const newChild = newChildren[0];
+            const updatedNode = oldChild.Update(newChild)!;
+
+            if(updatedNode === oldChild)
+            {
+                newNode.RemoveChildByIndex(0);
+                i++;
+            }
+            else
+                oldChild.Destroy();
         }
     }
 

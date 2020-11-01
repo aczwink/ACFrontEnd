@@ -15,18 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary, Instantiatable, Observer } from "acts-util-core";
+import { Dictionary, Observer } from "acts-util-core";
 
 import { Injectable } from "../ComponentManager";
-import { Component } from "../Component";
-import { VirtualInstance } from "../VirtualInstance";
 import { Dialog } from "../Components/Dialog";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
 import { RootInjector } from "../App";
 import { VirtualNode } from "../VirtualNode";
 import { VirtualElement } from "../VirtualElement";
 import { PopupRef } from "../Controller/PopupRef";
-import { RenderNode } from "../main";
+import { TransformRenderValueToVirtualNode } from "../VirtualTreeCreator";
 
 interface PopupContainer
 {
@@ -35,10 +33,10 @@ interface PopupContainer
     popupRefs: PopupRef[];
 }
 
-interface ModalProperties<InputType>
+interface ModalProperties
 {
     className?: string;
-    input: InputType;
+    withBackdrop?: boolean;
 }
 
 @Injectable
@@ -50,10 +48,14 @@ export class PopupManager
     }
 
     //Public methods
-    public OpenDialog(component: Instantiatable<Component>, dialogTemplate: DialogProperties)
+    public OpenDialog(content: RenderValue, dialogTemplate: DialogProperties)
     {
-        const modal = new VirtualInstance<Dialog, DialogProperties, VirtualNode>(Dialog, dialogTemplate, new VirtualInstance(component, dialogTemplate.input || null));
-        const ref = this.OpenModalInternal(modal);
+        const modal: RenderElement = {
+            type: Dialog,
+            properties: dialogTemplate,
+            children: [content]
+        };
+        const ref = this.OpenModalInternal(modal, true);
 
         const dialogRef = new DialogRef( this.CloseModal.bind(this, ref) );
         RootInjector.RegisterInstance(DialogRef, dialogRef);
@@ -61,17 +63,37 @@ export class PopupManager
         return dialogRef;
     }
 
-    public OpenModal<InputType, ChildrenType>(component: Instantiatable<Component<InputType, ChildrenType>>, properties: ModalProperties<InputType>)
+    public OpenModal(content: RenderValue, properties: ModalProperties)
     {
-        const className = "modal " + (properties.className || "");
-        const modal = new VirtualElement("div", { className: className });
+        const hasBackdrop = properties.withBackdrop === undefined ? true : properties.withBackdrop;
 
-        const ref = this.OpenModalInternal(modal);
-        modal.children = [
-            new VirtualElement("button", {textContent: "\u00d7", onclick: ref.Close.bind(ref)}),
-            new VirtualInstance<Component<InputType, ChildrenType>, InputType, ChildrenType>(component, properties.input)
-        ];
+        const children = [];
+        if(hasBackdrop)
+        {
+            children.push({
+                type: "button",
+                properties: {
+                    textContent: "\u00d7",
+                    onclick: () => ref.Close()
+                },
+                children: []
+            });
+        }
+        children.push(content);
 
+        let className = "modal";
+        if(properties.className)
+            className += " " + properties.className;
+
+        const modal: RenderElement = {
+            type: "div",
+            properties: {
+                className
+            },
+            children
+        };
+
+        const ref = this.OpenModalInternal(modal, hasBackdrop);
         ref.keydownEvents.Subscribe({ next: event => {
             if(event.keyCode === 27) //escape
                 ref.Close();
@@ -80,44 +102,11 @@ export class PopupManager
         return ref;
     }
 
-    public OpenModeless(content: Instantiatable<Component> | VirtualNode, properties?: Dictionary<any>)
+    public OpenModeless(content: RenderValue)
     {
-        if(!(content instanceof VirtualNode))
-            content = new VirtualInstance(content, properties || null);
-        const ref = new PopupRef( () => this.root.RemoveChild(content as VirtualNode), this.OnNewKeyBoardSubscriber.bind(this, "") );
-        this.root.AddChild(content);
-
-        return ref;
-    }
-
-    public OpenPopup(containerId: string, popupNode: VirtualNode, properties?: any): PopupRef
-    {
-        let container = this.popupContainers[containerId];
-
-        const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
-        popupNode.EnsureHasOwnInjector();
-        popupNode.injector!.RegisterInstance(PopupRef, ref);
-
-        if(container === undefined)
-        {
-            if(properties === undefined)
-                properties = {};
-            properties.id = containerId;
-            container = {
-                container: new VirtualElement("div", properties),
-                popups: [],
-                popupRefs: []
-            };
-            this.popupContainers[containerId] = container;
-            const adder = () => {
-                this.root.AddChild(container!.container);
-            };
-            adder.CallImmediate();
-        }
-        container.popups.push(popupNode);
-        container.container.children = container.popups;
-
-        container.popupRefs.push(ref);
+        const vNode = TransformRenderValueToVirtualNode(content)!;
+        const ref = new PopupRef( () => this.root.RemoveChild(vNode), this.OnNewKeyBoardSubscriber.bind(this, "") );
+        this.root.AddChild(vNode);
 
         return ref;
     }
@@ -147,15 +136,56 @@ export class PopupManager
         }
     }
 
-    private OpenModalInternal(modal: VirtualNode)
+    private OpenModalInternal(modal: RenderElement, showBackdrop: boolean)
     {
         const containerId = "modalContainer";
-        const ref = this.OpenPopup(containerId, modal, { className: "show", onclick: (event: MouseEvent) => {
-            if(event.target === event.currentTarget)
-                this.CloseModal(ref)
-        }});
+        const ref = this.OpenPopup(containerId, modal, {
+            className: showBackdrop ? "show" : "showTransparent",
+            onclick: (event: MouseEvent) => {
+                if(event.target === event.currentTarget)
+                    this.CloseModal(ref)
+            },
+            oncontextmenu: (event: MouseEvent) => {
+                if(event.target === event.currentTarget)
+                    this.CloseModal(ref);
+            }
+        });
 
         document.body.className = "scroll-lock";
+
+        return new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
+    }
+
+    private OpenPopup(containerId: string, content: RenderValue, properties?: any): PopupRef
+    {
+        let container = this.popupContainers[containerId];
+
+        const popupNode = TransformRenderValueToVirtualNode(content)!;
+
+        const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
+        popupNode.EnsureHasOwnInjector();
+        popupNode.injector!.RegisterInstance(PopupRef, ref);
+
+        if(container === undefined)
+        {
+            if(properties === undefined)
+                properties = {};
+            properties.id = containerId;
+            container = {
+                container: new VirtualElement("div", properties),
+                popups: [],
+                popupRefs: []
+            };
+            this.popupContainers[containerId] = container;
+            const adder = () => {
+                this.root.AddChild(container!.container);
+            };
+            adder.CallImmediate();
+        }
+        container.popups.push(popupNode);
+        container.container.children = container.popups;
+
+        container.popupRefs.push(ref);
 
         return ref;
     }

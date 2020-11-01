@@ -22,10 +22,12 @@ import { FormsComponent } from "./FormsComponent";
 import { GalleryComponent } from "./GalleryComponent";
 import { TooltipComponent } from "./TooltipComponent";
 import { WizardComponent } from "./WizardComponent";
+import { MenusComponent } from "./MenusComponent";
 
 export const routes: Routes = [
     { path: "forms", component: FormsComponent },
     { path: "gallery", component: GalleryComponent },
+    { path: "menus", component: MenusComponent },
     { path: "tooltips", component: TooltipComponent },
     { path: "wizards", component: WizardComponent },
     { path: "", component: HomeComponent },

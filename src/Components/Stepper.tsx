@@ -16,13 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
+import { Component, RenderComponentChildWithChildrenHelp } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { VirtualChildNode } from "../VirtualInstance";
 import { StepperPage } from "./StepperPage";
 
-export class Stepper extends Component<{ onAccept: () => void }, VirtualChildNode<StepperPage>[]>
+export class Stepper extends Component<{ onAccept: () => void }, RenderComponentChildWithChildrenHelp<StepperPage, RenderValue>[]>
 {
     constructor()
     {
@@ -31,7 +29,7 @@ export class Stepper extends Component<{ onAccept: () => void }, VirtualChildNod
         this.currentPage = 0;
     }
 
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const pages = this.children;
         const currentPage = pages[this.currentPage];
@@ -49,14 +47,14 @@ export class Stepper extends Component<{ onAccept: () => void }, VirtualChildNod
             nextButtonText = "Next";
         
         return <div class="stepper">
-            <h4>{currentPage.input.title}</h4>
+            <h4>{currentPage.properties.title}</h4>
 
-            <div>{currentPage.Clone()}</div>
+            <div>{currentPage}</div>
 
             <div>
                 <div class="row">
                     {prevButton}
-                    <button type="button" disabled={!currentPage.input.validate()} onclick={this.OnNext.bind(this)}>{nextButtonText}</button>
+                    <button type="button" disabled={!currentPage.properties.validate()} onclick={this.OnNext.bind(this)}>{nextButtonText}</button>
                 </div>
                 <div class="row">
                     <ul class="wizardStepper">

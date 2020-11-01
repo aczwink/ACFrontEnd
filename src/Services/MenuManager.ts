@@ -15,28 +15,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
 
-type IntegerSpinnerInput = {
-    value: number;
-    onChanged: (newValue: number) => void;
-};
+import { Injectable } from "../ComponentManager";
+import { PopupManager } from "./PopupManager";
 
 @Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export class MenuManager
 {
-    //Protected methods
-    protected Render(): RenderValue
+    constructor(private popupManager: PopupManager)
     {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} />;
     }
 
-    //Event handlers
-    private OnChanged(event: Event)
+    //Public methods
+    public OpenMenu(menu: RenderValue, event: MouseEvent)
     {
-        const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        const element: RenderValue = {
+            type: "div",
+            properties: {
+                className: "contextMenu",
+                onclick: () => popupRef.Close(),
+                style: "left: " + event.clientX + "px; " + "top: " + event.clientY + "px"
+            },
+            children: [menu]
+        }
+
+        const popupRef = this.popupManager.OpenModal(element, { withBackdrop: false });
+        return popupRef;
     }
 }

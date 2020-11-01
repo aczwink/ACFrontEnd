@@ -15,28 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
+import { Component, RenderComponentChildWithChildrenHelp } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
 
-type IntegerSpinnerInput = {
-    value: number;
-    onChanged: (newValue: number) => void;
-};
+export class MenuItem extends Component<{}, RenderValue>
+{
+    protected Render(): RenderValue
+    {
+        return <li>{this.children}</li>;
+    }
+}
 
-@Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export class Menu extends Component<{}, RenderComponentChildWithChildrenHelp<MenuItem, RenderValue>[]>
 {
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} />;
-    }
-
-    //Event handlers
-    private OnChanged(event: Event)
-    {
-        const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        return <ul class="menu">
+            {...this.children}
+        </ul>;
     }
 }

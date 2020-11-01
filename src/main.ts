@@ -19,7 +19,7 @@
 import {App, RootInjector} from "./App";
 import {Component, DataBindingProxy} from "./Component";
 import {JSX_CreateElement} from "./JSX_CreateElement";
-import { VirtualNode, RenderNode } from "./VirtualNode";
+import { VirtualNode } from "./VirtualNode";
 import { RouterComponent } from "./Components/RouterComponent";
 import { Route, Routes } from "./Services/Router/Route";
 import { Anchor } from "./Components/Anchor";
@@ -61,6 +61,9 @@ import { NumberSpinner } from "./Components/NumberSpinner";
 import { CookieService } from "./Services/CookieService";
 import { FileSelect } from "./Components/FileSelect";
 import { GalleryModal } from "./Components/GalleryModal";
+import { Menu, MenuItem } from "./Components/Menu";
+import { MenuManager } from "./Services/MenuManager";
+import { Navigation, NavigationGroup } from "./Components/Navigation";
 
 export
 {
@@ -70,6 +73,7 @@ export
     AutocompleteTextLineEdit,
     CheckBox,
     Component,
+    ComponentManager,
     CookieService,
     DataBindingProxy,
     DialogProperties,
@@ -81,12 +85,16 @@ export
     HttpService,
     InfoMessageManager,
     Injectable,
-    ComponentManager,
     IntegerSpinner,
     JSX_CreateElement,
     KeyDisplayValuePair,
     LineEdit,
     MatIcon,
+    Menu,
+    MenuItem,
+    MenuManager,
+    Navigation,
+    NavigationGroup,
     NumberSpinner,
     ObservableEvent,
     PaginationComponent,
@@ -94,7 +102,6 @@ export
     PopupRef,
     PrimitiveDictionary,
     ProgressSpinner,
-    RenderNode,
     RootInjector,
     Route,
     RouteGuard,

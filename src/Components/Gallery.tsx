@@ -18,7 +18,6 @@
 
 import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { PopupManager } from "../Services/PopupManager";
 import { GalleryModal } from "./GalleryModal";
@@ -43,7 +42,7 @@ export class Gallery extends Component<{ images: Images; }>
     }
 
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const imgClass = this.input.images.imgClass ? this.input.images.imgClass : "";
         return <fragment>
@@ -56,6 +55,6 @@ export class Gallery extends Component<{ images: Images; }>
     {
         event.stopPropagation();
 
-        this.popupManager.OpenModal(GalleryModal, { className: "galleryModal", input: { startImageIndex: imgIndex, images: this.input.images.images} });
+        this.popupManager.OpenModal(<GalleryModal startImageIndex={imgIndex} images={this.input.images.images} />, { className: "galleryModal" });
     }
 }

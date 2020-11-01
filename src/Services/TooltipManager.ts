@@ -18,9 +18,6 @@
 
 import { Injectable } from "../ComponentManager";
 import { PopupManager } from "./PopupManager";
-import { RenderNode, VirtualNode } from "../VirtualNode";
-import { VirtualElement } from "../VirtualElement";
-import { TransformChildren } from "../RenderNodeTransformer";
 
 type TooltipPosition = "below" | "leftOf";
 interface TooltipProperties
@@ -37,14 +34,26 @@ export class TooltipManager
     }
 
     //Public methods
-    public ShowTooltip(renderNode: RenderNode, properties: TooltipProperties)
+    public ShowTooltip(renderNode: RenderValue, properties: TooltipProperties)
     {
         const coords = this.ComputeCoordinates(properties);
 
-        const tooltip = new VirtualElement("div", { className: "tooltip " + properties.position, style: "left: " + coords.x + "px; top: " + coords.y + "px" }, [
-            new VirtualElement("div", { className: "arrow" + this.TranslateTooltipPositionToArrowClass(properties.position) }),
-            new VirtualElement("div", null, TransformChildren([renderNode]))
-        ]);
+        const tooltip: RenderValue = {
+            type: "div",
+            properties: { className: "tooltip " + properties.position, style: "left: " + coords.x + "px; top: " + coords.y + "px" },
+            children: [
+                {
+                    type: "div",
+                    properties: { className: "arrow" + this.TranslateTooltipPositionToArrowClass(properties.position) },
+                    children: []
+                },
+                {
+                    type: "div",
+                    properties: null,
+                    children: [renderNode]
+                }
+            ]
+        };
 
         return this.popupManager.OpenModeless(tooltip);
     }

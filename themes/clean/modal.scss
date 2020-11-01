@@ -17,6 +17,12 @@ div#modalContainer.show
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
+div#modalContainer.showTransparent
+{
+	display: block;
+	background-color: rgba(0, 0, 0, 0);
+}
+
 div.modal
 {
 	height: 100vh;
@@ -47,7 +53,7 @@ div.modal button:hover
 	background-color: transparent;
 }
 
-div.modal > *:first-child
+div.modal > button:first-child
 {
 	position: absolute;
 	top: 0.15rem;

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { ProgressSpinner } from "./ProgressSpinner";
 
@@ -48,7 +47,7 @@ export class AutoCompleteMultiSelectBox<KeyType> extends Component<AutoCompleteM
         this.waitForSuggestions = false;
     }
 
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const className = "autoCompleteMultiSelectBox" + (this.ShowSuggestions() ? " withSuggestions" : "") + (this.focused ? " focused" : "");
 

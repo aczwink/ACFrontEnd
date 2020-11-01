@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,18 +18,16 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
-import { VirtualNode } from "../main";
 
 @Injectable
-export class FormField extends Component<{ hint: string; }, VirtualNode[]>
+export class FormField extends Component<{ hint: string; }, RenderValue>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <div class="formElement">
             <span>{this.input.hint}</span>
-            {this.children.map(child => child.Clone())}
+            {this.children}
         </div>;
     }
 }

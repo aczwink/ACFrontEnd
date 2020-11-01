@@ -18,7 +18,6 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
 
 type CheckBoxInput = {
     value: boolean;
@@ -29,7 +28,7 @@ type CheckBoxInput = {
 export class CheckBox extends Component<CheckBoxInput>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <input type="checkbox" checked={this.input.value} onclick={this.OnToggled.bind(this)} />;
     }

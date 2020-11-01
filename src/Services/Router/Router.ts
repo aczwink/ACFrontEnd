@@ -33,7 +33,7 @@ export class Router
         this.TransformRoutes(routes);
         RootInjector.RegisterInstance(Router, this);
 
-        const state = this.CreateRouterState(new Url(window.location.href));
+        const state = this.CreateRouterState(Url.Parse(window.location.href));
         this._state = new Property<RouterState>(state);
         this.UpdateRouterState(state);
     }
@@ -48,7 +48,7 @@ export class Router
     public RouteTo(url: string | Url)
     {
         if(typeof(url) === "string")
-            url = new Url(url);
+            url = RouterState.CreateAbsoluteUrl(url);
 
         const newState = this.CreateRouterState(url);
         if(this.UpdateRouterState(newState))

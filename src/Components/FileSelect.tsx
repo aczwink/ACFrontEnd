@@ -18,7 +18,6 @@
 
 import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 type FileSelectInput = {
@@ -29,7 +28,7 @@ type FileSelectInput = {
 export class FileSelect extends Component<FileSelectInput>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <input type="file" onchange={this.OnValueChanged.bind(this)} />;
     }

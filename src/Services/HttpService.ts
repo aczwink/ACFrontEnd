@@ -24,8 +24,7 @@ interface RequestHeaders
     "Content-Type"?: "application/json" | "multipart/form-data";
 }
 
-type HttpDataMethod = "DELETE" | "POST" | "PUT";
-type HttpMethod = "GET" | HttpDataMethod;
+type HttpMethod = "DELETE" | "GET" | "POST" | "PUT";
 
 export interface HttpRequest
 {
@@ -40,7 +39,7 @@ export interface HttpRequest
 export class HttpService
 {
     //Public methods
-    public DataRequest<T>(url: string, httpMethod: HttpDataMethod, data: any | FormData): Promise<T>
+    public DataRequest<T>(url: string, httpMethod: HttpMethod, data: any | FormData): Promise<T>
     {
         const headers: RequestHeaders = {};
         if(data !== undefined)
@@ -66,11 +65,6 @@ export class HttpService
         });
     }
 
-    public Delete<T>(url: string, data: any): Promise<T>
-    {
-        return this.DataRequest<T>(url, "DELETE", data);
-    }
-
     public Get<T>(url: string, queryParams?: PrimitiveDictionary): Promise<T>
     {
         if(queryParams !== undefined)
@@ -78,6 +72,9 @@ export class HttpService
             const parts = [];
             for (const key in queryParams)
             {
+                if (!Object.prototype.hasOwnProperty.call(queryParams, key))
+                    continue;
+
                 const value = queryParams[key];
                 if(value === undefined)
                     throw new Error("Query param '" + key + "' can't be undefined");
@@ -94,11 +91,6 @@ export class HttpService
             responseType: "json",
             url: url
         });
-    }
-
-    public Post<T>(url: string, data: any): Promise<T>
-    {
-        return this.DataRequest<T>(url, "POST", data);
     }
 
     public Request(request: HttpRequest): Promise<any>

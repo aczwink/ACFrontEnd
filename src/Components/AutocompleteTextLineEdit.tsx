@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { ProgressSpinner } from "../main";
+import { ProgressSpinner } from "./ProgressSpinner";
 
 type AutocompleteTextLineEditInput = {
     value: string;
@@ -43,7 +42,7 @@ export class AutocompleteTextLineEdit extends Component<AutocompleteTextLineEdit
     }
     
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const className = "autoComplete" + (this.ShouldShowSuggestions() ? " withSuggestions" : "");
         const hintText = this.input.hint || "";

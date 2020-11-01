@@ -18,7 +18,6 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
 
 type LineEditInput = {
     value: string;
@@ -32,7 +31,7 @@ type LineEditInput = {
 export class LineEdit extends Component<LineEditInput>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const type = this.input.password === true ? "password" : "text";
         return <input type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;

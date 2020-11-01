@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, RenderNode, Gallery, JSX_CreateElement } from "acfrontend";
+import { Component, Gallery, JSX_CreateElement } from "acfrontend";
 
 export class GalleryComponent extends Component
 {
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const images = {
             images: this.GetRandomPics(6)

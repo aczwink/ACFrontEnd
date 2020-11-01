@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, RenderNode, JSX_CreateElement, Injectable, PopupRef, TooltipManager } from "acfrontend";
+import { Component, JSX_CreateElement, Injectable, PopupRef, TooltipManager } from "acfrontend";
 
 @Injectable
 export class TooltipComponent extends Component
@@ -26,7 +26,7 @@ export class TooltipComponent extends Component
         super();
     }
 
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <fragment>
             <button type="button" onmouseenter={this.OnMouseEntered.bind(this)} onmouseout={this.OnMouseLeft.bind(this)}>Hover over me!</button>

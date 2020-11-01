@@ -25,7 +25,7 @@ export class RouteHandler
 {
     constructor(private route: Route, private parent: RouteHandler | null)
     {
-        this.path = new Url(route.path);
+        this.path = RouterState.CreateAbsoluteUrl(route.path);
 
         if(route.children === undefined)
             this.children = [];

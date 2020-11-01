@@ -17,13 +17,7 @@
  * */
 import { Instantiatable } from "acts-util-core";
 
-import { VirtualNode, RenderNode } from "./VirtualNode";
-import { VirtualElement } from "./VirtualElement";
 import { Component } from "./Component";
-import { VirtualInstance } from "./VirtualInstance";
-import { VirtualFragment } from "./VirtualFragment";
-import { VirtualConstNode } from "./VirtualConstNode";
-import { TransformChildren } from "./RenderNodeTransformer";
 
 function MoveProperty(properties: any, fromKey: string, toKey: string)
 {
@@ -57,7 +51,7 @@ function SetPropertyOnBoolAndMove(properties: any, fromKey: string, toKey: strin
 
 function RedirectProperties(properties: any)
 {
-    if(properties !== null)
+    if( (properties !== null) && (properties !== undefined) )
     {
         SetPropertyOnBoolAndMove(properties, "allowfullscreen", "allowFullscreen", true);
         SetPropertyOnBool(properties, "checked");
@@ -70,28 +64,11 @@ function RedirectProperties(properties: any)
     return properties;
 }
 
-export function JSX_CreateElement(type: string | Instantiatable<Component> | Instantiatable<VirtualFragment>, properties?: any, ...children: RenderNode[]): VirtualNode
+export function JSX_CreateElement(type: string | Instantiatable<Component>, properties?: any, ...children: RenderValue[]): SingleRenderValue
 {
-    if(typeof(type) == "string")
-    {
-        if(type == "const")
-        {
-            const vNode = new VirtualConstNode();
-            vNode.children = TransformChildren(children);
-            return vNode;
-        }
-
-        if(type == "fragment")
-        {
-            const vNode =  new VirtualFragment();
-            vNode.children = TransformChildren(children);
-            return vNode;
-        }
-        
-        const vNode = new VirtualElement(type, RedirectProperties(properties));
-        vNode.children = TransformChildren(children);
-        return vNode;
-    }
-
-    return new VirtualInstance(type as unknown as Instantiatable<Component<any, VirtualNode[]>>, properties, TransformChildren(children));
+    return {
+        type,
+        properties: typeof(type) === "string" ? RedirectProperties(properties) : properties,
+        children
+    };
 }

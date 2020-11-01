@@ -17,10 +17,6 @@
  * */
 
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
-import { TransformChildren, TransformRenderNodeToVirtualNode } from "../RenderNodeTransformer";
-import { VirtualInstance } from "../VirtualInstance";
-import { InfoMessage } from "../Components/InfoMessage";
 import { PopupManager } from "./PopupManager";
 
 interface InfoMessageOptions
@@ -36,12 +32,15 @@ export class InfoMessageManager
     }
 
     //Public methods
-    public ShowMessage(renderNode: RenderNode, options: InfoMessageOptions)
+    public ShowMessage(renderNode: RenderValue, options: InfoMessageOptions)
     {
+        throw new Error("InfoMessageManager.ShowMessage");
+        /*
         const message = new VirtualInstance(InfoMessage, null, TransformRenderNodeToVirtualNode(renderNode));
         const ref = this.popupManager.OpenPopup("infoMessagesContainer", message);
 
         if(options.duration !== undefined)
             setTimeout(ref.Close.bind(ref), options.duration);
+        */
     }
 }

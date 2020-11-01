@@ -17,7 +17,6 @@
  * */
 
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 type SwitchInput = {
@@ -27,7 +26,7 @@ type SwitchInput = {
 
 export class Switch extends Component<SwitchInput>
 {
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <label class="switch">
             <input type="checkbox" checked={this.input.checked} onclick={this.OnToggled.bind(this)} />

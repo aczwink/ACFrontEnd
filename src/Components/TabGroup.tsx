@@ -15,27 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
+import { Component, RenderComponentChild } from "../Component";
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
-import { VirtualInstance } from "../VirtualInstance";
-import { VirtualNode } from "../main";
+import { JSX_CreateElement } from "../JSX_CreateElement";
 
 type TabInput = { key: string; };
 export class Tab extends Component<TabInput, string>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return this.children[0];
     }
 }
 
-export class TabHeader extends Component<{}, VirtualNode[]>
+export class TabHeader extends Component<{}, RenderValue>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <div class="subPageNav">
             {...this.children}
@@ -49,10 +46,10 @@ type TabGroupInput = {
 }
 
 @Injectable
-export class TabGroup extends Component<TabGroupInput, VirtualInstance<Tab, TabInput, string>[]>
+export class TabGroup extends Component<TabGroupInput, RenderComponentChild<Tab>[]>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <ul>{...this.RenderHeader()}</ul>;
     }
@@ -60,7 +57,7 @@ export class TabGroup extends Component<TabGroupInput, VirtualInstance<Tab, TabI
     //Private methods
     private FindActiveTab()
     {
-        return this.children.find( tab => tab.input.key === this.input.activeKey );
+        return this.children.find( tab => tab.properties.key === this.input.activeKey );
     }
 
     private RenderHeader()
@@ -70,7 +67,7 @@ export class TabGroup extends Component<TabGroupInput, VirtualInstance<Tab, TabI
         return this.children.map(tab => {
             const className = tab === activeTab ? "active" : "";
             return <li class={className}>
-                <a onclick={this.input.activeKeyChanged.bind(this, tab.input.key)}>{tab.Clone()}</a>
+                <a onclick={this.input.activeKeyChanged.bind(this, tab.properties.key)}>{tab}</a>
             </li>}
         );
     }

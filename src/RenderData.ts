@@ -15,28 +15,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
 
-type IntegerSpinnerInput = {
-    value: number;
-    onChanged: (newValue: number) => void;
-};
-
-@Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export function IsRenderText(renderValue: RenderValue): renderValue is RenderText
 {
-    //Protected methods
-    protected Render(): RenderValue
-    {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} />;
-    }
+    return (typeof renderValue === "string" || typeof renderValue === "number" || typeof renderValue === "boolean");
+}
 
-    //Event handlers
-    private OnChanged(event: Event)
-    {
-        const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
-    }
+export function IsRenderElement(renderValue: RenderValue): renderValue is RenderElement
+{
+    if(renderValue === null || renderValue === undefined)
+        return false;
+    if(Array.isArray(renderValue))
+        return false;
+    if(IsRenderText(renderValue))
+        return false;
+    return true;
 }

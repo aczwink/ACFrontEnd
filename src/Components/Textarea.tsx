@@ -18,7 +18,6 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
 
 type TextAreaInput = {
     value: string;
@@ -32,7 +31,7 @@ type TextAreaInput = {
 export class Textarea extends Component<TextAreaInput>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const cols = (this.input.columns || 80).toString();
         const rows = (this.input.rows || 24).toString();

@@ -15,28 +15,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
-import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
 
-type IntegerSpinnerInput = {
-    value: number;
-    onChanged: (newValue: number) => void;
-};
+import { Component, JSX_CreateElement, Injectable, Menu, MenuItem, MenuManager, Anchor } from "acfrontend";
+
 
 @Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export class MenusComponent extends Component
 {
-    //Protected methods
+    constructor(private menuManager: MenuManager)
+    {
+        super();
+    }
+    
     protected Render(): RenderValue
     {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} />;
+        return <button type="button" onclick={this.OnOpenMenu.bind(this)}>Press me</button>;
     }
 
     //Event handlers
-    private OnChanged(event: Event)
+    private OnOpenMenu(event: MouseEvent)
     {
-        const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        const menu = <Menu>
+            <MenuItem></MenuItem>
+            <MenuItem><a onclick={() => alert("Item 1 clicked")}>Item 1</a></MenuItem>
+            <MenuItem><a onclick={() => alert("Item 2 clicked")}>Item 2</a></MenuItem>
+            <MenuItem><Anchor route="/">Route to root</Anchor></MenuItem>
+        </Menu>;
+
+        this.menuManager.OpenMenu(menu, event);
     }
 }

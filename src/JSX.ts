@@ -16,18 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+//These definitions need to be known here. However, we can not use imports in this file -.- therefore we need to define it here
+interface Renderable
+{
+}
+
+interface Instantiatable<T> extends Function
+{
+    new (...args: any[]): T;
+}
+
+type RenderText = string | number | boolean;
+type RenderOther = null | undefined;
+interface RenderElement
+{
+    type: "const" | "fragment" | string | Instantiatable<Renderable>;
+    properties: any;
+    children: RenderValue[];
+}
+type SingleRenderValue = RenderText | RenderOther | RenderElement;
+type RenderValue = SingleRenderValue | SingleRenderValue[];
+
 type EventHandler<EventType = Event> = (event: EventType) => void;
 
 declare module JSX
 {
-    //We would need that this interface extends VirtualNode.
-    //However, we can not use imports in this file -.-
-    //it therefore does not work.
-    /*interface Element
-    {
-    }*/
-    type Element = any;
-    type JsxNode = JSX.Element;
+    type Element = any; //Should be RenderValue but then does not work for RenderComponent
 
     interface ElementAttributesProperty
     {
@@ -45,7 +59,7 @@ declare module JSX
         fragment: {}; //special for VirtualFragment
 
         a: {
-            children: JsxNode;
+            children: RenderValue;
 
             class?: string;
             href?: string;
@@ -61,7 +75,7 @@ declare module JSX
         br: {
         };
         button: {
-            children: JsxNode;
+            children: RenderValue;
             type: "button" | "submit";
 
             class?: string;
@@ -74,17 +88,17 @@ declare module JSX
         };
         div: any;
         form: {
-            children: JsxNode;
+            children: RenderValue;
             onsubmit: EventHandler;
         };
         h1: any;
         h2: {
-            children: JsxNode;
+            children: RenderValue;
 
             class?: string;
         };
         h3: {
-            children: JsxNode;
+            children: RenderValue;
 
             style?: string;
         }
@@ -127,12 +141,12 @@ declare module JSX
         };
 
         label: {
-            children: JsxNode;
+            children: RenderValue;
             class: string;
         };
 
         li: {
-            children: JsxNode;
+            children: RenderValue;
 
             class?: string;
             tabindex?: number;
@@ -159,7 +173,11 @@ declare module JSX
             onchange?: EventHandler;
             oninput?: EventHandler<InputEvent>;
         };
-        span: any;
+        span: {
+            children?: RenderValue;
+            class?: string;
+            style?: string;
+        };
         table: {
             children: any[];
             
@@ -175,7 +193,7 @@ declare module JSX
             rows: string;
         };
         td: {
-            children: JsxNode;
+            children: RenderValue;
 
             class?: string;
             colspan?: string;
@@ -183,16 +201,15 @@ declare module JSX
             onclick?: EventHandler<MouseEvent>;
         };
         th: {
-            children: JsxNode;
+            children: RenderValue;
 
             colspan?: string;
         };
         tr: {
-            children: JsxNode;
-
+            children: RenderValue;
             class?: string;
-
             oncontextmenu?: EventHandler<MouseEvent>;
+            onselectstart?: EventHandler<Event>;
         };
         ul: any;
     }

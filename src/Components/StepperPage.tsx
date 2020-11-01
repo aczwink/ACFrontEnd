@@ -17,16 +17,15 @@
  * */
 
 import { Component } from "../Component";
-import { RenderNode, VirtualNode } from "../VirtualNode";
 
 export type StepperPageInput = {
     title: string;
     validate: () => boolean;
 };
-export class StepperPage extends Component<StepperPageInput, VirtualNode>
+export class StepperPage extends Component<StepperPageInput, RenderValue>
 {
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
-        return this.children[0].Clone();
+        return this.children[0];
     }
 }

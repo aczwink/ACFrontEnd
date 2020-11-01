@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component, RenderNode, JSX_CreateElement, AutocompleteTextLineEdit, AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "acfrontend";
+import { Component, JSX_CreateElement, AutocompleteTextLineEdit, AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "acfrontend";
 
 export class FormsComponent extends Component
 {
@@ -27,7 +27,7 @@ export class FormsComponent extends Component
         this.text = "";
     }
     
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <fragment>
             <p>

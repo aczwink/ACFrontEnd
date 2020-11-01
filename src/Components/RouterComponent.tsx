@@ -20,9 +20,7 @@ import { Instantiatable, Injector, ResolutionStrategy, Subscription } from "acts
 import { Component } from "../Component";
 import { Router } from "../Services/Router/Router";
 import { Injectable } from "../ComponentManager";
-import { VirtualInstance } from "../VirtualInstance";
 import { RouterStateNode } from "../Services/Router/RouterState";
-import { RenderNode } from "../VirtualNode";
 
 @Injectable
 export class RouterComponent extends Component
@@ -36,11 +34,15 @@ export class RouterComponent extends Component
     }
 
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {        
         if(this.component === null)
             return null;
-        return new VirtualInstance(this.component as Instantiatable<Component<null, undefined>>, null);
+        return {
+            type: this.component,
+            properties: null,
+            children: []
+        };
     }
 
     //Private members

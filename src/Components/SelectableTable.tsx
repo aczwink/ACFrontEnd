@@ -16,12 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { VirtualElement } from "../VirtualElement";
-import { VirtualNode } from "../main";
-import { VirtualFragment } from "../VirtualFragment";
 import { DontBind } from "../ComponentManager";
+import { IsRenderElement } from "../RenderData";
 
 type SelectableTableInput<RowKeyType> = {
     columns: string[];
@@ -31,7 +28,7 @@ type SelectableTableInput<RowKeyType> = {
     selectionChanged: (selection: RowKeyType[]) => void;
 };
 
-export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<RowKeyType>, VirtualNode[]>
+export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<RowKeyType>, RenderValue>
 {
     constructor()
     {
@@ -42,7 +39,7 @@ export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<
     }
 
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         this.rowCounter = 0;
 
@@ -72,15 +69,14 @@ export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<
 			this.RemoveFromSelection(idx);
 	}
     
-    private RenderChild(child: VirtualNode): any
+    private RenderChild(child: RenderValue): any
     {
-        if(child instanceof VirtualFragment)
-        {
-            if(child.children === undefined)
-                return null;
-            return child.children.map(subChild => this.RenderChild(subChild));
-        }
-        if( (child instanceof VirtualElement) && (child.tagName === "tr") )
+        if(child === undefined || child === null)
+            return null;
+        if(Array.isArray(child))
+            return child.map(subChild => this.RenderChild(subChild));
+
+        if(IsRenderElement(child) && child.type === "tr")
         {
             const rowKey = this.input.rowKeys[this.rowCounter];
             const isSelected = this.selection.has(rowKey);
@@ -90,11 +86,13 @@ export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<
             if(isSelected)
                 child.properties.className = "selected";
             child.properties.onclick = this.OnRowClick.bind(this, rowKey);
+            child.properties.onselectstart = this.OnStartSelection.bind(this);
 
             this.rowCounter++;
 
-            return child.Clone();
+            return child;
         }
+
         throw new Error("Children of SelectableTable must be tr-s")
     }
 
@@ -194,5 +192,10 @@ export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<
 		//propagate selection
 		var selectedRows = this.input.rowKeys.filter(rowKey => this.selection.has(rowKey));
 		this.input.selectionChanged(selectedRows);
-	}
+    }
+    
+    private OnStartSelection(event: Event)
+    {
+        event.preventDefault();
+    }
 }

@@ -18,13 +18,12 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderText, RenderNode } from "../VirtualNode";
 
 @Injectable
 export class MatIcon extends Component<{ class?: string; }, RenderText>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const additionalClasses = this.input.class === undefined ? "" : " " + this.input.class;
         return <div class={"material-icons" + additionalClasses}>{this.children}</div>;

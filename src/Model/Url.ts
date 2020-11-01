@@ -18,96 +18,87 @@
 
 import { Dictionary } from "acts-util-core";
 
-interface UrlParts
+interface UrlProperties
 {
-    fullUrl: string;
-    protocol: string;
-    host: string;
-    path: string;
-    queryParams: Dictionary<string>;
+    readonly protocol: "http" | "https";
+    readonly authority: string;
+    readonly path: string;
+    readonly queryParams: Dictionary<string>
 }
 
-export class Url
+/**
+ * Represents a fully qualified url.
+ */
+export class Url implements UrlProperties
 {
-    constructor(urlString: string);
-    constructor(path: string, queryParams: Dictionary<string>);
-    constructor(pathSegments: string[], queryParams: Dictionary<string>);
-    constructor(input: string|string[], queryParams?: Dictionary<string>)
+    constructor(properties: UrlProperties)
     {
-        if(Array.isArray(input))
-        {
-            this.protocol = window.location.protocol;
-            this.host = window.location.host;
-
-            this._pathSegments = input;
-            this.path = this._pathSegments.join("/");
-
-            this._queryParams = {};
-        }
-        else
-        {
-            //full url or path
-            const urlParseResult = this.ParseUrl(input);
-
-            this.protocol = urlParseResult.protocol;
-            this.host = urlParseResult.host;
-
-            this.path = this.ToAbsolutePath(urlParseResult.path).path;
-            this._pathSegments = this.SplitPathIntoSegments(this.path);
-
-            this._queryParams = urlParseResult.queryParams;
-        }
-
-        if(queryParams !== undefined)
-            Object.assign(this._queryParams, queryParams);
+        this.urlProperties = properties;
+        this._pathSegments = this.SplitPathIntoSegments(this.urlProperties.path);
     }
     
     //Properties
-    get pathSegments()
+    public get authority()
+    {
+        return this.urlProperties.authority;
+    }
+
+    public get path()
+    {
+        return this.urlProperties.path;
+    }
+
+    public get pathSegments()
     {
         return this._pathSegments;
     }
 
+    public get protocol()
+    {
+        return this.urlProperties.protocol;
+    }
+
     public get queryParams()
     {
-        return this._queryParams;
+        return this.urlProperties.queryParams;
     }
 
     //Public methods
+    public Equals(other: Url)
+    {
+        return this.ToString() === other.ToString();
+    }
+    
     public ToString()
     {
         const queryParams = [];
-        for (const key in this._queryParams)
+        for (const key in this.queryParams)
         {
-            if (this._queryParams.hasOwnProperty(key))
-                queryParams.push(key + "=" + this._queryParams[key]);
+            if (this.queryParams.hasOwnProperty(key))
+                queryParams.push(key + "=" + this.queryParams[key]);
         }
-        const url = this.protocol + "//" + this.host + "/" + this.path + (queryParams.length > 0 ? "?" + queryParams.join("&") : "");
+        const query = queryParams.length > 0 ? "?" + queryParams.join("&") : "";
+        const url = this.protocol + "://" + this.authority + this.path + query;
         return url;
     }
 
-    //Private members
-    private protocol: string;
-    private host: string;
-    private path: string;
-    private _pathSegments: string[];
-    private _queryParams: Dictionary<string>;
-
-    //Private methods
-    private JoinPaths(first: string, second: string)
+    //Public functions
+    public static Relative(absolute: Url, relativePath: string)
     {
-        if(first.endsWith("/"))
-            first = first.slice(0, -1);
-        if(second.startsWith("/"))
-            second = second.slice(1);
+        const joinedPath = Url.JoinPaths(absolute.path, relativePath);
 
-        return first + "/" + second;
+        return new Url({
+            authority: absolute.authority,
+            path: joinedPath,
+            protocol: absolute.protocol,
+            queryParams: absolute.queryParams
+        });
     }
 
-    private ParseUrl(url: string): UrlParts
+    public static Parse(urlString: string)
     {
         const parser = document.createElement("a");
-        parser.href = url;
+        parser.href = urlString;
 
         const queryParamsParts = parser.search.length > 0 ? parser.search.substr(1).split("&") : [];
         const queryParams: Dictionary<string> = {};
@@ -116,15 +107,19 @@ export class Url
             queryParams[split[0]] = split[1];
         });
 
-        return {
-            fullUrl: parser.href,
-            protocol: parser.protocol,
-            host: parser.host,
+        return new Url({
+            protocol: parser.protocol.slice(0, -1) as any,
+            authority: parser.host,
             path: decodeURI(parser.pathname),
-            queryParams: queryParams
-        };
+            queryParams
+        });
     }
 
+    //Private members
+    private urlProperties: UrlProperties;
+    private _pathSegments: string[];
+
+    //Private methods
     private SplitPathIntoSegments(path: string)
     {
         if(path.startsWith("/"))
@@ -136,10 +131,14 @@ export class Url
         return path.split("/");
     }
 
-    private ToAbsolutePath(path: string): UrlParts
+    //Private functions
+    private static JoinPaths(first: string, second: string)
     {
-        const root = document.head.getElementsByTagName("base")[0].href;
+        if(first.endsWith("/"))
+            first = first.slice(0, -1);
+        if(second.startsWith("/"))
+            second = second.slice(1);
 
-        return this.ParseUrl(this.JoinPaths(root, path));
+        return first + "/" + second;
     }
 }

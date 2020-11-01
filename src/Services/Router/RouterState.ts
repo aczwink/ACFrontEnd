@@ -70,27 +70,39 @@ export class RouterState
     public ToUrl(): Url
     {
         if(this._root.route.path == "*")
-            return new Url("/");
+            return RouterState.CreateAbsoluteUrl("/");
 
         const finalSegments = [];
         let node: RouterStateNode | null | undefined = this._root;
         while((node !== null) && (node !== undefined))
         {
-            const segments = node.route.path.split("/");
-            for (let segment of segments)
+            if(node.route.path.length > 0)
             {
-                if(segment.startsWith(":"))
+                const segments = node.route.path.split("/");
+                for (let segment of segments)
                 {
-                    const key = segment.substring(1);
-                    segment = this._routeParams[key]!;
-                }
+                    if(segment.startsWith(":"))
+                    {
+                        const key = segment.substring(1);
+                        segment = this._routeParams[key]!;
+                    }
 
-                finalSegments.push(segment);
+                    finalSegments.push(segment);
+                }
             }
 
             node = node.child;
         }
-        return new Url(finalSegments, this._queryParams);
+        return RouterState.CreateAbsoluteUrlFromSegments(finalSegments, this._queryParams);
+    }
+
+    //Functions
+    public static CreateAbsoluteUrl(path: string)
+    {
+        const root = document.head.getElementsByTagName("base")[0].href;
+        const urlRoot = Url.Parse(root);
+
+        return Url.Relative(urlRoot, path);
     }
 
     //Private members
@@ -117,5 +129,17 @@ export class RouterState
         if(node.child !== undefined)
             return this.ActivateNode(node.child);
         return true;
+    }
+
+    //Private functions
+    private static CreateAbsoluteUrlFromSegments(segments: string[], queryParams: Dictionary<string>)
+    {
+        const url = RouterState.CreateAbsoluteUrl(segments.join("/"));
+        return new Url({
+            authority: url.authority,
+            path: url.path,
+            protocol: url.protocol,
+            queryParams
+        });
     }
 }

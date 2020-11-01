@@ -17,7 +17,6 @@
  * */
 
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { GalleryImage } from "./Gallery";
 import { Injectable } from "../ComponentManager";
@@ -47,7 +46,7 @@ export class GalleryModal<T extends GalleryImage = GalleryImage> extends Compone
     }
 
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         let leftStyle = "";
 		if(!this.HasPreviousImage())

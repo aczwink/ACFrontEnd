@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { VirtualNode, RenderNode } from "./VirtualNode";
-import { TransformRenderNodeToVirtualNode } from "./RenderNodeTransformer";
+import { VirtualNode } from "./VirtualNode";
 import { VirtualConstNode } from "./VirtualConstNode";
-import { PrimitiveDictionary } from "./main";
+import { TransformRenderValueToVirtualNode } from "./VirtualTreeCreator";
 
 interface BindUnbind
 {
@@ -55,18 +54,27 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
 
     public UpdateSync()
     {
-        const newNode = this.Render();
-        let newVirtualNode = TransformRenderNodeToVirtualNode(newNode);
-        if(newVirtualNode === null) //components can't have a null child, because they can't update themselves without their parent being updated
-            newVirtualNode = new VirtualConstNode();
+        const newRenderValue = this.Render();
         
+        const newVNode = TransformRenderValueToVirtualNode(newRenderValue);
+
         if(this._vNode === null) //special case: component was never used before
         {
-            this._vNode = newVirtualNode;
-            return;
+            if(newVNode === null) //components can't have a null child, because they can't update themselves without their parent being updated
+                this._vNode = new VirtualConstNode();
+            else
+                this._vNode = newVNode;
         }
+        else
+        {
+            const oldVNode = this._vNode;
+            this._vNode = this._vNode.Update(newVNode);
 
-        this._vNode = this._vNode.Update(newVirtualNode);
+            if(this._vNode !== oldVNode)
+                oldVNode.Destroy();
+            else if(newVNode !== null)
+                newVNode.Destroy();
+        }
     }
 
     //Protected properties
@@ -83,7 +91,7 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
     }
 
     //Protected abstract
-    protected abstract Render(): RenderNode;
+    protected abstract Render(): RenderValue;
 
     //Protected methods
     protected BindProperty<T>(object: T, propertyName: string | number | symbol)
@@ -164,3 +172,21 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
 
     protected __jsxProperties!: CreateJSXProps<InputType, ChildrenType>;
 }
+
+interface RenderComponent<ComponentType extends Renderable, InputType extends any, ChildrenType extends RenderValue> extends RenderElement
+{
+    type: Instantiatable<ComponentType>;
+    properties: InputType;
+    children: ChildrenType[];
+}
+
+export type RenderComponentChild<ComponentType> = ComponentType extends Component<infer InputType, infer ChildrenType>
+    ? ChildrenType extends RenderValue
+        ? RenderComponent<ComponentType, InputType, ChildrenType>
+        : never
+    : never;
+export type RenderComponentChildWithChildrenHelp<ComponentType, ChildrenType> = ComponentType extends Component<infer InputType, ChildrenType>
+    ? ChildrenType extends RenderValue
+        ? RenderComponent<ComponentType, InputType, ChildrenType>
+        : never
+    : never;

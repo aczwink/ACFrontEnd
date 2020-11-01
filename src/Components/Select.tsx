@@ -18,35 +18,33 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { VirtualNode, RenderNode } from "../VirtualNode";
-import { VirtualElement } from "../VirtualElement";
-import { VirtualFragment } from "../VirtualFragment";
+import { IsRenderElement } from "../RenderData";
 
 @Injectable
-export class Select extends Component<{ onChanged: (newValue: string[]) => void; }, VirtualNode[]>
+export class Select extends Component<{ onChanged: (newValue: string[]) => void; }, RenderValue>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <select onchange={this.OnSelectionChanged.bind(this)}>
             <option disabled selected={!this.IsChildSelected(this.children)}>Select an option</option>
-            {...this.children.map(child => child.Clone())}
+            {...this.children}
         </select>;
     }
 
     //Private methods
-    private IsChildSelected(children: VirtualNode[])
+    private IsChildSelected(children: SingleRenderValue[])
     {
         for (const child of children)
         {
-            if(child instanceof VirtualElement)
+            if(IsRenderElement(child) && child.type === "option")
             {
                 if(child.properties.selected)
                     return true;
             }
-            else if(child instanceof VirtualFragment)
+            else if(Array.isArray(child))
             {
-                if( (child.children !== undefined) && this.IsChildSelected(child.children))
+                if( child.Values().Map(subChild => this.IsChildSelected(subChild)).Any() )
                     return true;
             }
             else

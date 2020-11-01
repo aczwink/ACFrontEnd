@@ -19,7 +19,7 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
-import { RenderNode, VirtualNode } from "../VirtualNode";
+import { VirtualNode } from "../VirtualNode";
 import { ProgressSpinner } from "./ProgressSpinner";
 
 @Injectable
@@ -34,7 +34,7 @@ export class Dialog extends Component<DialogProperties, VirtualNode>
     }
 
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         const header = <div>
             <h4>{this.input.title}</h4>

@@ -15,28 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component } from "../Component";
+import { Component, RenderComponentChildWithChildrenHelp } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
-import { RenderNode } from "../VirtualNode";
-import { VirtualNode } from "../main";
-import { VirtualInstance } from "../VirtualInstance";
 
 type StackChildInput = { key: string; };
-export class StackChild extends Component<StackChildInput, VirtualNode>
+export class StackChild extends Component<StackChildInput, RenderValue>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return this.children[0];
     }
 }
 
 @Injectable
-export class Stack extends Component<{ activeKey: string; }, VirtualInstance<StackChild, StackChildInput, VirtualNode>[]>
+export class Stack extends Component<{ activeKey: string; }, RenderComponentChildWithChildrenHelp<StackChild, RenderValue>[]>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <const>{this.FindActiveChild()}</const>;
     }
@@ -44,6 +41,6 @@ export class Stack extends Component<{ activeKey: string; }, VirtualInstance<Sta
     //Private methods
     private FindActiveChild()
     {
-        return this.children.find( child => child.input.key === this.input.activeKey )?.Clone();
+        return this.children.find( child => child.properties.key === this.input.activeKey );
     }
 }

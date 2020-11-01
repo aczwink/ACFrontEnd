@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, RenderNode, Stepper, JSX_CreateElement, StepperPage, FormField, LineEdit, IntegerSpinner, DataBindingProxy } from "acfrontend";
-import { ObservableObject } from "acts-util-core";
+import { Component, Stepper, JSX_CreateElement, StepperPage, FormField, LineEdit, IntegerSpinner, DataBindingProxy } from "acfrontend";
 
 interface SharedState
 {
@@ -27,7 +26,7 @@ interface SharedState
 
 export class FirstPageComponent extends Component< { state: SharedState } >
 {
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <fragment>
             <FormField hint="Name">
@@ -40,7 +39,7 @@ export class FirstPageComponent extends Component< { state: SharedState } >
 
 export class SecondPageComponent extends Component< { state: DataBindingProxy<SharedState> } >
 {
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <fragment>
             Hi, {this.input.state.name}!
@@ -74,7 +73,7 @@ export class ThirdPageComponent extends Component<{ onValidationChange: (newValu
         this.answer = "";
     }
     
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <fragment>
             Just to be sure you're not a bot.
@@ -106,7 +105,7 @@ export class WizardComponent extends Component
     }
 
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <Stepper onAccept={this.OnAccept.bind(this)}>
             <StepperPage title="Page one" validate={() => this.sharedState.name.trim().length > 0}>

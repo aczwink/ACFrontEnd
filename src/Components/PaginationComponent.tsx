@@ -17,7 +17,6 @@
  * */
 
 import { Component } from "../Component";
-import { RenderNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Select } from "./Select";
 
@@ -33,7 +32,7 @@ type PaginationComponentInput = {
 export class PaginationComponent extends Component<PaginationComponentInput>
 {
     //Protected methods
-    protected Render(): RenderNode
+    protected Render(): RenderValue
     {
         return <div class="paginator">
             <div class="limitSelection">

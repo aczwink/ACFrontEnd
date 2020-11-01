@@ -50,8 +50,7 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
     //Protected methods
     protected CloneSelf(): VirtualNode
     {
-        const subChildren = this._subChildren === undefined ? undefined : (this._subChildren as unknown as VirtualNode[]).map(child => child.Clone());
-        return new VirtualInstance(this.type, this.args === null ? null : (this.args as any).Clone(), subChildren as any);
+        return new VirtualInstance(this.type, this.args === null ? null : (this.args as any).Clone(), this._subChildren as any);
     }
 
     protected RealizeSelf(): void
@@ -164,5 +163,3 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
     private instance: ComponentType | null;
     private injections: any;
 }
-
-export type VirtualChildNode<ComponentType> = ComponentType extends Component<infer InputType, infer ChildrenType> ? VirtualInstance<ComponentType, InputType, ChildrenType> : never;
