@@ -97,12 +97,12 @@ export class RouterState
     }
 
     //Functions
-    public static CreateAbsoluteUrl(path: string)
+    public static CreateAbsoluteUrl(pathWithQuery: string)
     {
         const root = document.head.getElementsByTagName("base")[0].href;
         const urlRoot = Url.Parse(root);
 
-        return Url.Relative(urlRoot, path);
+        return Url.Relative(urlRoot, pathWithQuery);
     }
 
     //Private members

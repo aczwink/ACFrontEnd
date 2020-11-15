@@ -111,6 +111,40 @@ export class PopupManager
         return ref;
     }
 
+    public OpenPopup(containerId: string, content: RenderValue, properties?: any): PopupRef
+    {
+        let container = this.popupContainers[containerId];
+
+        const popupNode = TransformRenderValueToVirtualNode(content)!;
+
+        const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
+        popupNode.EnsureHasOwnInjector();
+        popupNode.injector!.RegisterInstance(PopupRef, ref);
+
+        if(container === undefined)
+        {
+            if(properties === undefined)
+                properties = {};
+            properties.id = containerId;
+            container = {
+                container: new VirtualElement("div", properties),
+                popups: [],
+                popupRefs: []
+            };
+            this.popupContainers[containerId] = container;
+            const adder = () => {
+                this.root.AddChild(container!.container);
+            };
+            adder.CallImmediate();
+        }
+        container.popups.push(popupNode);
+        container.container.children = container.popups;
+
+        container.popupRefs.push(ref);
+
+        return ref;
+    }
+
     //Private methods
     private CloseModal(ref: PopupRef)
     {
@@ -154,40 +188,6 @@ export class PopupManager
         document.body.className = "scroll-lock";
 
         return new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
-    }
-
-    private OpenPopup(containerId: string, content: RenderValue, properties?: any): PopupRef
-    {
-        let container = this.popupContainers[containerId];
-
-        const popupNode = TransformRenderValueToVirtualNode(content)!;
-
-        const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
-        popupNode.EnsureHasOwnInjector();
-        popupNode.injector!.RegisterInstance(PopupRef, ref);
-
-        if(container === undefined)
-        {
-            if(properties === undefined)
-                properties = {};
-            properties.id = containerId;
-            container = {
-                container: new VirtualElement("div", properties),
-                popups: [],
-                popupRefs: []
-            };
-            this.popupContainers[containerId] = container;
-            const adder = () => {
-                this.root.AddChild(container!.container);
-            };
-            adder.CallImmediate();
-        }
-        container.popups.push(popupNode);
-        container.container.children = container.popups;
-
-        container.popupRefs.push(ref);
-
-        return ref;
     }
 
     //Private members

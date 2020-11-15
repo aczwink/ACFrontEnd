@@ -83,15 +83,17 @@ export class Url implements UrlProperties
     }
 
     //Public functions
-    public static Relative(absolute: Url, relativePath: string)
+    public static Relative(absolute: Url, relativePathWithQuery: string)
     {
+        const parts = relativePathWithQuery.split("?");
+        const relativePath = parts[0];
         const joinedPath = Url.JoinPaths(absolute.path, relativePath);
 
         return new Url({
             authority: absolute.authority,
             path: joinedPath,
             protocol: absolute.protocol,
-            queryParams: absolute.queryParams
+            queryParams: Url.ParseQueryParams(parts[1] ?? "")
         });
     }
 
@@ -100,18 +102,11 @@ export class Url implements UrlProperties
         const parser = document.createElement("a");
         parser.href = urlString;
 
-        const queryParamsParts = parser.search.length > 0 ? parser.search.substr(1).split("&") : [];
-        const queryParams: Dictionary<string> = {};
-        queryParamsParts.forEach(kv => {
-            const split = kv.split("=")
-            queryParams[split[0]] = split[1];
-        });
-
         return new Url({
             protocol: parser.protocol.slice(0, -1) as any,
             authority: parser.host,
             path: decodeURI(parser.pathname),
-            queryParams
+            queryParams: Url.ParseQueryParams(parser.search.substr(1))
         });
     }
 
@@ -140,5 +135,16 @@ export class Url implements UrlProperties
             second = second.slice(1);
 
         return first + "/" + second;
+    }
+
+    private static ParseQueryParams(queryParamsString: string): Dictionary<string>
+    {
+        const queryParamsParts = queryParamsString.length > 0 ? queryParamsString.split("&") : [];
+        const queryParams: Dictionary<string> = {};
+        queryParamsParts.forEach(kv => {
+            const split = kv.split("=")
+            queryParams[split[0]] = split[1];
+        });
+        return queryParams;
     }
 }

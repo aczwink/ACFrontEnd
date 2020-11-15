@@ -24,7 +24,8 @@ interface RequestHeaders
     "Content-Type"?: "application/json" | "multipart/form-data";
 }
 
-type HttpMethod = "DELETE" | "GET" | "POST" | "PUT";
+type HttpDataMethod = "DELETE" | "POST" | "PUT";;
+type HttpMethod = "GET" | HttpDataMethod;
 
 export interface HttpRequest
 {
@@ -39,7 +40,7 @@ export interface HttpRequest
 export class HttpService
 {
     //Public methods
-    public DataRequest<T>(url: string, httpMethod: HttpMethod, data: any | FormData): Promise<T>
+    public DataRequest<T>(url: string, httpMethod: HttpDataMethod, data: any | FormData): Promise<T>
     {
         const headers: RequestHeaders = {};
         if(data !== undefined)
