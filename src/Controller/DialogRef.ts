@@ -29,13 +29,19 @@ export class DialogRef
     constructor(private closer: Function)
     {
         this._onAccept = new ObservableEvent();
+        this._valid = new Property<boolean>(true);
         this._waiting = new Property<boolean>(false);
     }
 
     //Properties
-    get onAccept()
+    public get onAccept()
     {
         return this._onAccept;
+    }
+
+    public get valid()
+    {
+        return this._valid;
     }
 
     public get waiting()
@@ -51,5 +57,6 @@ export class DialogRef
 
     //Members
     private _onAccept: ObservableEvent;
+    private _valid: Property<boolean>;
     private _waiting: Property<boolean>;
 }

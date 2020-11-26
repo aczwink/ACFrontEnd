@@ -18,6 +18,8 @@
 
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
+import { PopupManager } from "../Services/PopupManager";
+import { IntegerSpinner } from "./IntegerSpinner";
 import { Select } from "./Select";
 
 type PaginationComponentInput = {
@@ -29,8 +31,41 @@ type PaginationComponentInput = {
     onSizeChanged: (newSize: number) => void;
 };
 
+class SetCustomPaginationLimitComponent extends Component<{ onValueChanged: (newValue: number) => void}>
+{
+    constructor()
+    {
+        super();
+        this.value = 1;
+    }
+    
+    protected Render(): RenderValue
+    {
+        return <fragment>
+            Enter custom limit: <IntegerSpinner min={1} hint="Enter custom limit" value={this.value} onChanged={this.OnValueChanged.bind(this)} />
+        </fragment>
+    }
+
+    //Private members
+    private value: number;
+
+    //Event handlers
+    private OnValueChanged(newValue: number)
+    {
+        this.value = newValue;
+        this.input.onValueChanged(newValue);
+    }
+}
+
 export class PaginationComponent extends Component<PaginationComponentInput>
 {
+    constructor(private popupManager: PopupManager)
+    {
+        super();
+
+        this.customLimit = null;
+    }
+
     //Protected methods
     protected Render(): RenderValue
     {
@@ -48,6 +83,9 @@ export class PaginationComponent extends Component<PaginationComponentInput>
             </ul>
         </div>;
     }
+
+    //Private members
+    private customLimit: number | null;
 
     //Private properties
     private get nPages()
@@ -95,6 +133,9 @@ export class PaginationComponent extends Component<PaginationComponentInput>
     {
         const choices = [10, 25, 50, 100];
 
+        if(this.customLimit !== null)
+            choices.push(this.customLimit);
+
         const options = choices.map(choice => <option selected={choice === this.input.size}>{choice.toString()}</option>);
         options.push(<option selected={!choices.Contains(this.input.size)}>custom</option>);
 
@@ -106,7 +147,11 @@ export class PaginationComponent extends Component<PaginationComponentInput>
     {
         const selected = selection[0];
         if(selected === "custom")
-            console.error("not implemented");
+        {
+            let newCustomLimit = 1;
+            const ref = this.popupManager.OpenDialog(<SetCustomPaginationLimitComponent onValueChanged={newValue => newCustomLimit = newValue} />, { title: "Choose page size" });
+            ref.onAccept.Subscribe(() => this.customLimit = newCustomLimit);
+        }
         else
             this.input.onSizeChanged(parseInt(selected));
     }

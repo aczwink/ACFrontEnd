@@ -24,6 +24,7 @@ export class RootComponent extends Component
         return <fragment>
             <div class="vertNav">
                 <ul>
+                    <li><Anchor route="/dialogs">Dialogs</Anchor></li>
                     <li><Anchor route="/forms">Forms</Anchor></li>
                     <li><Anchor route="/gallery">Gallery</Anchor></li>
                     <li><Anchor route="/menus">Menus</Anchor></li>

@@ -23,8 +23,10 @@ import { GalleryComponent } from "./GalleryComponent";
 import { TooltipComponent } from "./TooltipComponent";
 import { WizardComponent } from "./WizardComponent";
 import { MenusComponent } from "./MenusComponent";
+import { DialogsComponent } from "./DialogsComponent";
 
 export const routes: Routes = [
+    { path: "dialogs", component: DialogsComponent },
     { path: "forms", component: FormsComponent },
     { path: "gallery", component: GalleryComponent },
     { path: "menus", component: MenusComponent },

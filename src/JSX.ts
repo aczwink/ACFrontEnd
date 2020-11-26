@@ -124,20 +124,20 @@ declare module JSX
             style?: string;
         };
         input: {
-            type: "checkbox" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
-
             checked?: boolean;
             disabled?: boolean;
-            placeholder?: string;
-            step?: string;
-            value?: number | string;
-
+            min?: number;
             onblur?: EventHandler<FocusEvent>;
             onchange?: EventHandler;
             onclick?: EventHandler;
             onfocus?: EventHandler<FocusEvent>;
+            oninput?: EventHandler<InputEvent>;
             onkeydown?: EventHandler<KeyboardEvent>;
             onkeyup?: EventHandler<KeyboardEvent>;
+            placeholder?: string;
+            step?: string;
+            type: "checkbox" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
+            value?: number | string;
         };
 
         label: {
@@ -172,6 +172,9 @@ declare module JSX
 
             onchange?: EventHandler;
             oninput?: EventHandler<InputEvent>;
+        };
+        source: {
+            src: string;
         };
         span: {
             children?: RenderValue;
@@ -212,5 +215,12 @@ declare module JSX
             onselectstart?: EventHandler<Event>;
         };
         ul: any;
+        video: {
+            children: RenderValue;
+            
+            controls?: boolean;
+            poster?: string;
+            style?: string;
+        };
     }
 }

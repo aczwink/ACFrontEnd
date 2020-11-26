@@ -31,7 +31,7 @@ import { DialogProperties, DialogRef } from "./Controller/DialogRef";
 import { LineEdit } from "./Components/LineEdit";
 import { Select } from "./Components/Select";
 import { HttpService } from "./Services/HttpService";
-import { AutocompleteTextLineEdit } from "./Components/AutocompleteTextLineEdit";
+import { AutoCompleteTextLineEdit } from "./Components/AutoCompleteTextLineEdit";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
 import { SelectableTable } from "./Components/SelectableTable";
 import { Router } from "./Services/Router/Router";
@@ -64,13 +64,14 @@ import { GalleryModal } from "./Components/GalleryModal";
 import { Menu, MenuItem } from "./Components/Menu";
 import { MenuManager } from "./Services/MenuManager";
 import { Navigation, NavigationGroup } from "./Components/Navigation";
+import { LoadingButton } from "./Components/LoadingButton";
 
 export
 {
     Anchor,
     App,
     AutoCompleteMultiSelectBox,
-    AutocompleteTextLineEdit,
+    AutoCompleteTextLineEdit,
     CheckBox,
     Component,
     ComponentManager,
@@ -89,6 +90,7 @@ export
     JSX_CreateElement,
     KeyDisplayValuePair,
     LineEdit,
+    LoadingButton,
     MatIcon,
     Menu,
     MenuItem,

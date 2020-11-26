@@ -17,28 +17,26 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
+import { ProgressSpinner } from "./ProgressSpinner";
 
-type IntegerSpinnerInput = {
-    hint?: string;
-    min?: number;
-    onChanged: (newValue: number) => void;
-    value: number;
-};
+interface LoadingButtonInput
+{
+    isLoading: boolean;
+    onclick: EventHandler<MouseEvent>;
+}
 
-@Injectable
-export class IntegerSpinner extends Component<IntegerSpinnerInput>
+export class LoadingButton extends Component<LoadingButtonInput, SingleRenderValue>
 {
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input type="number" min={this.input.min} placeholder={this.input.hint} value={this.input.value} onchange={this.OnChanged.bind(this)} />;
-    }
+        let className = "loadingButton";
+        if(this.input.isLoading)
+            className += " active";
 
-    //Event handlers
-    private OnChanged(event: Event)
-    {
-        const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        return <button type="button" class={className} disabled={this.input.isLoading} onclick={this.input.onclick}>
+            <ProgressSpinner />
+            {this.children[0]}
+        </button>;
     }
 }

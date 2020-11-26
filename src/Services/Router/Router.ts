@@ -36,10 +36,12 @@ export class Router
         const state = this.CreateRouterState(Url.Parse(window.location.href));
         this._state = new Property<RouterState>(state);
         this.UpdateRouterState(state);
+
+        window.onpopstate = this.OnPopHistoryState.bind(this);
     }
 
     //Properties
-    get state()
+    public get state()
     {
         return this._state;
     }
@@ -51,22 +53,17 @@ export class Router
             url = RouterState.CreateAbsoluteUrl(url);
 
         const newState = this.CreateRouterState(url);
-        if(this.UpdateRouterState(newState))
-        {
-            this._state.Set(newState);
-            this.AddStateToHistory(newState);
-        }
+        this.UpdateRouterState(newState);
     }
 
     //Private methods
-    private AddStateToHistory(routerState: RouterState)
+    private AddURLToHistory(url: string)
     {
-        const url = routerState.ToUrl().ToString();
         const state = {
 			type: "url",
 			url: url
 		};
-		window.history.pushState(state, "", url);
+        window.history.pushState(state, "", url);
     }
 
     private CreateRouterState(url: Url): RouterState
@@ -93,13 +90,42 @@ export class Router
     //Private methods
     private UpdateRouterState(state: RouterState)
     {
+        if(this.SetRouterState(state))
+        {
+            this.AddURLToHistory(state.ToUrl().ToString());
+            return true;
+        }
+        return false;
+    }
+
+    private SetRouterState(state: RouterState)
+    {
         if(state.Activate())
         {
             RootInjector.RegisterInstance(RouterState, state);
             RootInjector.RegisterInstance(RouterStateNode, state.root);
 
+            if(this._state.Get() !== state)
+                this._state.Set(state);
+
             return true;
         }
         return false;
+    }
+
+    //Event handlers
+    private OnPopHistoryState(event: PopStateEvent)
+    {
+        if(event.state === null)
+            return;
+
+        switch(event.state.type)
+        {
+            case "url":
+                const url = Url.Parse(event.state.url);
+                const newState = this.CreateRouterState(url);
+                this.SetRouterState(newState);
+            break;
+        }
     }
 }

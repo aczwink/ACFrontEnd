@@ -29,7 +29,7 @@ type AutocompleteTextLineEditInput = {
     onLoadSuggestions: (searchText: string) => Promise<string[]>;
 };
 
-export class AutocompleteTextLineEdit extends Component<AutocompleteTextLineEditInput>
+export class AutoCompleteTextLineEdit extends Component<AutocompleteTextLineEditInput>
 {
     constructor()
     {
@@ -52,7 +52,9 @@ export class AutocompleteTextLineEdit extends Component<AutocompleteTextLineEdit
                 onblur={() => this.focused = false}
                 onfocus={() => this.focused = true}
                 onkeydown={this.OnKeyDown.bind(this)}
-                onkeyup={this.OnKeyUp.bind(this)} />
+                onkeyup={this.OnKeyUp.bind(this)}
+                oninput={this.OnInput.bind(this)}
+                />
             {this.RenderSuggestions()}
         </span>;
     }
@@ -189,6 +191,12 @@ export class AutocompleteTextLineEdit extends Component<AutocompleteTextLineEdit
             this.input.onChanged(newValue);
 
         this.timeOut = setTimeout(this.OnStoppedTyping.bind(this), this.loadTimeout);
+    }
+
+    private OnInput(event: InputEvent)
+    {
+        const newValue = (event.target! as HTMLInputElement).value;
+        this.input.onChanged(newValue);
     }
 
     private OnStoppedTyping(event: Event)

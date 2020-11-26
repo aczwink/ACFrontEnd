@@ -31,6 +31,9 @@ export class Dialog extends Component<DialogProperties, VirtualNode>
 
         this.dialogRef.waiting.Subscribe(() => this.waiting = this.dialogRef.waiting.Get());
         this.waiting = this.dialogRef.waiting.Get();
+
+        this.dialogRef.valid.Subscribe(() => this.isValid = this.dialogRef.valid.Get());
+        this.isValid = this.dialogRef.valid.Get();
     }
 
     //Protected methods
@@ -43,7 +46,7 @@ export class Dialog extends Component<DialogProperties, VirtualNode>
 
         const footer = <div>
             <div class="row">
-                <button type="button" onclick={this.OnOkActivated.bind(this)}>OK</button>
+                <button type="button" disabled={!this.isValid} onclick={this.OnOkActivated.bind(this)}>OK</button>
                 <button type="button" onclick={this.OnCancelActivated.bind(this)} class="outline">Cancel</button>
             </div>
         </div>;
@@ -60,6 +63,7 @@ export class Dialog extends Component<DialogProperties, VirtualNode>
 
     //Private members
     private waiting: boolean;
+    private isValid: boolean;
 
     //Event handlers
     private OnCancelActivated()
