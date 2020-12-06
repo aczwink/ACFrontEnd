@@ -78,7 +78,7 @@ export class HttpService
 
                 const value = queryParams[key];
                 if(value === undefined)
-                    throw new Error("Query param '" + key + "' can't be undefined");
+                    continue;
 
                 parts.push(key + "=" + encodeURIComponent(value));
             }

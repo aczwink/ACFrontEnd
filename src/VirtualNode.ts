@@ -224,39 +224,36 @@ export abstract class VirtualNode
         //update nodes
         const newChildren = newNode._children;
 
-        //remove additional nodes
-        const nRemove = this._children.length - newChildren.length;
-		for(let i = 0; i < nRemove; i++)
-		{
-            this.RemoveChildByIndex(newChildren.length);
-        }
-
-        //add new additional nodes
-        const nNew = newChildren.length - this.children!.length;
-        for(let i = 0; i < nNew; i++)
+        //update nodes
+        let index = 0;
+        while( (newChildren.length > 0) && (index < this.children!.length) )
         {
-            const newChild = newChildren[this.children!.length];
-            newNode.RemoveChild(newChild);
-
-            this.AddChild(newChild);
-        }
-
-        //update nodes in between
-        const nUpdates = this._children.length - nNew;
-        let i = 0;
-        for(let k = 0; k < nUpdates; k++)
-        {
-            const oldChild = this._children[i];
+            const oldChild = this._children[index];
             const newChild = newChildren[0];
             const updatedNode = oldChild.Update(newChild)!;
 
             if(updatedNode === oldChild)
             {
                 newNode.RemoveChildByIndex(0);
-                i++;
+                index++;
             }
             else
                 oldChild.Destroy();
+        }
+
+        //remove additional nodes
+		for(; index < this.children!.length; index++)
+		{
+            this.RemoveChildByIndex(this.children!.length - 1);
+        }
+
+        //add new additional nodes
+        while(newChildren.length > 0)
+        {
+            const newChild = newChildren[0];
+            newNode.RemoveChildByIndex(0);
+
+            this.AddChild(newChild);
         }
     }
 

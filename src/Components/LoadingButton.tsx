@@ -25,7 +25,7 @@ interface LoadingButtonInput
     onclick: EventHandler<MouseEvent>;
 }
 
-export class LoadingButton extends Component<LoadingButtonInput, SingleRenderValue>
+export class LoadingButton extends Component<LoadingButtonInput, RenderValue>
 {
     //Protected methods
     protected Render(): RenderValue
@@ -36,7 +36,7 @@ export class LoadingButton extends Component<LoadingButtonInput, SingleRenderVal
 
         return <button type="button" class={className} disabled={this.input.isLoading} onclick={this.input.onclick}>
             <ProgressSpinner />
-            {this.children[0]}
+            {this.children}
         </button>;
     }
 }

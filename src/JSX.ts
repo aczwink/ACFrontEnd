@@ -219,6 +219,11 @@ declare module JSX
             children: RenderValue;
             
             controls?: boolean;
+            onended?: EventHandler<Event>;
+            onplay?: EventHandler<Event>;
+            onseeked?: EventHandler<Event>;
+            onseeking?: EventHandler<Event>;
+            ontimeupdate?: EventHandler<Event>;
             poster?: string;
             style?: string;
         };

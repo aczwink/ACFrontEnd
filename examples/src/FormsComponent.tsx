@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component, JSX_CreateElement, AutocompleteTextLineEdit, AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "acfrontend";
+import { Component, JSX_CreateElement, AutoCompleteTextLineEdit, AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "acfrontend";
 
 export class FormsComponent extends Component
 {
@@ -36,7 +36,7 @@ export class FormsComponent extends Component
                 This class can not provide more than one auto-completable suggestion.
                 If you need more than one selected suggestion, check the other control classes.
             </p>
-            <AutocompleteTextLineEdit value={this.text} loadTimeout={250} minChars={1}
+            <AutoCompleteTextLineEdit value={this.text} loadTimeout={250} minChars={1}
                 onChanged={newValue => this.text = newValue}
                 onLoadSuggestions={this.OnLoadSuggestions.bind(this)} />
                 

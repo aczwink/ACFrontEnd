@@ -36,7 +36,6 @@ export class MenusComponent extends Component
     private OnOpenMenu(event: MouseEvent)
     {
         const menu = <Menu>
-            <MenuItem></MenuItem>
             <MenuItem><a onclick={() => alert("Item 1 clicked")}>Item 1</a></MenuItem>
             <MenuItem><a onclick={() => alert("Item 2 clicked")}>Item 2</a></MenuItem>
             <MenuItem><Anchor route="/">Route to root</Anchor></MenuItem>

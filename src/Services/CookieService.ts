@@ -29,7 +29,7 @@ export class CookieService
         {
             const cookie = cookies[i];
             const [key, value] = cookie.split("=");
-            if(name === key)
+            if(name === key.trim())
                 return value;
         }
         return undefined;

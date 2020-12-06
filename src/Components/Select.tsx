@@ -33,24 +33,21 @@ export class Select extends Component<{ onChanged: (newValue: string[]) => void;
     }
 
     //Private methods
-    private IsChildSelected(children: SingleRenderValue[])
+    private IsChildSelected(child: RenderValue)
     {
-        for (const child of children)
+        if(IsRenderElement(child) && child.type === "option")
         {
-            if(IsRenderElement(child) && child.type === "option")
-            {
-                if(child.properties.selected)
-                    return true;
-            }
-            else if(Array.isArray(child))
-            {
-                if( child.Values().Map(subChild => this.IsChildSelected(subChild)).Any() )
-                    return true;
-            }
-            else
-                throw new Error("A select can only have option-children");
+            if(child.properties.selected)
+                return true;
         }
-
+        else if(Array.isArray(child))
+        {
+            if( child.Values().Filter(subChild => this.IsChildSelected(subChild)).Any() )
+                return true;
+        }
+        else
+            throw new Error("A select can only have option-children");
+        
         return false;
     }
 
