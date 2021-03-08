@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -71,7 +71,13 @@ export class RouterComponent extends Component
 
     private OnRouterStateChanged()
     {
-        const routerStateNode = this.injector.Resolve(RouterStateNode, ResolutionStrategy.ParentUpwards);
+        const routerStateNode = this.injector.TryResolve(RouterStateNode, ResolutionStrategy.ParentUpwards);
+        if(routerStateNode === undefined)
+        {
+            this.component = null;
+            this.injector.RegisterInstance(RouterStateNode, null);
+            return;
+        }
 
         const node = this.FindComponentNode(routerStateNode);
         if(node === null)

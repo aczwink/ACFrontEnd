@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,9 +31,9 @@ export class VirtualTextNode extends VirtualNode
         return new VirtualTextNode(this.text);
     }
 
-    protected RealizeSelf(): void
+    protected RealizeSelf(): Node
     {
-        this._domNode = document.createTextNode(this.text.toString());
+        return document.createTextNode(this.text.toString());
     }
 
     protected UpdateSelf(newNode: VirtualNode): VirtualNode
@@ -41,8 +41,8 @@ export class VirtualTextNode extends VirtualNode
         if(newNode instanceof VirtualTextNode)
         {
             this.text = newNode.text;
-            if(this._domNode !== null)
-                this._domNode.nodeValue = newNode.text.toString();
+            if(this.domNode !== null)
+                this.domNode.nodeValue = newNode.text.toString();
             return this;
         }
         return newNode;

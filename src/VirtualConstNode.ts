@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,8 +30,9 @@ export class VirtualConstNode extends VirtualNode
         return new VirtualConstNode();
     }
 
-    protected RealizeSelf(): void
+    protected RealizeSelf(): null
     {
+        return null;
     }
 
     protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null

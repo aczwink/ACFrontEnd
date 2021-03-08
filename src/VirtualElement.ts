@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -52,14 +52,14 @@ export class VirtualElement extends VirtualNode
         return new VirtualElement(this._tagName, props);
     }
 
-    protected RealizeSelf(): void
+    protected RealizeSelf(): Node
     {
         const element = document.createElement(this._tagName);
             
         for(var key in this._properties)
             (element as any)[key] = this._properties[key];
 
-        this._domNode = element;
+        return element;
     }
 
     protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null
@@ -69,10 +69,10 @@ export class VirtualElement extends VirtualNode
             if(this._tagName == newNode._tagName)
             {
                 //update self
-                if(this._domNode !== null)
-                    this.UpdateObject(this._domNode, this._properties, newNode._properties);
+                if(this.domNode !== null)
+                    this.UpdateObject(this.domNode, this._properties, newNode._properties);
                 this._properties = newNode._properties;
-                if(this._domNode !== null)
+                if(this.domNode !== null)
                     this.SyncInputProperties();
                 
                 this.UpdateChildren(newNode);
@@ -104,7 +104,7 @@ export class VirtualElement extends VirtualNode
         if(this._tagName !== "input")
             return;
 
-        const inputNode = this._domNode as HTMLInputElement;
+        const inputNode = this.domNode as HTMLInputElement;
         switch(inputNode.type)
         {
             case "checkbox":

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,8 +31,9 @@ export class VirtualFragment extends VirtualNode
         return new VirtualFragment();
     }
 
-    protected RealizeSelf(): void
+    protected RealizeSelf(): null
     {
+        return null;
     }
 
     protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null

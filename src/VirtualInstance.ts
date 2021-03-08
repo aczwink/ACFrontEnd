@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,7 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
         return new VirtualInstance(this.type, this.args === null ? null : (this.args as any).Clone(), this._subChildren as any);
     }
 
-    protected RealizeSelf(): void
+    protected RealizeSelf(): Node | null
     {
         this.injector!.RegisterInstance(Injector, this.injector);
 
@@ -69,6 +69,8 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
             this.children = undefined;
         else
             this.children = [this.instance.vNode];
+
+        return null;
     }
 
     protected UpdateSelf(newNode: VirtualNode | null): VirtualNode | null

@@ -113,7 +113,7 @@ export abstract class VirtualNode
 
     public Destroy()
     {
-        if(this._domNode !== null)
+        if(this.mounted)
             throw new Error("Can't destroy virtual node that is still in the dom");
         if( (this._nextSibling !== null) || (this._prevSibling !== null) || (this._parent !== null) )
             throw new Error("Can't destroy virtual node that is still mounted in a virtual tree");
@@ -184,7 +184,7 @@ export abstract class VirtualNode
         if(updatedNode !== this)
         {
             if(newVNode === null)
-                throw new Error("HERE"); //this.RemoveVirtualNode(oldVNode);
+                this.Remove();
             else
                 this.Replace(newVNode);
         }
@@ -193,17 +193,11 @@ export abstract class VirtualNode
     }
 
     //Protected members
-    /**
-     * Null means for a realized node that no dom node representation is available for this node.
-     * Currently this is only true for VirtualInstance and VirtualFragment.
-     * If this has not been realized, dom node is always null.
-     */
-    protected _domNode: Node | null;
     protected _injector?: Injector;
 
     //Protected abstract
     protected abstract CloneSelf(): VirtualNode;
-    protected abstract RealizeSelf(): void;
+    protected abstract RealizeSelf(): Node | null;
     protected abstract UpdateSelf(newNode: VirtualNode | null): VirtualNode | null;
 
     //Protected methods
@@ -267,6 +261,12 @@ export abstract class VirtualNode
 
     //Private members
     /**
+     * Null means for a realized node that no dom node representation is available for this node.
+     * Currently this is only true for VirtualInstance and VirtualFragment.
+     * If this has not been realized, dom node is always null.
+     */
+    private _domNode: Node | null;
+    /**
      * Undefined if the node does not have children.
      * This is currently only true for VirtualTextNode
      */
@@ -325,7 +325,7 @@ export abstract class VirtualNode
     {
         if( !this.realized )
         {
-            this.RealizeSelf();
+            this._domNode = this.RealizeSelf();
             this.realized = true;
         }
         if( this._domNode !== null )
@@ -379,8 +379,10 @@ export abstract class VirtualNode
             this._children = [];
 
         const refIndex = this._children.indexOf(referenceChild);
-
-        newChild.previousSibling = (refIndex == 0) ? null : this._children[refIndex];
+        if(refIndex === -1)
+            throw new Error("reference node is not a child");
+            
+        newChild.previousSibling = referenceChild._prevSibling;
         newChild.nextSibling = referenceChild;
 
         newChild._parent = this;
@@ -410,6 +412,12 @@ export abstract class VirtualNode
         }
     }
 
+    private Remove()
+    {
+        if(this._parent !== null)
+            this._parent.RemoveChild(this);
+    }
+
     private RemoveChildByIndex(index: number)
     {
         const child = this._children![index];
@@ -420,7 +428,11 @@ export abstract class VirtualNode
     private Replace(newVNode: VirtualNode)
     {
         if(this._parent === null)
+        {
+            if(newVNode._parent === null)
+                return; //okay, in memory update without being present in the dom
             throw new Error("HERE");
+        }
         if(newVNode._parent !== null)
             newVNode._parent.RemoveChild(newVNode);
 
@@ -430,11 +442,11 @@ export abstract class VirtualNode
     private ReplaceChild(oldChild: VirtualNode, newChild: VirtualNode)
     {
         const next = oldChild._nextSibling;
-        this.RemoveChild(oldChild);
 
         if(next === null)
             this.AddChild(newChild);
         else
             this.InsertChildBefore(next, newChild);
+        this.RemoveChild(oldChild);
     }
 }
