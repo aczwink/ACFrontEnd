@@ -164,9 +164,15 @@ declare module JSX
             selected?: boolean;
             value?: string;
         };
+
+        ol: {
+        };
+
         p: {
             children: string;
+            style?: string;
         };
+        
         progress: {
             max: string;
             value: string;

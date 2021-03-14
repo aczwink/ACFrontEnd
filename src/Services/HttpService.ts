@@ -82,7 +82,8 @@ export class HttpService
 
                 parts.push(key + "=" + encodeURIComponent(value));
             }
-            url += "?" + parts.join("&");
+            if(parts.length > 0)
+                url += "?" + parts.join("&");
         }
 
         return this.Request({

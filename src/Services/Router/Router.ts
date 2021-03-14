@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,9 @@ export class Router
 {
     constructor(routes: Routes)
     {
-        this.TransformRoutes(routes);
+        this.mainRouteHandler = new RouteHandler({ path: "", children: routes }, null);
+        routes.forEach(route => new RouteHandler(route, this.mainRouteHandler));
+        
         RootInjector.RegisterInstance(Router, this);
 
         const state = this.CreateRouterState(Url.Parse(window.location.href));
@@ -68,24 +70,15 @@ export class Router
 
     private CreateRouterState(url: Url): RouterState
     {
-        for (let i = 0; i < this.routes.length; i++)
-        {
-            const route = this.routes[i];
-            const result = route.CreateRouterState(url);
-            if(result !== null)
-                return result;
-        }
-        throw Error("Can not find a route for url: " + url);
-    }
-
-    private TransformRoutes(routes: Routes)
-    {
-        this.routes = routes.map(route => new RouteHandler(route, null));
+        const result = this.mainRouteHandler.CreateRouterState(url);
+        if(result !== null)
+            return result;
+        throw Error("Can not find a route for url: " + url.ToString());
     }
 
     //Private members
     private _state: Property<RouterState>;
-    private routes!: RouteHandler[];
+    private mainRouteHandler: RouteHandler;
 
     //Private methods
     private UpdateRouterState(state: RouterState)

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,8 @@ export class RouteHandler
         if(!this.Matches(pathSegments, routeParams))
             return null;
 
-        pathSegments = pathSegments.slice(this.path.pathSegments.length); // remove the portion that has been matched
+        if(!(this.route.path === ""))
+            pathSegments = pathSegments.slice(this.path.pathSegments.length); // remove the portion that has been matched
 
         if(this.route.redirect !== undefined)
         {
@@ -98,7 +99,7 @@ export class RouteHandler
 
     private Matches(pathSegments: string[], routeParams: Dictionary<string>)
     {
-        if(this.route.path == "*")
+        if((this.route.path == "*") || (this.route.path === ""))
             return true;
 
         if(this.path.pathSegments.length > pathSegments.length)
@@ -123,7 +124,7 @@ export class RouteHandler
         if(this.parent === null)
             throw new Error("NOT IMPLEMENTED");
 
-        return this.parent.FindChildRoute(url, [this.route.redirect!].concat(pathSegments), routeParams);
+        return this.parent.FindChildRoute(url, this.route.redirect!.split("/").concat(pathSegments), routeParams);
     }
 
     private SegmentsMatch(routeSegment: string, pathSegment: string, routeParams: Dictionary<string>)
