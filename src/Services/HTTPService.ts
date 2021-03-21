@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,8 @@
  * */
 import { Injectable } from "../ComponentManager";
 import { PrimitiveDictionary } from "../Model/Dictionary";
+import { Url } from "../Model/Url";
+import { RouterState } from "./Router/RouterState";
 
 interface RequestHeaders
 {
@@ -25,19 +27,19 @@ interface RequestHeaders
 }
 
 type HttpDataMethod = "DELETE" | "POST" | "PUT";;
-type HttpMethod = "GET" | HttpDataMethod;
+export type HTTPMethod = "GET" | HttpDataMethod;
 
 export interface HttpRequest
 {
     data: any;
     headers: RequestHeaders;
-    method: HttpMethod;
+    method: HTTPMethod;
     responseType: "blob" | "json";
     url: string;
 }
 
 @Injectable
-export class HttpService
+export class HTTPService
 {
     //Public methods
     public DataRequest<T>(url: string, httpMethod: HttpDataMethod, data: any | FormData): Promise<T>
@@ -100,6 +102,25 @@ export class HttpService
         return new Promise<any>( (resolve, reject) => {
             return this.IssueRequest(request, resolve, reject);
         });
+    }
+
+    public SimpleRequest<T>(authority: string, route: string, method: HTTPMethod, data: any, routeParams?: any)
+    {
+        if(routeParams !== undefined)
+        {
+            const segments = RouterState.CreateAbsoluteUrl(route).pathSegments;
+            route = "/" + segments.map(x => x.startsWith(":") ? routeParams[x.substr(1)] : x).join("/");
+        }
+        const url = new Url({
+            authority: authority,
+            path: route,
+            protocol: "http",
+            queryParams: {}
+        });
+
+        if(method === "GET")
+            return this.Get<T>(url.ToString(), { jsondata: JSON.stringify(data) });
+        return this.DataRequest<T>(url.ToString(), method, data);
     }
 
     //Private methods

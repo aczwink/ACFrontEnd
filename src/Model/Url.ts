@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -68,8 +68,8 @@ export class Url implements UrlProperties
     {
         return this.ToString() === other.ToString();
     }
-    
-    public ToString()
+
+    public PathAndQueryToString()
     {
         const queryParams = [];
         for (const key in this.queryParams)
@@ -78,8 +78,13 @@ export class Url implements UrlProperties
                 queryParams.push(key + "=" + this.queryParams[key]);
         }
         const query = queryParams.length > 0 ? "?" + queryParams.join("&") : "";
-        const url = this.protocol + "://" + this.authority + this.path + query;
-        return url;
+
+        return this.path + query;
+    }
+    
+    public ToString()
+    {
+        return this.protocol + "://" + this.authority + this.PathAndQueryToString();
     }
 
     //Public functions

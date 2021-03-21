@@ -162,7 +162,7 @@ declare module JSX
             children: string;
             disabled?: boolean;
             selected?: boolean;
-            value?: string;
+            value?: number | string;
         };
 
         ol: {

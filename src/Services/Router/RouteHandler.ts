@@ -76,9 +76,13 @@ export class RouteHandler
             if(child === null)
                 return null;
             node.child = child;
-        }
 
-        return node;
+            return node;
+        }
+        else if( (pathSegments.length === 0) || ((pathSegments.length === 1) && (pathSegments[0] === "")) )
+            return node;
+
+        return null;
     }
 
     private FindChildRoute(url: Url, pathSegments: string[], routeParams: Dictionary<string>)

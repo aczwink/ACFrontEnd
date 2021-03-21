@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ import { FormField } from "./Components/FormField";
 import { DialogProperties, DialogRef } from "./Controller/DialogRef";
 import { LineEdit } from "./Components/LineEdit";
 import { Select } from "./Components/Select";
-import { HttpService } from "./Services/HttpService";
+import { HTTPMethod, HTTPService } from "./Services/HTTPService";
 import { AutoCompleteTextLineEdit } from "./Components/AutoCompleteTextLineEdit";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
 import { SelectableTable } from "./Components/SelectableTable";
@@ -83,7 +83,8 @@ export
     FormField,
     Gallery,
     GalleryModal,
-    HttpService,
+    HTTPMethod,
+    HTTPService,
     InfoMessageManager,
     Injectable,
     IntegerSpinner,
