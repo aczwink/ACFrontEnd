@@ -38,7 +38,7 @@ div.modal button
 	font-size: 32px;
 	font-weight: bold;
 	transition: 0.3s;
-	color: $text-color;
+	color: var(--text-color);
 	text-shadow: 0 1px 0 #000;
 	background-color: transparent;
 	border: none;
@@ -98,8 +98,8 @@ div.dialog
 	left: 50%;
 	transform: translate(-50%, -50%);
 	transition: transform .3s ease-out;
-	background-color: $background-color;
-	border: 1px solid $border-color;
+	background-color: var(--background-color);
+	border: 1px solid var(--border-color);
 	border-radius: 0.25rem;
 	display: inline-block;
 }
@@ -107,7 +107,7 @@ div.dialog
 div.dialog > *:first-child
 {
 	padding: 1rem;
-	border-bottom: 1px solid $background-color;
+	border-bottom: 1px solid var(--border-color);
 	border-top-left-radius: .3rem;
 	border-top-right-radius: .3rem;
 	display: flex;
@@ -128,7 +128,7 @@ div.dialog > *:first-child
 		font-size: 1rem;
 		font-weight: 700;
 		line-height: 1;
-		color: $text-color;
+		color: var(--text-color);
 		text-shadow: 0 1px 0 #000;
 		opacity: 0.5;
 		background-color: transparent;
@@ -156,7 +156,7 @@ div.dialog
 		align-items: center;
 		justify-content: center;
 		padding: 1rem;
-		border-top: 1px solid $background-color;
+		border-top: 1px solid var(--border-color);
 		
 		*
 		{

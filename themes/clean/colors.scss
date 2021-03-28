@@ -3,46 +3,48 @@ $primary-color: #007fff;
 $bright-color: #fff;
 $dark-color: #191919;
 
-$text-color: $dark-color;
 $shadow-color: rgba(0, 0, 0, 0.075);
 
 
 
 
 
-
-
-
-
-
-
+//legacy
 $secondary-color: adjust_hue($primary-color, 180); // complementary
 
-$gray-dark-color: mix($bright-color, $dark-color, 10%);
-$gray-meddark-color: mix($bright-color, $dark-color, 25%);
-$gray-medium-color: mix($bright-color, $dark-color, 50%);
-$gray-medbright-color: mix($bright-color, $dark-color, 75%);
-$gray-bright-color: mix($bright-color, $dark-color, 90%);
-$gray-ultrabright-color: mix($bright-color, $dark-color, 95%);
-
 $background-color: $bright-color;
-$border-color: $gray-bright-color;
-$text-color-less-important: $gray-meddark-color;
+$text-color-less-important: mix($bright-color, $dark-color, 25%);
 $text-on-primary-color: $bright-color;
-$text-color-disabled: $gray-medium-color;
-$text-color-highlighted: $bright-color;
-$ui-area-background-color: $gray-bright-color;
-$ui-area-background-color-highlighted: lighten($gray-meddark-color, 10%);
-$control-background-color: $bright-color;
+$text-color-disabled: mix($bright-color, $dark-color, 50%);
+//legacy
 
 :root
 {
     --background-color: #{$bright-color};
+    --control-background-color: #{$bright-color};
     --danger-color: #ff3030;
     --primary-color: #{$primary-color};
+    --text-color: #{$dark-color};
+
+    --border-color: var(--gray6-color);
+    --ui-area-background-color: var(--gray6-color);
+    --ui-area-background-color-highlighted: var(--gray4-color);
+
+    --gray4-color: #{mix($bright-color, $dark-color, 50%)};
+    --gray6-color: #{mix($bright-color, $dark-color, 90%)};
+    --gray7-color: #{mix($bright-color, $dark-color, 95%)};
 }
 
 .theme-dark
 {
-    --background-color: #{$gray-dark-color};
+    --background-color: #{$dark-color};
+    --control-background-color: #{$dark-color};
+    --text-color: #{$bright-color};
+
+    --border-color: var(--gray6-color);
+    --ui-area-background-color: var(--gray6-color);
+    --ui-area-background-color-highlighted: var(--gray4-color);
+
+    --gray6-color: #{mix($bright-color, $dark-color, 10%)};
+    --gray7-color: #{mix($bright-color, $dark-color, 5%)};
 }

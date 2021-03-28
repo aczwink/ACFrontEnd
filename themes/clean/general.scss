@@ -7,7 +7,7 @@ html
 body
 {
 	background-color: var(--background-color);
-	color: $text-color;
+	color: var(--text-color);
 	min-height: 100vh;
 	margin: 0;
 	display: flex;
@@ -87,7 +87,7 @@ div.loadingSpinner
 	height: 50px;
 	margin: auto;
 	border-radius: 50%;
-	border: 1px solid $gray-medium-color;
+	border: 1px solid var(--gray4-color);
 	border-top-color: $primary-color;
 	animation: loadingSpinner 600ms linear infinite;
 }

@@ -65,6 +65,7 @@ import { Menu, MenuItem } from "./Components/Menu";
 import { MenuManager } from "./Services/MenuManager";
 import { Navigation, NavigationGroup } from "./Components/Navigation";
 import { LoadingButton } from "./Components/LoadingButton";
+import { ThemingService } from "./Services/ThemingService";
 
 export
 {
@@ -124,6 +125,7 @@ export
     TabGroup,
     TabHeader,
     Textarea,
+    ThemingService,
     TimeUtil,
     TitleService,
     TooltipManager,

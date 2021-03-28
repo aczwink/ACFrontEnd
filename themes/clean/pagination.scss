@@ -30,7 +30,7 @@ ul.paginationNavigation
 	li
 	{
 		display: inline-block;
-		border: 1px solid $border-color;
+		border: 1px solid var(--border-color);
 		
 		a
 		{
@@ -38,7 +38,7 @@ ul.paginationNavigation
 			padding: 0.5rem 0.75rem;
 			cursor: pointer;
 			
-			background-color: $ui-area-background-color-highlighted;
+			background-color: var(--ui-area-background-color-highlighted);
 		}
 		
 		a:hover
@@ -52,15 +52,15 @@ ul.paginationNavigation
 		{
 			color: $text-color-disabled;
 			pointer-events: none;
-			background-color: $border-color;
-			border-color: $border-color;
+			background-color: var(--border-color);
+			border-color: var(--border-color);
 		}
 		
 		a.active
 		{
 			background-color: $primary-color;
 			border-color: $primary-color;
-			color: $ui-area-background-color-highlighted;
+			color: var(--ui-area-background-color-highlighted);
 			pointer-events: none;
 		}
 	}

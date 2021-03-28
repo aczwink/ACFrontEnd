@@ -3,7 +3,7 @@ div.tooltip
 	position: absolute;
 	border: 1px solid $shadow-color;
 	border-radius: 0.25rem;
-	background-color: $bright-color;
+	background-color: var(--background-color);
 	z-index: 2000;
 	
 	> div:last-child /* body */
@@ -14,7 +14,7 @@ div.tooltip
 	> .arrow
 	{
 		position: relative;
-		background: $background-color;
+		background: var(--background-color);
 	}
 	
 	> .arrow:after, > .arrow:before
@@ -47,13 +47,13 @@ div.tooltip
 	
 	> .arrow.up:after
 	{
-		border-bottom-color: $bright-color;
+		border-bottom-color: var(--background-color);
 		margin-left: calc(-0.4rem + 1px);
 	}
 	
 	> .arrow.right:after
 	{
-		border-left-color: $bright-color;
+		border-left-color: var(--background-color);
 		margin-top: calc(-0.4rem + 1px);
 	}
 	

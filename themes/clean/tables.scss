@@ -3,18 +3,18 @@ table
 	margin: auto;
 	padding: 5px;
 	border-collapse: collapse;
-	border: 1px solid $border-color;
+	border: 1px solid var(--border-color);
 	border-radius: 0.25rem;
 }
 
 tr:nth-of-type(2n)
 {
-	background-color: $gray-ultrabright-color;
+	background-color: var(--gray7-color);
 }
 
 tr:hover
 {
-	background-color: $gray-ultrabright-color !important;
+	background-color: var(--gray7-color) !important;
 }
 
 tr.selected
@@ -42,7 +42,7 @@ th
 
 td
 {
-	border: 1px solid $border-color;
+	border: 1px solid var(--border-color);
 	padding: 0.75rem;
 	text-align: center;
 }

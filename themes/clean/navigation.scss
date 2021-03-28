@@ -36,7 +36,7 @@ nav, div.subPageNav
 			
 			a:hover
 			{
-				color: $text-color;
+				color: var(--text-color);
 				text-decoration: none;
 			}
 		}
@@ -56,7 +56,7 @@ nav, div.subPageNav
 div.subPageNav
 {
 	box-shadow: none;
-	border-bottom: 1px solid $gray-bright-color;
+	border-bottom: 1px solid var(--gray6-color);
 	
 	> *
 	{
@@ -74,10 +74,10 @@ div.vertNav
 	top: auto;
 	left: 0;
 	overflow-x: hidden;
-	background-color: $gray-ultrabright-color;
+	background-color: var(--gray7-color);
 	margin-top: -1rem;
-	border-right: 1px solid $border-color;
-	border-top: 1px solid $border-color;
+	border-right: 1px solid var(--border-color);
+	border-top: 1px solid var(--border-color);
 	
 	ul
 	{
@@ -102,7 +102,7 @@ div.vertNav
 		
 		li.active a
 		{
-			background-color: $gray-bright-color;
+			background-color: var(--gray6-color);
 		}
 	}
 }

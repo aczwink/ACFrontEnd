@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -152,7 +152,9 @@ export class PopupManager
 
         if(this.popupContainers["modalContainer"] === undefined)
         {
-            document.body.className = "";
+            const classes = document.body.className.split(" ").Values().ToSet();
+            classes.delete("scroll-lock");
+            document.body.className = classes.ToArray().join(" ");
         }
     }
 
@@ -185,7 +187,7 @@ export class PopupManager
             }
         });
 
-        document.body.className = "scroll-lock";
+        document.body.className = document.body.className.split(" ").concat(["scroll-lock"]).join(" ");
 
         return new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
     }
