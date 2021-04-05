@@ -230,6 +230,7 @@ declare module JSX
             
             controls?: boolean;
             onended?: EventHandler<Event>;
+            onpause?: EventHandler<Event>;
             onplay?: EventHandler<Event>;
             onseeked?: EventHandler<Event>;
             onseeking?: EventHandler<Event>;
