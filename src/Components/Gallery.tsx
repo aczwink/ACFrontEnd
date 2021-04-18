@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,7 @@ import { GalleryModal } from "./GalleryModal";
 export interface GalleryImage
 {
     url: string;
+    caption?: string;
 }
 
 interface Images
@@ -34,7 +35,7 @@ interface Images
 }
 
 @Injectable
-export class Gallery extends Component<{ images: Images; }>
+export class Gallery extends Component<Images>
 {
     constructor(private popupManager: PopupManager)
     {
@@ -44,9 +45,16 @@ export class Gallery extends Component<{ images: Images; }>
     //Protected methods
     protected Render(): RenderValue
     {
-        const imgClass = this.input.images.imgClass ? this.input.images.imgClass : "";
+        return <fragment>{this.input.images.map(this.RenderImage.bind(this))}</fragment>;
+    }
+
+    //Private methods
+    private RenderImage(image: GalleryImage, index: number)
+    {
+        const imgClass = this.input.imgClass ? this.input.imgClass : "";
         return <fragment>
-            {this.input.images.images.map( (image, index) => <img onclick={this.OnImageClicked.bind(this, index)} class={imgClass} src={image.url} />)}
+            <img onclick={this.OnImageClicked.bind(this, index)} class={imgClass} src={image.url} />
+            {image.caption}
         </fragment>;
     }
 
@@ -55,6 +63,6 @@ export class Gallery extends Component<{ images: Images; }>
     {
         event.stopPropagation();
 
-        this.popupManager.OpenModal(<GalleryModal startImageIndex={imgIndex} images={this.input.images.images} />, { className: "galleryModal" });
+        this.popupManager.OpenModal(<GalleryModal startImageIndex={imgIndex} images={this.input.images} />, { className: "galleryModal" });
     }
 }
