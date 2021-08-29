@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,10 @@
 
 import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
-import { VirtualNode } from "../VirtualNode";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 @Injectable
-export class InfoMessage extends Component<null, VirtualNode>
+export class InfoMessage extends Component<null, RenderValue>
 {
     protected Render(): RenderValue
     {

@@ -35,9 +35,23 @@ interface RenderElement
     children: RenderValue[];
 }
 type SingleRenderValue = RenderText | RenderOther | RenderElement;
-type RenderValue = SingleRenderValue | SingleRenderValue[];
+type RenderValue = SingleRenderValue | RenderValue[];
 
 type EventHandler<EventType = Event> = (event: EventType) => void;
+
+interface JSX_GlobalEventHandlers
+{
+    onclick?: EventHandler<MouseEvent>;
+    onmouseenter?: EventHandler<MouseEvent>;
+    onmouseleave?: EventHandler<MouseEvent>;
+    onmouseout?: EventHandler<MouseEvent>;
+}
+
+interface JSX_Element extends JSX_GlobalEventHandlers
+{
+    class?: string;
+    style?: string;
+}
 
 declare module JSX
 {
@@ -78,15 +92,19 @@ declare module JSX
             children: RenderValue;
             type: "button" | "submit";
 
-            class?: string;
             disabled?: boolean;
-            onclick?: EventHandler<MouseEvent>;
-            onmouseenter?: EventHandler<MouseEvent>;
-            onmouseout?: EventHandler<MouseEvent>;
-            style?: string;
             title?: string;
+        } & JSX_Element;
+
+        div: {
+            children?: RenderValue;
+            innerHTML?: string;
+        } & JSX_Element;
+
+        fieldset: {
+            children: RenderValue;
         };
-        div: any;
+
         form: {
             children: RenderValue;
             onsubmit: EventHandler;
@@ -116,13 +134,9 @@ declare module JSX
         img: {
             src: string;
             
-            class?: string;
-            onclick?: EventHandler<MouseEvent>;
             oncontextmenu?: EventHandler<MouseEvent>;
-            onmouseenter?: EventHandler<MouseEvent>;
-            onmouseleave?: EventHandler<MouseEvent>;
-            style?: string;
-        };
+        } & JSX_Element;
+
         input: {
             checked?: boolean;
             disabled?: boolean;
@@ -143,6 +157,10 @@ declare module JSX
         label: {
             children: RenderValue;
             class: string;
+        };
+
+        legend: {
+            children: RenderText;
         };
 
         li: {
@@ -174,8 +192,9 @@ declare module JSX
         };
         
         progress: {
-            max: string;
-            value: string;
+            max: number | string;
+            style?: string;
+            value: number | string;
         };
         select: {
             children: any[];
@@ -227,8 +246,11 @@ declare module JSX
         ul: any;
         video: {
             children: RenderValue;
-            
+
+            autoplay?: boolean;            
             controls?: boolean;
+            loop?: boolean;
+            muted?: boolean;
             onended?: EventHandler<Event>;
             onpause?: EventHandler<Event>;
             onplay?: EventHandler<Event>;
