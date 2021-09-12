@@ -22,11 +22,11 @@
   },
   "homepage": "https://github.com/aczwink/ACFrontEnd#readme",
   "devDependencies": {
-    "source-map-loader": "^0.2.4",
-    "ts-loader": "^6.0.4",
-    "typescript": "^3.6.2",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.8",
+    "source-map-loader": "^3.0.0",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.4.3",
+    "webpack": "^5.52.1",
+    "webpack-cli": "^4.8.0",
     "npx": "^10.2.2"
   },
   "dependencies": {
