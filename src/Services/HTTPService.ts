@@ -119,7 +119,7 @@ export class HTTPService
         });
 
         if(method === "GET")
-            return this.Get<T>(url.ToString(), { jsondata: JSON.stringify(data) });
+            return this.Get<T>(url.ToString(), data);
         return this.DataRequest<T>(url.ToString(), method, data);
     }
 
