@@ -176,6 +176,15 @@ declare module JSX
         };
 
         nav: any;
+
+        object: {
+            data: string;
+            id: string;
+            style: string;
+            type: string;
+            onload: EventHandler<Event>;
+        };
+
         option: {
             children: string;
             disabled?: boolean;
