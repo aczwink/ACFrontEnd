@@ -50,7 +50,7 @@ import { Url } from "./Model/Url";
 import { RouterState } from "./Services/Router/RouterState";
 import { InfoMessageManager } from "./Services/InfoMessageManager";
 import { PaginationComponent } from "./Components/PaginationComponent";
-import { AutoCompleteMultiSelectBox, KeyDisplayValuePair } from "./Components/AutoCompleteMultiSelectBox";
+import { AutoCompleteMultiSelectBox } from "./Components/AutoCompleteMultiSelectBox";
 import { PopupRef } from "./Controller/PopupRef";
 import { TooltipManager } from "./Services/TooltipManager";
 import { Stepper } from "./Components/Stepper";
@@ -66,12 +66,15 @@ import { MenuManager } from "./Services/MenuManager";
 import { Navigation, NavigationGroup } from "./Components/Navigation";
 import { LoadingButton } from "./Components/LoadingButton";
 import { ThemingService } from "./Services/ThemingService";
+import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
+import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
 
 export
 {
     Anchor,
     App,
     AutoCompleteMultiSelectBox,
+    AutoCompleteSelectBox,
     AutoCompleteTextLineEdit,
     CheckBox,
     Component,
