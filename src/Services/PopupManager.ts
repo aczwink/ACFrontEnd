@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,11 +20,16 @@ import { Dictionary, Observer } from "acts-util-core";
 import { Injectable } from "../ComponentManager";
 import { Dialog } from "../Components/Dialog";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
-import { RootInjector } from "../App";
 import { VirtualNode } from "../VirtualNode";
 import { VirtualElement } from "../VirtualElement";
 import { PopupRef } from "../Controller/PopupRef";
 import { TransformRenderValueToVirtualNode } from "../VirtualTreeCreator";
+
+interface PopupDefinition
+{
+    ref: PopupRef;
+    popupNode: VirtualNode;
+}
 
 interface PopupContainer
 {
@@ -56,9 +61,10 @@ export class PopupManager
             children: [content]
         };
         const ref = this.OpenModalInternal(modal, true);
+        const dialogRef = new DialogRef( this.CloseModal.bind(this, ref.ref) );
+        ref.popupNode.injector?.RegisterInstance(DialogRef, dialogRef);
 
-        const dialogRef = new DialogRef( this.CloseModal.bind(this, ref) );
-        RootInjector.RegisterInstance(DialogRef, dialogRef);
+        this.ShowPopup(ref.containerId, ref);
 
         return dialogRef;
     }
@@ -93,11 +99,13 @@ export class PopupManager
             children
         };
 
-        const ref = this.OpenModalInternal(modal, hasBackdrop);
+        const modalRef = this.OpenModalInternal(modal, hasBackdrop);
+        const ref = modalRef.ref;
         ref.keydownEvents.Subscribe({ next: event => {
             if(event.keyCode === 27) //escape
                 ref.Close();
         }});
+        this.ShowPopup(modalRef.containerId, modalRef);
 
         return ref;
     }
@@ -113,13 +121,27 @@ export class PopupManager
 
     public OpenPopup(containerId: string, content: RenderValue, properties?: any): PopupRef
     {
-        let container = this.popupContainers[containerId];
+        this.CreatePopupContainer(containerId, properties);
+        const popup = this.CreatePopup(containerId, content);
+        this.ShowPopup(containerId, popup);
+        return popup.ref;
+    }
 
+    //Private methods
+    private CreatePopup(containerId: string, content: RenderValue): PopupDefinition
+    {
         const popupNode = TransformRenderValueToVirtualNode(content)!;
 
         const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
         popupNode.EnsureHasOwnInjector();
         popupNode.injector!.RegisterInstance(PopupRef, ref);
+
+        return { popupNode, ref };
+    }
+
+    private CreatePopupContainer(containerId: string, properties: any)
+    {
+        let container = this.popupContainers[containerId];
 
         if(container === undefined)
         {
@@ -137,15 +159,8 @@ export class PopupManager
             };
             adder.CallImmediate();
         }
-        container.popups.push(popupNode);
-        container.container.children = container.popups;
-
-        container.popupRefs.push(ref);
-
-        return ref;
     }
 
-    //Private methods
     private CloseModal(ref: PopupRef)
     {
         ref.Close();
@@ -175,7 +190,7 @@ export class PopupManager
     private OpenModalInternal(modal: RenderElement, showBackdrop: boolean)
     {
         const containerId = "modalContainer";
-        const ref = this.OpenPopup(containerId, modal, {
+        this.CreatePopupContainer(containerId, {
             className: showBackdrop ? "show" : "showTransparent",
             onclick: (event: MouseEvent) => {
                 if(event.target === event.currentTarget)
@@ -186,10 +201,21 @@ export class PopupManager
                     this.CloseModal(ref);
             }
         });
-
+        const popup = this.CreatePopup(containerId, modal);
+        const ref = popup.ref;
         document.body.className = document.body.className.split(" ").concat(["scroll-lock"]).join(" ");
 
-        return new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
+        const modalRef = new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
+        return { popupNode: popup.popupNode, ref: modalRef, containerId };
+    }
+
+    private ShowPopup(containerId: string, def: PopupDefinition)
+    {
+        let container = this.popupContainers[containerId]!;
+
+        container.popups.push(def.popupNode);
+        container.popupRefs.push(def.ref);
+        container.container.children = container.popups;
     }
 
     //Private members
