@@ -22,9 +22,12 @@ $text-color-disabled: mix($bright-color, $dark-color, 50%);
 {
     --background-color: #{$bright-color};
     --control-background-color: #{$bright-color};
-    --danger-color: #ff3030;
     --primary-color: #{$primary-color};
     --text-color: #{$dark-color};
+    --success-color: #30ff30;
+    --danger-color: #ff3030;
+    --warning-color: #ffff30;
+    --info-color: #3030ff;
 
     --border-color: var(--gray6-color);
     --ui-area-background-color: var(--gray6-color);
