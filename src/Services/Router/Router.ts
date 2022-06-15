@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Property } from "acts-util-core";
+import { Property, URL } from "acts-util-core";
 
 import { Injectable } from "../../ComponentManager";
 import { Routes } from "./Route";
 import { RouteHandler } from "./RouteHandler";
 import { RouterState, RouterStateNode } from "./RouterState";
-import { Url } from "../../Model/Url";
 import { RootInjector } from "../../App";
 
 
@@ -35,7 +34,7 @@ export class Router
         
         RootInjector.RegisterInstance(Router, this);
 
-        const state = this.CreateRouterState(Url.Parse(window.location.href));
+        const state = this.CreateRouterState(RouterState.ParseURL(window.location.href));
         this._state = new Property<RouterState>(state);
         this.UpdateRouterState(state);
 
@@ -49,7 +48,7 @@ export class Router
     }
 
     //Public methods
-    public RouteTo(url: string | Url)
+    public RouteTo(url: string | URL)
     {
         if(typeof(url) === "string")
             url = RouterState.CreateAbsoluteUrl(url);
@@ -68,7 +67,7 @@ export class Router
         window.history.pushState(state, "", url);
     }
 
-    private CreateRouterState(url: Url): RouterState
+    private CreateRouterState(url: URL): RouterState
     {
         const result = this.mainRouteHandler.CreateRouterState(url);
         if(result !== null)
@@ -115,7 +114,7 @@ export class Router
         switch(event.state.type)
         {
             case "url":
-                const url = Url.Parse(event.state.url);
+                const url = RouterState.ParseURL(event.state.url);
                 const newState = this.CreateRouterState(url);
                 this.SetRouterState(newState);
             break;

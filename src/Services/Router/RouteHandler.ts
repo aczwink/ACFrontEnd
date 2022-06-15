@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,9 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary } from "acts-util-core";
+import { Dictionary, URL } from "acts-util-core";
 
-import { Url } from "../../Model/Url";
 import { Route } from "./Route";
 import { RouterState, RouterStateNode } from "./RouterState";
 
@@ -34,7 +33,7 @@ export class RouteHandler
     }
 
     //Public methods
-    public CreateRouterState(url: Url): RouterState | null
+    public CreateRouterState(url: URL): RouterState | null
     {
         const routeParams: Dictionary<string> = {};
         const node = this.CreateRouterStateNode(url, url.pathSegments, routeParams);
@@ -44,11 +43,11 @@ export class RouteHandler
     }
 
     //Private members
-    private path: Url;
+    private path: URL;
     private children: RouteHandler[];
 
     //Private methods
-    private CreateRouterStateNode(url: Url, pathSegments: string[], routeParams: Dictionary<string>): RouterStateNode | null
+    private CreateRouterStateNode(url: URL, pathSegments: string[], routeParams: Dictionary<string>): RouterStateNode | null
     {
         if(!this.Matches(pathSegments, routeParams))
             return null;
@@ -85,7 +84,7 @@ export class RouteHandler
         return null;
     }
 
-    private FindChildRoute(url: Url, pathSegments: string[], routeParams: Dictionary<string>)
+    private FindChildRoute(url: URL, pathSegments: string[], routeParams: Dictionary<string>)
     {
         for(let i = 0; i < this.children!.length; i++)
         {
@@ -118,7 +117,7 @@ export class RouteHandler
         return true;
     }
 
-    private ResolveRedirect(url: Url, pathSegments: string[], routeParams: Dictionary<string>): RouterStateNode | null
+    private ResolveRedirect(url: URL, pathSegments: string[], routeParams: Dictionary<string>): RouterStateNode | null
     {
         if(this.route.redirect!.startsWith("/"))
             throw new Error("NOT IMPLEMENTED");

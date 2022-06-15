@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { URL } from "acts-util-core";
 
 import { Component, RenderComponentChild, RenderComponentChildWithChildrenHelp } from "../Component";
 import { Injectable } from "../ComponentManager";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Url } from "../Model/Url";
 import { Router } from "../Services/Router/Router";
 import { RouterState } from "../Services/Router/RouterState";
 import { Anchor } from "./Anchor";
@@ -41,7 +41,7 @@ export class NavigationGroup extends Component<{}, RenderComponentChildWithChild
     }
 
     //Private methods
-    private RenderChild(routerUrl: Url, child: RenderComponentChild<Anchor>)
+    private RenderChild(routerUrl: URL, child: RenderComponentChild<Anchor>)
     {
         const ownUrl = RouterState.CreateAbsoluteUrl(child.properties.route);
         const className = routerUrl.Equals(ownUrl) ? "active" : undefined;

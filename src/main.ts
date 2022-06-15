@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ import { FormField } from "./Components/FormField";
 import { DialogProperties, DialogRef } from "./Controller/DialogRef";
 import { LineEdit } from "./Components/LineEdit";
 import { Select } from "./Components/Select";
-import { HTTPMethod, HTTPService } from "./Services/HTTPService";
+import { HTTPMethod, HTTPService, RequestHeaders } from "./Services/HTTPService";
 import { AutoCompleteTextLineEdit } from "./Components/AutoCompleteTextLineEdit";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
 import { SelectableTable } from "./Components/SelectableTable";
@@ -46,7 +46,6 @@ import { IntegerSpinner } from "./Components/IntegerSpinner";
 import { StackChild, Stack } from "./Components/Stack";
 import { RouterButton } from "./Components/RouterButton";
 import { RouteGuard } from "./Services/Router/RouteGuard";
-import { Url } from "./Model/Url";
 import { RouterState } from "./Services/Router/RouterState";
 import { InfoMessageManager } from "./Services/InfoMessageManager";
 import { PaginationComponent } from "./Components/PaginationComponent";
@@ -109,6 +108,7 @@ export
     PopupRef,
     PrimitiveDictionary,
     ProgressSpinner,
+    RequestHeaders,
     RootInjector,
     Route,
     RouteGuard,
@@ -133,5 +133,4 @@ export
     TitleService,
     TooltipManager,
     VirtualNode,
-    Url
 };

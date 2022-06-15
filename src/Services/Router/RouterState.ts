@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary } from "acts-util-core";
+import { Dictionary, URL, URLParser } from "acts-util-core";
 
 import { Route } from "./Route";
-import { Url } from "../../Model/Url";
 import { RootInjector } from "../../App";
 
 export class RouterStateNode
@@ -67,7 +66,7 @@ export class RouterState
         return this.ActivateNode(this._root);
     }
 
-    public ToUrl(): Url
+    public ToUrl(): URL
     {
         if(this._root.route.path == "*")
             return RouterState.CreateAbsoluteUrl("/");
@@ -100,9 +99,22 @@ export class RouterState
     public static CreateAbsoluteUrl(pathWithQuery: string)
     {
         const root = document.head.getElementsByTagName("base")[0].href;
-        const urlRoot = Url.Parse(root);
+        const urlRoot = this.ParseURL(root);
 
-        return Url.Relative(urlRoot, pathWithQuery);
+        return URL.FromRelative(urlRoot, pathWithQuery);
+    }
+
+    public static ParseURL(urlString: string)
+    {
+        const parser = document.createElement("a");
+        parser.href = urlString;
+
+        return new URL({
+            protocol: parser.protocol.slice(0, -1) as any,
+            authority: parser.host,
+            path: decodeURI(parser.pathname),
+            queryParams: URLParser.ParseQueryParams(parser.search.substr(1))
+        });
     }
 
     //Private members
@@ -135,7 +147,7 @@ export class RouterState
     private static CreateAbsoluteUrlFromSegments(segments: string[], queryParams: Dictionary<string>)
     {
         const url = RouterState.CreateAbsoluteUrl(segments.join("/"));
-        return new Url({
+        return new URL({
             authority: url.authority,
             path: url.path,
             protocol: url.protocol,
