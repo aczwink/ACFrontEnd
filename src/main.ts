@@ -67,11 +67,13 @@ import { LoadingButton } from "./Components/LoadingButton";
 import { ThemingService } from "./Services/ThemingService";
 import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
 import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
+import { APIServiceBase } from "./Services/APIServiceBase";
 
 export
 {
     Anchor,
     App,
+    APIServiceBase,
     AutoCompleteMultiSelectBox,
     AutoCompleteSelectBox,
     AutoCompleteTextLineEdit,
