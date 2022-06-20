@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary, URL } from "acts-util-core";
+import { Dictionary, AbsURL } from "acts-util-core";
 import { HTTPMethod, HTTPService, RequestHeaders } from "./HTTPService";
 
 interface RequestData
@@ -37,7 +37,7 @@ export class APIServiceBase
     //Public methods
     public async IssueRequest(requestData: RequestData)
     {
-        const url = new URL({
+        const url = new AbsURL({
             authority: this.backendAuthority,
             path: requestData.path,
             protocol: this.backendProtocol,

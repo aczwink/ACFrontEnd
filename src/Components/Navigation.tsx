@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { URL } from "acts-util-core";
+import { AbsURL } from "acts-util-core";
 
 import { Component, RenderComponentChild, RenderComponentChildWithChildrenHelp } from "../Component";
 import { Injectable } from "../ComponentManager";
@@ -41,7 +41,7 @@ export class NavigationGroup extends Component<{}, RenderComponentChildWithChild
     }
 
     //Private methods
-    private RenderChild(routerUrl: URL, child: RenderComponentChild<Anchor>)
+    private RenderChild(routerUrl: AbsURL, child: RenderComponentChild<Anchor>)
     {
         const ownUrl = RouterState.CreateAbsoluteUrl(child.properties.route);
         const className = routerUrl.Equals(ownUrl) ? "active" : undefined;

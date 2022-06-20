@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary, URL, URLParser } from "acts-util-core";
+import { Dictionary, AbsURL, URLParser } from "acts-util-core";
 
 import { Route } from "./Route";
 import { RootInjector } from "../../App";
@@ -66,7 +66,7 @@ export class RouterState
         return this.ActivateNode(this._root);
     }
 
-    public ToUrl(): URL
+    public ToUrl(): AbsURL
     {
         if(this._root.route.path == "*")
             return RouterState.CreateAbsoluteUrl("/");
@@ -101,7 +101,7 @@ export class RouterState
         const root = document.head.getElementsByTagName("base")[0].href;
         const urlRoot = this.ParseURL(root);
 
-        return URL.FromRelative(urlRoot, pathWithQuery);
+        return AbsURL.FromRelative(urlRoot, pathWithQuery);
     }
 
     public static ParseURL(urlString: string)
@@ -109,7 +109,7 @@ export class RouterState
         const parser = document.createElement("a");
         parser.href = urlString;
 
-        return new URL({
+        return new AbsURL({
             protocol: parser.protocol.slice(0, -1) as any,
             authority: parser.host,
             path: decodeURI(parser.pathname),
@@ -147,7 +147,7 @@ export class RouterState
     private static CreateAbsoluteUrlFromSegments(segments: string[], queryParams: Dictionary<string>)
     {
         const url = RouterState.CreateAbsoluteUrl(segments.join("/"));
-        return new URL({
+        return new AbsURL({
             authority: url.authority,
             path: url.path,
             protocol: url.protocol,

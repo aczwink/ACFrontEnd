@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Property, URL } from "acts-util-core";
+import { Property, AbsURL } from "acts-util-core";
 
 import { Injectable } from "../../ComponentManager";
 import { Routes } from "./Route";
@@ -48,7 +48,7 @@ export class Router
     }
 
     //Public methods
-    public RouteTo(url: string | URL)
+    public RouteTo(url: string | AbsURL)
     {
         if(typeof(url) === "string")
             url = RouterState.CreateAbsoluteUrl(url);
@@ -67,7 +67,7 @@ export class Router
         window.history.pushState(state, "", url);
     }
 
-    private CreateRouterState(url: URL): RouterState
+    private CreateRouterState(url: AbsURL): RouterState
     {
         const result = this.mainRouteHandler.CreateRouterState(url);
         if(result !== null)
