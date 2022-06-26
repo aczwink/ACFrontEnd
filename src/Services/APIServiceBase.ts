@@ -16,7 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Dictionary, AbsURL } from "acts-util-core";
-import { HTTPMethod, HTTPService, RequestHeaders } from "./HTTPService";
+import { HTTPMethod, HTTPService, RequestHeaders, ResponseData } from "./HTTPService";
+
+type Formats = "date-time";
+interface FormatRule
+{
+    format: Formats;
+    keys: string[];
+}
 
 interface RequestData
 {
@@ -26,20 +33,44 @@ interface RequestData
     body?: object;
     requestBodyType?: "form-data";
     responseType: "blob" | "json";
+    successStatusCode: number;
+    formatRules: FormatRule[];
+}
+
+export interface HTTPInterceptor
+{
+    /**
+     * Should return false if the response was intercepted. True if it should be processed normally.
+     */
+    Intercept(response: ResponseData): Promise<boolean>;
 }
 
 export class APIServiceBase
 {
-    constructor(private httpService: HTTPService, private backendAuthority: string, private backendProtocol: "http" | "https")
+    constructor(private httpService: HTTPService, private backendHost: string, private backendPort: number, private backendProtocol: "http" | "https")
     {
+        this._globalHeaders = {};
+        this.interceptors = [];
+    }
+
+    //Properties
+    public get globalHeaders()
+    {
+        return this._globalHeaders;
     }
 
     //Public methods
-    public async IssueRequest(requestData: RequestData)
+    public RegisterInterceptor(interceptor: HTTPInterceptor)
+    {
+        this.interceptors.push(interceptor);
+    }
+
+    public async SendRequest(requestData: RequestData)
     {
         const url = new AbsURL({
-            authority: this.backendAuthority,
+            host: this.backendHost,
             path: requestData.path,
+            port: this.backendPort,
             protocol: this.backendProtocol,
             queryParams: (requestData.query === undefined) ? {} : (requestData.query as Dictionary<string>)
         });
@@ -50,26 +81,56 @@ export class APIServiceBase
             responseType: requestData.responseType,
             url: url.ToString()
         });
+
+        await this.Intercept(response);
         
         return {
             statusCode: response.statusCode,
-            data: response.body
+            data: (response.statusCode === requestData.successStatusCode) ? this.ApplyFormatRules(response.body, requestData.formatRules) : response.body
         };
     }
 
+    //Private variables
+    private _globalHeaders: RequestHeaders;
+    private interceptors: HTTPInterceptor[];
+
     //Private methods
-    private CreateHeaders(body: object | undefined, requestBodyType: "form-data" | undefined): RequestHeaders
+    private ApplyFormat(value: any, format: Formats)
     {
-        if((body !== undefined) && (requestBodyType !== "form-data"))
+        switch(format)
         {
-            return {
-                "Content-Type": "application/json"
-            };
+            case "date-time":
+                return new Date(value);
         }
-        return {};
     }
 
-    private FormatBody(body: object | undefined, requestBodyType: "form-data" | undefined): any
+    private ApplyFormatRules(body: any, formatRules: FormatRule[])
+    {
+        for (const rule of formatRules)
+        {
+            let object = body;
+            for(let i = 0; i < rule.keys.length - 1; i++)
+            {
+                const key = rule.keys[i];
+                object = object[key];
+            }
+            const lastKey = rule.keys[rule.keys.length - 1];
+            object[lastKey] = this.ApplyFormat(object[lastKey], rule.format);
+        }
+        return body;
+    }
+
+    private CreateHeaders(body: object | undefined, requestBodyType: "form-data" | undefined): RequestHeaders
+    {
+        const headers = this._globalHeaders.Clone();
+
+        if((body !== undefined) && (requestBodyType !== "form-data"))
+            headers["Content-Type"] = "application/json";
+
+        return headers;
+    }
+
+    private FormatBody(body: object | undefined, requestBodyType: "form-data" | undefined)
     {
         if(body === undefined)
             return undefined;
@@ -92,5 +153,15 @@ export class APIServiceBase
         }
 
         return JSON.stringify(body);
+    }
+
+    private async Intercept(response: ResponseData)
+    {
+        for (const handler of this.interceptors)
+        {
+            const result = await handler.Intercept(response);
+            if(!result)
+                throw new Error("HTTP response was intercepted");
+        }
     }
 }

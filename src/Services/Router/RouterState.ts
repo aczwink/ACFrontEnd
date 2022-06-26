@@ -111,7 +111,8 @@ export class RouterState
 
         return new AbsURL({
             protocol: parser.protocol.slice(0, -1) as any,
-            authority: parser.host,
+            host: parser.hostname,
+            port: parseInt(parser.port),
             path: decodeURI(parser.pathname),
             queryParams: URLParser.ParseQueryParams(parser.search.substr(1))
         });
@@ -148,8 +149,9 @@ export class RouterState
     {
         const url = RouterState.CreateAbsoluteUrl(segments.join("/"));
         return new AbsURL({
-            authority: url.authority,
+            host: url.host,
             path: url.path,
+            port: url.port,
             protocol: url.protocol,
             queryParams
         });

@@ -67,7 +67,7 @@ import { LoadingButton } from "./Components/LoadingButton";
 import { ThemingService } from "./Services/ThemingService";
 import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
 import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
-import { APIServiceBase } from "./Services/APIServiceBase";
+import { APIServiceBase, HTTPInterceptor } from "./Services/APIServiceBase";
 
 export
 {
@@ -88,6 +88,7 @@ export
     FormField,
     Gallery,
     GalleryModal,
+    HTTPInterceptor,
     HTTPMethod,
     HTTPService,
     InfoMessageManager,

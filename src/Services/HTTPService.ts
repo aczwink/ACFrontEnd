@@ -15,27 +15,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { Dictionary } from "acts-util-core";
 import { Injectable } from "../ComponentManager";
 
 export type HTTPMethod = "DELETE" | "GET" | "POST" | "PUT";
 
 export interface RequestHeaders
 {
+    Authorization?: string;
     "Content-Type"?: "application/json";
 }
 
 interface RequestData
 {
-    body: any;
+    body?: string | FormData;
     headers: RequestHeaders;
     method: HTTPMethod;
     responseType: "blob" | "json";
     url: string;
 }
 
-interface ResponseData
+export interface ResponseData
 {
     statusCode: number;
+    headers: Dictionary<string>;
     body: any;
 }
 
@@ -58,12 +61,14 @@ export class HTTPService
         httpRequest.responseType = request.responseType;
 
         httpRequest.open(request.method, request.url, true);
+        const context = this;
         httpRequest.onreadystatechange = function()
         {
             if(this.readyState == 4)
             {
                 resolve({
                     statusCode: this.status,
+                    headers: context.ParseHeaders(httpRequest.getAllResponseHeaders()),
                     body: this.response
                 });
             }
@@ -79,5 +84,21 @@ export class HTTPService
         }
 
         httpRequest.send(request.body);
+    }
+
+    private ParseHeaders(headers: string)
+    {
+        var arr = headers.trim().split(/[\r\n]+/);
+        
+        var headerMap: Dictionary<string> = {};
+        arr.forEach(function (line)
+        {
+            var parts = line.split(': ');
+            var header = parts.shift()!;
+            var value = parts.join(': ');
+            headerMap[header] = value;
+        });
+
+        return headerMap;
     }
 }
