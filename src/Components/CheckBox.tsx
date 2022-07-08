@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ export class CheckBox extends Component<CheckBoxInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input type="checkbox" checked={this.input.value} onclick={this.OnToggled.bind(this)} />;
+        return <input class="form-check-input" type="checkbox" checked={this.input.value} onclick={this.OnToggled.bind(this)} />;
     }
 
     //Event handlers

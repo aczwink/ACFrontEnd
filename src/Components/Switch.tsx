@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,10 +28,9 @@ export class Switch extends Component<SwitchInput>
 {
     protected Render(): RenderValue
     {
-        return <label class="switch">
-            <input type="checkbox" checked={this.input.checked} onclick={this.OnToggled.bind(this)} />
-            <span></span>
-        </label>;
+        return <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" checked={this.input.checked} onclick={this.OnToggled.bind(this)} />
+        </div>;
     }
 
     //Event handlers

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,16 +18,39 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
+import { CheckBox } from "../main";
 
 @Injectable
-export class FormField extends Component<{ hint: string; }, RenderValue>
+export class FormField extends Component<{ title: string; description?: string }, SingleRenderValue>
 {
     //Protected methods
     protected Render(): RenderValue
     {
-        return <div class="formElement">
-            <span>{this.input.hint}</span>
-            {this.children}
+        if(this.IsCheckBox())
+        {
+            return <div class="form-check">
+                {...this.children}
+                <label class="form-check-label">{this.input.title}</label>
+                {this.input.description === undefined ? null : <div class="form-text">{this.input.description}</div>}
+            </div>;
+        }
+
+        return <div class="mb-3">
+            <label class="form-label">{this.input.title}</label>
+            {...this.children}
+            {this.input.description === undefined ? null : <div class="form-text">{this.input.description}</div>}
         </div>;
+    }
+
+    //Private methods
+    private IsCheckBox()
+    {
+        const child = this.children[0];
+        if( (child === undefined) || (child === null) )
+            return false;
+
+        if( (typeof child === "object") && ("type" in child) )
+            return child.type === CheckBox;
+        return false;
     }
 }

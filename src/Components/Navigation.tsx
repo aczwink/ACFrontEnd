@@ -15,42 +15,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { AbsURL } from "acts-util-core";
-
-import { Component, RenderComponentChild, RenderComponentChildWithChildrenHelp } from "../Component";
+import { Component } from "../Component";
 import { Injectable } from "../ComponentManager";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
-import { RouterState } from "../Services/Router/RouterState";
 import { Anchor } from "./Anchor";
 
 @Injectable
-export class NavigationGroup extends Component<{}, RenderComponentChildWithChildrenHelp<Anchor, RenderValue>[]>
+export class NavItem extends Component<{ route: string }, RenderValue>
 {
     constructor(private router: Router)
     {
         super();
     }
-    
+
     protected Render(): RenderValue
     {
         const routerUrl = this.router.state.Get().ToUrl();
-        return <ul>
-            {...this.children.map(this.RenderChild.bind(this, routerUrl))}
-        </ul>;
-    }
 
-    //Private methods
-    private RenderChild(routerUrl: AbsURL, child: RenderComponentChild<Anchor>)
-    {
-        const ownUrl = RouterState.CreateAbsoluteUrl(child.properties.route);
-        const className = routerUrl.Equals(ownUrl) ? "active" : undefined;
-
-        return <li class={className}>{child}</li>;
+        const isActive = this.input.route === "/" ? routerUrl.path === this.input.route : routerUrl.path.startsWith(this.input.route);
+        const className = "nav-link" + (isActive ? " active" : "");
+        return <li><Anchor class={className} route={this.input.route}>{...this.children}</Anchor></li>;
     }
 
     //Event handlers
-    public OnInitiated()
+    public override OnInitiated()
     {
         this.router.state.Subscribe(this.OnRouterStateChanged.bind(this));
     }
@@ -61,10 +50,12 @@ export class NavigationGroup extends Component<{}, RenderComponentChildWithChild
     }
 }
 
-export class Navigation extends Component<{}, RenderComponentChild<NavigationGroup>[]>
+export class Navigation extends Component<{}, RenderValue>
 {
     protected Render(): RenderValue
     {
-        return <nav>{...this.children}</nav>;
+        return <div class="container">
+            <nav class="d-flex justify-content-between align-items-center">{...this.children}</nav>
+        </div>;
     }
 }

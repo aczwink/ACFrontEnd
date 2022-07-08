@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -63,7 +63,7 @@ export class RouterComponent extends Component
     }
 
     //Event handlers
-    public OnInitiated()
+    public override OnInitiated()
     {
         this.OnRouterStateChanged();
         this.subscription = this.router.state.Subscribe(this.OnRouterStateChanged.bind(this));
@@ -94,7 +94,7 @@ export class RouterComponent extends Component
         this.Update();
     }
 
-    public OnUnmounted()
+    override OnUnmounted()
     {
         this.subscription?.Unsubscribe();
     }

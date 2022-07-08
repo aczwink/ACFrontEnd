@@ -62,7 +62,7 @@ import { FileSelect } from "./Components/FileSelect";
 import { GalleryModal } from "./Components/GalleryModal";
 import { Menu, MenuItem } from "./Components/Menu";
 import { MenuManager } from "./Services/MenuManager";
-import { Navigation, NavigationGroup } from "./Components/Navigation";
+import { Navigation, NavItem } from "./Components/Navigation";
 import { LoadingButton } from "./Components/LoadingButton";
 import { ThemingService } from "./Services/ThemingService";
 import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
@@ -103,7 +103,7 @@ export
     MenuItem,
     MenuManager,
     Navigation,
-    NavigationGroup,
+    NavItem,
     NumberSpinner,
     ObservableEvent,
     PaginationComponent,

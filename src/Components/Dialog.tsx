@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,11 +19,10 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
-import { VirtualNode } from "../VirtualNode";
 import { ProgressSpinner } from "./ProgressSpinner";
 
 @Injectable
-export class Dialog extends Component<DialogProperties, VirtualNode>
+export class Dialog extends Component<DialogProperties, RenderValue>
 {
     constructor(private dialogRef: DialogRef)
     {
@@ -38,26 +37,21 @@ export class Dialog extends Component<DialogProperties, VirtualNode>
 
     //Protected methods
     protected Render(): RenderValue
-    {
-        const header = <div>
-            <h4>{this.input.title}</h4>
-            <button type="button" onclick={this.OnCancelActivated.bind(this)}>{"\u00d7"}</button>
-        </div>;
-
-        const footer = <div>
-            <div class="row">
-                <button type="button" disabled={!this.isValid} onclick={this.OnOkActivated.bind(this)}>OK</button>
-                <button type="button" onclick={this.OnCancelActivated.bind(this)} class="outline">Cancel</button>
+    {            
+        return <div class="modal fade show d-block" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{this.input.title}</h5>
+                    <button type="button" class="btn-close" onclick={this.OnCancelActivated.bind(this)} aria-label="Close" disabled={this.waiting} />
+                </div>
+                <div class="modal-body">{this.waiting ? <ProgressSpinner /> : this.children}</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" disabled={this.waiting || !this.isValid} onclick={this.OnOkActivated.bind(this)}>OK</button>
+                    <button type="button" class="btn btn-secondary" onclick={this.OnCancelActivated.bind(this)} disabled={this.waiting}>Cancel</button>
+                </div>
+                </div>
             </div>
-        </div>;
-
-        const loader = <div><ProgressSpinner /></div>;
-
-        return <div class={"dialog" + (this.waiting ? " waiting" : "")}>
-            {header}
-            {this.children}
-            {footer}
-            {loader}
         </div>;
     }
 

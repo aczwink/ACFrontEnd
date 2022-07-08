@@ -191,7 +191,7 @@ export class PopupManager
     {
         const containerId = "modalContainer";
         this.CreatePopupContainer(containerId, {
-            className: showBackdrop ? "show" : "showTransparent",
+            className: showBackdrop ? "modal-backdrop fade show" : "",
             onclick: (event: MouseEvent) => {
                 if(event.target === event.currentTarget)
                     this.CloseModal(ref)

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -78,6 +78,7 @@ declare module JSX
             class?: string;
             href?: string;
             onclick?: EventHandler<MouseEvent>;
+            role?: "button";
             style?: string;
             target?: "_blank";
             title?: string;
@@ -88,17 +89,20 @@ declare module JSX
         }
         br: {
         };
+        
         button: {
-            children: RenderValue;
-            type: "button" | "submit";
-
+            children?: RenderValue;
+            "aria-label"?: string;
             disabled?: boolean;
             title?: string;
+            type: "button" | "submit";
         } & JSX_Element;
 
         div: {
             children?: RenderValue;
             innerHTML?: string;
+            role?: "status";
+            tabindex?: string;
         } & JSX_Element;
 
         fieldset: {
@@ -121,6 +125,13 @@ declare module JSX
             style?: string;
         }
         h4: any;
+
+        h5: {
+            children: string;
+
+            class?: string;
+        };
+
         hr: {
         };
 
@@ -139,6 +150,7 @@ declare module JSX
 
         input: {
             checked?: boolean;
+            class?: string;
             disabled?: boolean;
             min?: number;
             onblur?: EventHandler<FocusEvent>;
@@ -156,7 +168,7 @@ declare module JSX
 
         label: {
             children: RenderValue;
-            class: string;
+            class?: string;
         };
 
         legend: {
@@ -219,12 +231,17 @@ declare module JSX
             class?: string;
             style?: string;
         };
+
         table: {
-            children: any[];
+            children: RenderValue;
             
             class?: string;
             id?: string;
         };
+
+        tbody: {
+        };
+
         textarea: {
             children: string;
             cols: string;
@@ -246,6 +263,10 @@ declare module JSX
 
             colspan?: string;
         };
+
+        thead: {
+        };
+
         tr: {
             children: RenderValue;
             class?: string;

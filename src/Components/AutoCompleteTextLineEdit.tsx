@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -61,7 +61,7 @@ export class AutoCompleteTextLineEdit extends Component<AutocompleteTextLineEdit
     private controller?: AutoCompleteController<string>;
     
     //Event handlers
-    public OnInitiated()
+    public override OnInitiated()
     {
         this.controller = new AutoCompleteController<string>({
             onChoiceSelected: keyValue => this.input.onChanged(keyValue.key),

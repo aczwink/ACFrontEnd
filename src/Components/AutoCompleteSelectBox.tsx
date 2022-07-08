@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2021-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -91,7 +91,7 @@ export class AutoCompleteSelectBox<KeyType> extends Component<AutoCompleteSelect
         this.activeFilter = false;
     }
 
-    public OnInitiated()
+    public override OnInitiated()
     {
         this.controller = new AutoCompleteController<KeyType>({
             onChoiceSelected: choice => {

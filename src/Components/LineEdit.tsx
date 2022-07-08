@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,13 +19,14 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 
-type LineEditInput = {
+interface LineEditInput
+{
     value: string;
 
     password?: boolean;
 
     onChanged: (newValue: string) => void;
-};
+}
 
 @Injectable
 export class LineEdit extends Component<LineEditInput>
@@ -34,7 +35,7 @@ export class LineEdit extends Component<LineEditInput>
     protected Render(): RenderValue
     {
         const type = this.input.password === true ? "password" : "text";
-        return <input type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;
+        return <input class="form-control" type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;
     }
 
     //Event handlers
