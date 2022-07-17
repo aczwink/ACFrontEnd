@@ -223,6 +223,12 @@ declare module JSX
             onchange?: EventHandler;
             oninput?: EventHandler<InputEvent>;
         };
+
+        small: {
+            children: string;
+            class?: string;
+        };
+
         source: {
             src: string;
         };
@@ -244,12 +250,15 @@ declare module JSX
 
         textarea: {
             children: string;
+            class?: string;
             cols: string;
+            onchange?: EventHandler;
             onkeydown?: EventHandler<KeyboardEvent>;
             oninput?: EventHandler<InputEvent>;
             readonly?: boolean;
             rows: string;
         };
+        
         td: {
             children: RenderValue;
 

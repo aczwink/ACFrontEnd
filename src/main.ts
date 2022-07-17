@@ -38,7 +38,7 @@ import { Router } from "./Services/Router/Router";
 import { PrimitiveDictionary } from "./Model/Dictionary";
 import { ObservableEvent } from "./ObservableEvent";
 import { TitleService } from "./Services/TitleService";
-import { TabGroup, Tab, TabHeader } from "./Components/TabGroup";
+import { TabGroup, Tab, TabHeader } from "./Components/TabHeader";
 import { TimeUtil } from "./TimeUtil";
 import { Gallery } from "./Components/Gallery";
 import { CheckBox } from "./Components/CheckBox";

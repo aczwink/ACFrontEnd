@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ export class NumberSpinner extends Component<NumberEditInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input type="number" value={this.input.value} onchange={this.OnChanged.bind(this)} step={this.input.step.toString()} />;
+        return <input type="number" class="form-control" value={this.input.value} onchange={this.OnChanged.bind(this)} step={this.input.step.toString()} />;
     }
 
     //Event handlers

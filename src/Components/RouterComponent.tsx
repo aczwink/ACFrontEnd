@@ -38,15 +38,11 @@ export class RouterComponent extends Component
     {        
         if(this.component === null)
             return null;
-        return {
-            type: this.component,
-            properties: null,
-            children: []
-        };
+        return this.component;
     }
 
     //Private members
-    private component: Instantiatable<Component<null | {}>> | null;
+    private component: SingleRenderValue | null;
     private subscription?: Subscription;
 
     //Private methods
@@ -87,7 +83,22 @@ export class RouterComponent extends Component
         }
         else
         {
-            this.component = node.route.component || null;
+            const component = node.route.component;
+            if((component === undefined))
+                this.component = null;
+            else
+            {
+                if(("type" in component) && (typeof component !== "string"))
+                    this.component = component;
+                else
+                {
+                    this.component = {
+                        type: component,
+                        properties: null,
+                        children: []
+                    };
+                }
+            }
             this.injector.RegisterInstance(RouterStateNode, node.child || null);
         }
 

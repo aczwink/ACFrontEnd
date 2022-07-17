@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@ import { RouteGuard } from "./RouteGuard";
 export interface Route
 {
     path: string;
-    component?: Instantiatable<Component<null | {}>>;
+    component?: Instantiatable<Component<null | {}>> | RenderElement;
     redirect?: string;
     children?: Route[];
     guards?: Instantiatable<RouteGuard>[];

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,17 +29,6 @@ export class Tab extends Component<TabInput, string>
     }
 }
 
-export class TabHeader extends Component<{}, RenderValue>
-{
-    //Protected methods
-    protected Render(): RenderValue
-    {
-        return <div class="subPageNav">
-            {...this.children}
-        </div>;
-    }
-}
-
 type TabGroupInput = {
     activeKey: string;
     activeKeyChanged: (newKey: string) => void;
@@ -51,7 +40,7 @@ export class TabGroup extends Component<TabGroupInput, RenderComponentChild<Tab>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <ul>{...this.RenderHeader()}</ul>;
+        return <ul class="nav nav-tabs">{...this.RenderHeader()}</ul>;
     }
 
     //Private methods
@@ -65,10 +54,19 @@ export class TabGroup extends Component<TabGroupInput, RenderComponentChild<Tab>
         const activeTab = this.FindActiveTab();
 
         return this.children.map(tab => {
-            const className = tab === activeTab ? "active" : "";
-            return <li class={className}>
-                <a onclick={this.input.activeKeyChanged.bind(this, tab.properties.key)}>{tab}</a>
+            const className = "nav-link" + (tab === activeTab ? " active" : "");
+            return <li class="nav-item">
+                <a class={className} onclick={this.input.activeKeyChanged.bind(this, tab.properties.key)}>{tab}</a>
             </li>}
         );
+    }
+}
+
+export class TabHeader extends Component<{}, RenderValue>
+{
+    //Protected methods
+    protected Render(): RenderValue
+    {
+        return this.children;
     }
 }
