@@ -20,6 +20,7 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 
 type NumberEditInput = {
+    class?: string;
     value: number;
     step: number | "any";
     onChanged: (newValue: number) => void;
@@ -31,7 +32,7 @@ export class NumberSpinner extends Component<NumberEditInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input type="number" class="form-control" value={this.input.value} onchange={this.OnChanged.bind(this)} step={this.input.step.toString()} />;
+        return <input type="number" class={"form-control " + this.input.class} value={this.input.value} onchange={this.OnChanged.bind(this)} step={this.input.step.toString()} />;
     }
 
     //Event handlers

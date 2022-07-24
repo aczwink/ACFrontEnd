@@ -220,6 +220,7 @@ declare module JSX
         select: {
             children: any[];
 
+            class?: string;
             onchange?: EventHandler;
             oninput?: EventHandler<InputEvent>;
         };

@@ -18,7 +18,7 @@
 import { Dictionary } from "acts-util-core";
 import { Injectable } from "../ComponentManager";
 
-export type HTTPMethod = "DELETE" | "GET" | "POST" | "PUT";
+export type HTTPMethod = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
 
 export interface RequestHeaders
 {

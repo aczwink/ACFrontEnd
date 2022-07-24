@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ export class Select extends Component<{ onChanged: (newValue: string[]) => void;
     //Protected methods
     protected Render(): RenderValue
     {
-        return <select onchange={this.OnSelectionChanged.bind(this)}>
+        return <select class="form-select" onchange={this.OnSelectionChanged.bind(this)}>
             <option disabled selected={!this.IsChildSelected(this.children)}>Select an option</option>
             {...this.children}
         </select>;

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import { Router } from "../Services/Router/Router";
 import { Injectable } from "../ComponentManager";
 
 @Injectable
-export class RouterButton extends Component<{ route: string; }, RenderValue>
+export class RouterButton extends Component<{ class?: string; route: string; }, RenderValue>
 {
     //Constructor
     constructor(private router: Router)
@@ -32,7 +32,7 @@ export class RouterButton extends Component<{ route: string; }, RenderValue>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <button type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
+        return <button class={this.input.class} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
     }
 
     //Event handlers
