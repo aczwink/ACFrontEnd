@@ -45,7 +45,7 @@ export class AutoCompleteTextLineEdit extends Component<AutocompleteTextLineEdit
         const className = "autoComplete" + (this.controller.ShouldShowSuggestions() ? " withSuggestions" : "");
         const hintText = this.input.hint || "";
 
-        return <span class={className}>
+        return <span className={className}>
             <input type="text" value={this.input.value} placeholder={hintText}
                 onblur={this.controller.HandleBlur.bind(this)}
                 onfocus={this.controller.HandleFocus.bind(this)}

@@ -21,7 +21,7 @@ import { Injectable } from "../ComponentManager";
 
 interface LineEditInput
 {
-    class?: string;
+    className?: string;
     value: string;
 
     password?: boolean;
@@ -36,7 +36,7 @@ export class LineEdit extends Component<LineEditInput>
     protected Render(): RenderValue
     {
         const type = this.input.password === true ? "password" : "text";
-        return <input class={"form-control " + this.input.class} type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;
+        return <input className={"form-control " + this.input.className} type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;
     }
 
     //Event handlers

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,6 @@ export class InfoMessage extends Component<null, RenderValue>
 {
     protected Render(): RenderValue
     {
-        return <div class="infoMessage">{this.children}</div>;
+        return <div className="infoMessage">{this.children}</div>;
     }
 }

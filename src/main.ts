@@ -68,6 +68,7 @@ import { ThemingService } from "./Services/ThemingService";
 import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
 import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
 import { APIServiceBase, HTTPInterceptor } from "./Services/APIServiceBase";
+import { SingleSelect } from "./Components/SingleSelect";
 
 export
 {
@@ -122,6 +123,7 @@ export
     RouterState,
     Select,
     SelectableTable,
+    SingleSelect,
     Stack,
     StackChild,
     Stepper,

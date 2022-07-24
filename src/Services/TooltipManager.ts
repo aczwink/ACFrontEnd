@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,15 +40,18 @@ export class TooltipManager
 
         const tooltip: RenderValue = {
             type: "div",
+            attributes: {},
             properties: { className: "tooltip " + properties.position, style: "left: " + coords.x + "px; top: " + coords.y + "px" },
             children: [
                 {
                     type: "div",
+                    attributes: {},
                     properties: { className: "arrow" + this.TranslateTooltipPositionToArrowClass(properties.position) },
                     children: []
                 },
                 {
                     type: "div",
+                    attributes: {},
                     properties: null,
                     children: [renderNode]
                 }

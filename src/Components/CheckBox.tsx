@@ -30,7 +30,7 @@ export class CheckBox extends Component<CheckBoxInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input class="form-check-input" type="checkbox" checked={this.input.value} onclick={this.OnToggled.bind(this)} />;
+        return <input className="form-check-input" type="checkbox" checked={this.input.value} onclick={this.OnToggled.bind(this)} />;
     }
 
     //Event handlers

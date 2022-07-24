@@ -54,8 +54,8 @@ export class Navigation extends Component<{}, RenderValue>
 {
     protected Render(): RenderValue
     {
-        return <div class="container">
-            <nav class="d-flex justify-content-between align-items-center">{...this.children}</nav>
+        return <div className="container">
+            <nav className="d-flex justify-content-between align-items-center">{...this.children}</nav>
         </div>;
     }
 }

@@ -28,12 +28,25 @@ interface Instantiatable<T> extends Function
 
 type RenderText = string | number | boolean;
 type RenderOther = null | undefined;
-interface RenderElement
+interface RenderDOMElement
 {
-    type: "const" | "fragment" | string | Instantiatable<Renderable>;
+    type: string;
+    attributes: any;
     properties: any;
     children: RenderValue[];
 }
+interface RenderComponentElement
+{
+    type: Instantiatable<Renderable>;
+    properties: any;
+    children: RenderValue[];
+}
+interface RenderSpecialElement
+{
+    type: "const" | "fragment";
+    children: RenderValue[];
+}
+type RenderElement = RenderDOMElement | RenderComponentElement | RenderSpecialElement;
 type SingleRenderValue = RenderText | RenderOther | RenderElement;
 type RenderValue = SingleRenderValue | RenderValue[];
 
@@ -49,7 +62,7 @@ interface JSX_GlobalEventHandlers
 
 interface JSX_Element extends JSX_GlobalEventHandlers
 {
-    class?: string;
+    className?: string;
     style?: string;
 }
 
@@ -75,14 +88,13 @@ declare module JSX
         a: {
             children: RenderValue;
 
-            class?: string;
             href?: string;
             onclick?: EventHandler<MouseEvent>;
             role?: "button";
-            style?: string;
             target?: "_blank";
             title?: string;
-        };
+        } & JSX_Element;
+
         abbr: {
             children: string;
             title: string;
@@ -102,7 +114,7 @@ declare module JSX
             children?: RenderValue;
             innerHTML?: string;
             role?: "status";
-            tabindex?: string;
+            tabIndex?: string;
         } & JSX_Element;
 
         fieldset: {
@@ -113,24 +125,25 @@ declare module JSX
             children: RenderValue;
             onsubmit: EventHandler;
         };
-        h1: any;
+
+        h1: {
+        };
+
         h2: {
             children: RenderValue;
-
-            class?: string;
-        };
+        } & JSX_Element;
         h3: {
             children: RenderValue;
 
             style?: string;
         }
-        h4: any;
+        
+        h4: {
+        };
 
         h5: {
             children: string;
-
-            class?: string;
-        };
+        } & JSX_Element;
 
         hr: {
         };
@@ -138,7 +151,7 @@ declare module JSX
         iframe: {
             src: string;
 
-            allowfullscreen?: boolean;
+            allowFullscreen?: boolean;
             style?: string;
         };
 
@@ -150,7 +163,6 @@ declare module JSX
 
         input: {
             checked?: boolean;
-            class?: string;
             disabled?: boolean;
             min?: number;
             onblur?: EventHandler<FocusEvent>;
@@ -164,12 +176,11 @@ declare module JSX
             step?: string;
             type: "checkbox" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
             value?: number | string;
-        };
+        } & JSX_Element;
 
         label: {
             children: RenderValue;
-            class?: string;
-        };
+        } & JSX_Element;
 
         legend: {
             children: RenderText;
@@ -178,16 +189,17 @@ declare module JSX
         li: {
             children: RenderValue;
 
-            class?: string;
-            tabindex?: number;
+            tabIndex?: number;
 
             onblur?: EventHandler<FocusEvent>;
             onfocus?: EventHandler<FocusEvent>;
             onkeyup?: EventHandler<KeyboardEvent>;
             onmousedown?: EventHandler<MouseEvent>;
-        };
+        } & JSX_Element;
 
-        nav: any;
+        nav: {
+            children: RenderValue;
+        } & JSX_Element;
 
         object: {
             data: string;
@@ -217,61 +229,57 @@ declare module JSX
             style?: string;
             value: number | string;
         };
+
         select: {
             children: any[];
 
-            class?: string;
             onchange?: EventHandler;
             oninput?: EventHandler<InputEvent>;
-        };
+        } & JSX_Element;
 
         small: {
             children: string;
-            class?: string;
-        };
+        } & JSX_Element;
 
         source: {
             src: string;
         };
+
         span: {
             children?: RenderValue;
-            class?: string;
-            style?: string;
-        };
+        } & JSX_Element;
 
         table: {
             children: RenderValue;
             
-            class?: string;
             id?: string;
-        };
+        } & JSX_Element;
 
         tbody: {
         };
 
         textarea: {
             children: string;
-            class?: string;
+
             cols: string;
             onchange?: EventHandler;
             onkeydown?: EventHandler<KeyboardEvent>;
             oninput?: EventHandler<InputEvent>;
-            readonly?: boolean;
+            readOnly?: boolean;
             rows: string;
-        };
+        } & JSX_Element;
         
         td: {
             children: RenderValue;
 
-            class?: string;
-            colspan?: string;
-
+            colSpan?: string;
             onclick?: EventHandler<MouseEvent>;
-        };
+        } & JSX_Element;
+
         th: {
             children: RenderValue;
 
-            colspan?: string;
+            colSpan?: string;
         };
 
         thead: {
@@ -279,11 +287,15 @@ declare module JSX
 
         tr: {
             children: RenderValue;
-            class?: string;
+
             oncontextmenu?: EventHandler<MouseEvent>;
             onselectstart?: EventHandler<Event>;
-        };
-        ul: any;
+        } & JSX_Element;
+
+        ul: {
+            children: RenderValue;
+        } & JSX_Element;
+
         video: {
             children: RenderValue;
 

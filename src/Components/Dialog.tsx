@@ -38,17 +38,17 @@ export class Dialog extends Component<DialogProperties, RenderValue>
     //Protected methods
     protected Render(): RenderValue
     {            
-        return <div class="modal fade show d-block" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{this.input.title}</h5>
-                    <button type="button" class="btn-close" onclick={this.OnCancelActivated.bind(this)} aria-label="Close" disabled={this.waiting} />
+        return <div className="modal fade show d-block" tabIndex="-1">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title">{this.input.title}</h5>
+                    <button type="button" className="btn-close" onclick={this.OnCancelActivated.bind(this)} aria-label="Close" disabled={this.waiting} />
                 </div>
-                <div class="modal-body">{this.waiting ? <ProgressSpinner /> : this.children}</div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" disabled={this.waiting || !this.isValid} onclick={this.OnOkActivated.bind(this)}>OK</button>
-                    <button type="button" class="btn btn-secondary" onclick={this.OnCancelActivated.bind(this)} disabled={this.waiting}>Cancel</button>
+                <div className="modal-body">{this.waiting ? <ProgressSpinner /> : this.children}</div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-primary" disabled={this.waiting || !this.isValid} onclick={this.OnOkActivated.bind(this)}>OK</button>
+                    <button type="button" className="btn btn-secondary" onclick={this.OnCancelActivated.bind(this)} disabled={this.waiting}>Cancel</button>
                 </div>
                 </div>
             </div>

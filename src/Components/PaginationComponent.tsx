@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -69,18 +69,24 @@ export class PaginationComponent extends Component<PaginationComponentInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <div class="paginator">
-            <div class="limitSelection">
-                Items per page:
-                <Select onChanged={this.OnItemCountChanged.bind(this)}>
-                    {...this.RenderLimitChoices()}
-                </Select>
+        return <div className="row justify-content-center align-items-center">
+            <div className="col-auto">
+                <div className="row justify-content-center align-items-center">
+                    <div className="col-auto">Items per page:</div>
+                    <div className="col-auto">
+                        <Select onChanged={this.OnItemCountChanged.bind(this)}>
+                            {...this.RenderLimitChoices()}
+                        </Select>
+                    </div>
+                </div>
             </div>
-            <div class="statusText">{this.GetPageFromToText()}</div>
-            <ul class="paginationNavigation">
-                {this.CreatePageLink("\u2039", this.page - 1)}
-				{this.CreatePageLink("\u203A", this.page + 1)}
-            </ul>
+            <div className="col-auto">{this.GetPageFromToText()}</div>
+            <div className="col-auto">
+                <ul className="pagination m-0">
+                    {this.CreatePageLink("\u2039", this.page - 1)}
+                    {this.CreatePageLink("\u203A", this.page + 1)}
+                </ul>
+            </div>
         </div>;
     }
 
@@ -108,17 +114,17 @@ export class PaginationComponent extends Component<PaginationComponentInput>
     {
         let className;
         if((page < 0) || (page >= this.nPages))
-			className = "disabled";
+			className = " disabled";
 		else if((this.page == page))
 		{
 			if(isActive)
-				className = "active";
+				className = " active";
 			else
-				className = "disabled";
+				className = " disabled";
         }
         
-        return <li>
-            <a class={className} onclick={this.OnPageLinkClicked.bind(this, page)}>{text}</a>
+        return <li className={"page-item" + className}>
+            <a className={"page-link"} onclick={this.OnPageLinkClicked.bind(this, page)}>{text}</a>
         </li>;
     }
 

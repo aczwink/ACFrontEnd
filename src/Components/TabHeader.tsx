@@ -40,7 +40,7 @@ export class TabGroup extends Component<TabGroupInput, RenderComponentChild<Tab>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <ul class="nav nav-tabs">{...this.RenderHeader()}</ul>;
+        return <ul className="nav nav-tabs">{...this.RenderHeader()}</ul>;
     }
 
     //Private methods
@@ -49,14 +49,14 @@ export class TabGroup extends Component<TabGroupInput, RenderComponentChild<Tab>
         return this.children.find( tab => tab.properties.key === this.input.activeKey );
     }
 
-    private RenderHeader()
+    private RenderHeader(): SingleRenderValue[]
     {
         const activeTab = this.FindActiveTab();
 
         return this.children.map(tab => {
             const className = "nav-link" + (tab === activeTab ? " active" : "");
-            return <li class="nav-item">
-                <a class={className} onclick={this.input.activeKeyChanged.bind(this, tab.properties.key)}>{tab}</a>
+            return <li className="nav-item">
+                <a className={className} onclick={this.input.activeKeyChanged.bind(this, tab.properties.key)}>{tab}</a>
             </li>}
         );
     }

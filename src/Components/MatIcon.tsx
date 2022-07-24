@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,12 +20,12 @@ import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Injectable } from "../ComponentManager";
 
 @Injectable
-export class MatIcon extends Component<{ class?: string; }, RenderText>
+export class MatIcon extends Component<{ className?: string; }, RenderText>
 {
     //Protected methods
     protected Render(): RenderValue
     {
-        const additionalClasses = this.input.class === undefined ? "" : " " + this.input.class;
-        return <div class={"material-icons" + additionalClasses}>{this.children}</div>;
+        const additionalClasses = this.input.className === undefined ? "" : " " + this.input.className;
+        return <div className={"material-icons" + additionalClasses}>{this.children}</div>;
     }
 }

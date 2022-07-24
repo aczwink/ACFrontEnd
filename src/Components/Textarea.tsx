@@ -36,7 +36,7 @@ export class Textarea extends Component<TextAreaInput>
         const cols = (this.input.columns || 80).toString();
         const rows = (this.input.rows || 24).toString();
 
-        return <textarea class="form-control" cols={cols} rows={rows} onkeydown={this.input.onKeyDown} oninput={this.OnValueChanged.bind(this)}>{this.input.value}</textarea>
+        return <textarea className="form-control" cols={cols} rows={rows} onkeydown={this.input.onKeyDown} oninput={this.OnValueChanged.bind(this)}>{this.input.value}</textarea>
     }
 
     //Event handlers

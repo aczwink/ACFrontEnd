@@ -28,17 +28,17 @@ export class FormField extends Component<{ title: string; description?: string }
     {
         if(this.IsCheckBox())
         {
-            return <div class="form-check">
+            return <div className="form-check">
                 {...this.children}
-                <label class="form-check-label">{this.input.title}</label>
-                {this.input.description === undefined ? null : <div class="form-text">{this.input.description}</div>}
+                <label className="form-check-label">{this.input.title}</label>
+                {this.input.description === undefined ? null : <div className="form-text">{this.input.description}</div>}
             </div>;
         }
 
-        return <div class="mb-3">
-            <label class="form-label">{this.input.title}</label>
+        return <div className="mb-3">
+            <label className="form-label">{this.input.title}</label>
             {...this.children}
-            {this.input.description === undefined ? null : <div class="form-text">{this.input.description}</div>}
+            {this.input.description === undefined ? null : <div className="form-text">{this.input.description}</div>}
         </div>;
     }
 

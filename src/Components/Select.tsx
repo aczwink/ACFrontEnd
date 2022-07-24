@@ -26,7 +26,7 @@ export class Select extends Component<{ onChanged: (newValue: string[]) => void;
     //Protected methods
     protected Render(): RenderValue
     {
-        return <select class="form-select" onchange={this.OnSelectionChanged.bind(this)}>
+        return <select className="form-select" onchange={this.OnSelectionChanged.bind(this)}>
             <option disabled selected={!this.IsChildSelected(this.children)}>Select an option</option>
             {...this.children}
         </select>;

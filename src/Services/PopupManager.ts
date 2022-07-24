@@ -78,6 +78,7 @@ export class PopupManager
         {
             children.push({
                 type: "button",
+                attributes: {},
                 properties: {
                     textContent: "\u00d7",
                     onclick: () => ref.Close()
@@ -93,6 +94,7 @@ export class PopupManager
 
         const modal: RenderElement = {
             type: "div",
+            attributes: {},
             properties: {
                 className
             },
@@ -149,7 +151,7 @@ export class PopupManager
                 properties = {};
             properties.id = containerId;
             container = {
-                container: new VirtualElement("div", properties),
+                container: new VirtualElement("div", properties, {}),
                 popups: [],
                 popupRefs: []
             };

@@ -31,50 +31,41 @@ interface AutoCompleteSelectBoxInput<KeyType> extends ControllerConfig
 
 export class AutoCompleteSelectBox<KeyType> extends Component<AutoCompleteSelectBoxInput<KeyType>>
 {
-    constructor()
-    {
-        super();
-
-        this.activeFilter = false;
-    }
-
     //Protected methods
     protected Render(): RenderValue
     {
         if(this.controller === undefined)
             return <ProgressSpinner />;
-            
-        const className = "autoCompleteMultiSelectBox" + (this.controller.ShouldShowSuggestions() ? " withSuggestions" : "") + (this.controller.focused ? " focused" : "");
 
-        return <span class={className}>
-            {this.RenderContent()}
-            {this.controller.RenderSuggestions()}
-        </span>;
+        const displayValue = (this.input.selection === null) ? "Select an option" : this.input.selection.displayValue;
+        return <div className="dropdown">
+            <button className="form-select" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick={this.OnFocus.bind(this)}>{displayValue}</button>
+            <div className="dropdown-menu">
+                <div className="px-2 py-1">
+                    <input className="form-control" type="text" value={this.controller!.filterText} onkeyup={this.controller!.HandleKeyUpEvent.bind(this.controller)} />
+                </div>
+                <div className="dropdown-divider" />
+                {this.controller.RenderSuggestions()}
+            </div>
+        </div>;
     }
 
     //Private members
     private controller?: AutoCompleteController<KeyType>;
-    private activeFilter: boolean;
 
     //Private methods
     private RenderContent()
     {
-        if((this.input.selection === null) || this.activeFilter)
+        /*if((this.input.selection === null) || this.activeFilter)
         {
-            return <input type="text" value={this.controller!.filterText}
                 onblur={this.OnBlur.bind(this)}
                 onfocus={this.controller!.HandleFocus.bind(this.controller)}
-                onkeyup={this.controller!.HandleKeyUpEvent.bind(this.controller)}
                 />;
-        }
-
-        return <ul>
-            <li tabindex={-1} onblur={this.controller!.HandleBlur.bind(this.controller)}
-                onfocus={this.OnFocusSelectedItem.bind(this)}>
-                {this.input.selection.displayValue}
+        }*/
+        /*
+        <li tabIndex={-1} onblur={this.controller!.HandleBlur.bind(this.controller)}>
             </li>
-            <li> </li>
-        </ul>; //TODO: the second li should show the arrow
+             */
     }
 
     private TryFocus()
@@ -88,16 +79,12 @@ export class AutoCompleteSelectBox<KeyType> extends Component<AutoCompleteSelect
     private OnBlur()
     {
         this.controller!.HandleBlur();
-        this.activeFilter = false;
     }
 
     public override OnInitiated()
     {
         this.controller = new AutoCompleteController<KeyType>({
-            onChoiceSelected: choice => {
-                this.activeFilter = false;
-                this.input.onChanged(choice);
-            },
+            onChoiceSelected: choice => this.input.onChanged(choice),
             onFilterTextChanged: () => null,
             onLoadSuggestions: this.input.onLoadSuggestions,
             onUpdate: this.Update.bind(this),
@@ -106,11 +93,9 @@ export class AutoCompleteSelectBox<KeyType> extends Component<AutoCompleteSelect
         });
     }
 
-    private OnFocusSelectedItem(event: Event)
+    private OnFocus(event: FocusEvent)
     {
         this.controller!.HandleFocus();
-        this.activeFilter = true;
-        this.controller!.Search(this.input.selection!.displayValue);
         this.UpdateSync();
         this.TryFocus();
     }

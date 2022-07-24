@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,7 @@ export class LoadingButton extends Component<LoadingButtonInput, RenderValue>
         if(this.input.isLoading)
             className += " active";
 
-        return <button type="button" class={className} disabled={this.input.isLoading} onclick={this.input.onclick}>
+        return <button type="button" className={className} disabled={this.input.isLoading} onclick={this.input.onclick}>
             <ProgressSpinner />
             {this.children}
         </button>;

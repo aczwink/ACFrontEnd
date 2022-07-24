@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,7 @@ export class Gallery extends Component<Images>
     {
         const imgClass = this.input.imgClass ? this.input.imgClass : "";
         return <fragment>
-            <img onclick={this.OnImageClicked.bind(this, index)} class={imgClass} src={image.url} />
+            <img onclick={this.OnImageClicked.bind(this, index)} className={imgClass} src={image.url} />
             {image.caption}
         </fragment>;
     }

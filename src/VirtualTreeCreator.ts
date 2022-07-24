@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import { VirtualElement } from "./VirtualElement";
 import { VirtualFragment } from "./VirtualFragment";
 import { VirtualInstance } from "./VirtualInstance";
 import { Instantiatable } from "acts-util-core";
+import { IsRenderComponentElement } from "./RenderData";
 
 class VirtualTreeCreator
 {
@@ -37,27 +38,26 @@ class VirtualTreeCreator
 
         if((typeof renderValue === "string") || (typeof renderValue === "number") || (typeof renderValue === "boolean"))
             return new VirtualTextNode(renderValue);
-        
-        if(typeof(renderValue.type) == "string")
-        {
-            if(renderValue.type == "const")
-            {
-                const vNode = new VirtualConstNode();
-                vNode.children = this.TransformArray(renderValue.children);
-                return vNode;
-            }
 
-            if(renderValue.type == "fragment")
-            {
-                const vNode =  new VirtualFragment(this.TransformArray(renderValue.children));
-                return vNode;
-            }
+        if(IsRenderComponentElement(renderValue))
+            return new VirtualInstance(renderValue.type as unknown as Instantiatable<Component<any, RenderValue[]>>, renderValue.properties, renderValue.children);
             
-            const vNode = new VirtualElement(renderValue.type, renderValue.properties, this.TransformArray(renderValue.children));
+        if(renderValue.type === "const")
+        {
+            const vNode = new VirtualConstNode();
+            vNode.children = this.TransformArray(renderValue.children);
             return vNode;
         }
 
-        return new VirtualInstance(renderValue.type as unknown as Instantiatable<Component<any, RenderValue[]>>, renderValue.properties, renderValue.children);
+        if(renderValue.type === "fragment")
+        {
+            const vNode =  new VirtualFragment(this.TransformArray(renderValue.children));
+            return vNode;
+        }
+
+        const renderDOMElement = renderValue as RenderDOMElement;        
+        const vNode = new VirtualElement(renderValue.type, renderDOMElement.properties, renderDOMElement.attributes, this.TransformArray(renderValue.children));
+        return vNode;
     }
 
     //Private methods

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,4 +30,9 @@ export function IsRenderElement(renderValue: RenderValue): renderValue is Render
     if(IsRenderText(renderValue))
         return false;
     return true;
+}
+
+export function IsRenderComponentElement(renderValue: RenderValue): renderValue is RenderComponentElement
+{
+    return IsRenderElement(renderValue) && (typeof renderValue.type !== "string");
 }

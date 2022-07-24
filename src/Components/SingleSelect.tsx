@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,24 +19,26 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
-type SwitchInput = {
-    checked: boolean;
-    onChanged: (newValue: boolean) => void;
-};
+interface SingleSelectInput
+{
+    selectedIndex: number;
+    onSelectionChanged: (newIndex: number) => void;
+}
 
-export class Switch extends Component<SwitchInput>
+export class SingleSelect extends Component<SingleSelectInput, RenderValue>
 {
     protected Render(): RenderValue
     {
-        return <div className="form-check form-switch">
-            <input className="form-check-input" type="checkbox" checked={this.input.checked} onclick={this.OnToggled.bind(this)} />
+        return <div className="dropdown">
+            <button className="form-select" type="button" data-bs-toggle="dropdown" aria-expanded="false">{this.children[this.input.selectedIndex]}</button>
+            <ul className="dropdown-menu">{this.children.map(this.RenderItem.bind(this))}</ul>
         </div>;
     }
 
-    //Event handlers
-    private OnToggled(event: Event)
+    //Private methods
+    private RenderItem(child: RenderValue, index: number)
     {
-        const newValue = (event.target! as HTMLInputElement).checked;
-        this.input.onChanged(newValue);
+        const className = "dropdown-item" + (index === this.input.selectedIndex ? " active" : "");
+        return <li><button className={className} type="button" onclick={() => this.input.onSelectionChanged(index)}>{child}</button></li>;
     }
 }

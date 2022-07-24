@@ -21,7 +21,7 @@ import { Router } from "../Services/Router/Router";
 import { Injectable } from "../ComponentManager";
 
 @Injectable
-export class RouterButton extends Component<{ class?: string; route: string; }, RenderValue>
+export class RouterButton extends Component<{ className?: string; route: string; }, RenderValue>
 {
     //Constructor
     constructor(private router: Router)
@@ -32,7 +32,7 @@ export class RouterButton extends Component<{ class?: string; route: string; }, 
     //Protected methods
     protected Render(): RenderValue
     {
-        return <button class={this.input.class} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
+        return <button className={this.input.className} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
     }
 
     //Event handlers

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,7 +38,7 @@ export class Stepper extends Component<{ onAccept: () => void }, RenderComponent
         if(this.currentPage == 0)
             prevButton = null;
         else
-            prevButton = <button type="button" class="outline" onclick={this.OnPrevious.bind(this)}>Previous</button>;
+            prevButton = <button type="button" className="outline" onclick={this.OnPrevious.bind(this)}>Previous</button>;
 
         let nextButtonText;
         if(this.currentPage == pages.length - 1)
@@ -46,18 +46,18 @@ export class Stepper extends Component<{ onAccept: () => void }, RenderComponent
         else
             nextButtonText = "Next";
         
-        return <div class="stepper">
+        return <div className="stepper">
             <h4>{currentPage.properties.title}</h4>
 
             <div>{currentPage}</div>
 
             <div>
-                <div class="row">
+                <div className="row">
                     {prevButton}
                     <button type="button" disabled={!currentPage.properties.validate()} onclick={this.OnNext.bind(this)}>{nextButtonText}</button>
                 </div>
-                <div class="row">
-                    <ul class="wizardStepper">
+                <div className="row">
+                    <ul className="wizardStepper">
                         {...this.children.map( (_value, index) => this.RenderStepperDot(index) )}
                     </ul>
                 </div>
@@ -76,7 +76,7 @@ export class Stepper extends Component<{ onAccept: () => void }, RenderComponent
             className = "finished";
         else if(index == this.currentPage)
             className = "active";
-        return <li class={className}> </li>;
+        return <li className={className}> </li>;
     }
 
     //Event handlers

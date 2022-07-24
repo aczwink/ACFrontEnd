@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,11 +19,12 @@ import { VirtualNode } from "./VirtualNode";
 
 export class VirtualElement extends VirtualNode
 {
-    constructor(tagName: string, properties: any, children?: VirtualNode[])
+    constructor(tagName: string, properties: any, attributes: any, children?: VirtualNode[])
     {
         super();
         this._tagName = tagName;
         this._properties = properties;
+        this._attributes = attributes;
 
         if(children !== undefined)
             this.children = children;
@@ -49,7 +50,7 @@ export class VirtualElement extends VirtualNode
     protected CloneSelf(): VirtualNode
     {
         const props = this.properties === null ? null : this.properties.DeepClone();
-        return new VirtualElement(this._tagName, props);
+        return new VirtualElement(this._tagName, props, this._attributes.DeepClone());
     }
 
     protected RealizeSelf(): Node
@@ -58,6 +59,15 @@ export class VirtualElement extends VirtualNode
             
         for(var key in this._properties)
             (element as any)[key] = this._properties[key];
+
+        for (const key in this._attributes)
+        {
+            if (Object.prototype.hasOwnProperty.call(this._attributes, key))
+            {
+                const value = this._attributes[key];
+                element.setAttribute(key, value);
+            }
+        }
 
         return element;
     }
@@ -90,6 +100,7 @@ export class VirtualElement extends VirtualNode
     //Private members
     private _tagName: string;
     private _properties: any;
+    private _attributes: any;
 
     //Private methods
     /**

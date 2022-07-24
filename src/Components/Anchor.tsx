@@ -32,7 +32,7 @@ export class Anchor extends Component<{ route: string; class?: string; }, Render
     //Protected methods
     protected Render(): RenderValue
     {
-        return <a class={this.input.class} href={this.input.route} onclick={this.OnActivated.bind(this)}>{...this.children}</a>;
+        return <a className={this.input.class} href={this.input.route} onclick={this.OnActivated.bind(this)}>{...this.children}</a>;
     }
 
     //Event handlers

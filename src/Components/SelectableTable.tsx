@@ -43,11 +43,13 @@ export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<
     {
         this.rowCounter = 0;
 
-        return <table>
-            <tr>
-                {this.input.columns.map( col => <th>{col}</th>)}
-            </tr>
-            {...this.children.map(row => this.RenderChild(row))}
+        return <table className="table table-striped table-hover">
+            <thead>
+                <tr>
+                    {this.input.columns.map( col => <th>{col}</th>)}
+                </tr>
+            </thead>
+            <tbody>{...this.children.map(row => this.RenderChild(row))}</tbody>
         </table>;
     }
 
@@ -84,7 +86,7 @@ export class SelectableTable<RowKeyType> extends Component<SelectableTableInput<
             if(child.properties === null)
                 child.properties = {};
             if(isSelected)
-                child.properties.className = "selected";
+                child.properties.className = "table-active";
             child.properties.onclick = this.OnRowClick.bind(this, rowKey);
             child.properties.onselectstart = this.OnStartSelection.bind(this);
 

@@ -57,10 +57,10 @@ export class GalleryModal<T extends GalleryImage = GalleryImage> extends Compone
             rightStyle = "display: none";
             
         return <div>
-            <button type="button" class="leftArrow" style={leftStyle} onclick={this.OnGoLeft.bind(this)}>{"\u2190"}</button>
+            <button type="button" className="leftArrow" style={leftStyle} onclick={this.OnGoLeft.bind(this)}>{"\u2190"}</button>
             <img src={this.input.images[this.currentImageIndex].url} />
             {this.RenderImageControls()}
-            <button type="button" class="rightArrow" style={rightStyle} onclick={this.OnGoRight.bind(this)}>{"\u2192"}</button>
+            <button type="button" className="rightArrow" style={rightStyle} onclick={this.OnGoRight.bind(this)}>{"\u2192"}</button>
         </div>;
     }
 

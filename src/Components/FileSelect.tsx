@@ -31,7 +31,7 @@ export class FileSelect extends Component<FileSelectInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input class={this.input.class} type="file" onchange={this.OnValueChanged.bind(this)} />;
+        return <input className={this.input.class} type="file" onchange={this.OnValueChanged.bind(this)} />;
     }
 
     //Event handlers

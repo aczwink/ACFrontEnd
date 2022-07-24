@@ -42,9 +42,9 @@ export class AutoCompleteMultiSelectBox<KeyType> extends Component<AutoCompleteM
 
         const className = "autoCompleteMultiSelectBox" + (this.controller.ShouldShowSuggestions() ? " withSuggestions" : "") + (this.controller.focused ? " focused" : "");
 
-        return <span class={className}>
+        return <span className={className}>
             <ul>
-                {...this.input.selection.map(sel => <li tabindex={-1} onblur={this.controller!.HandleBlur.bind(this)} onfocus={this.controller!.HandleFocus.bind(this)} onkeyup={this.OnSelectedKeyUp.bind(this, sel)}>
+                {...this.input.selection.map(sel => <li tabIndex={-1} onblur={this.controller!.HandleBlur.bind(this)} onfocus={this.controller!.HandleFocus.bind(this)} onkeyup={this.OnSelectedKeyUp.bind(this, sel)}>
                     {sel.displayValue}
                 </li>)}
                 <li>

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -90,6 +90,7 @@ export class AutoCompleteController<KeyType>
         switch(event.keyCode)
         {
             case 13: //enter
+                this.OnChooseChoice(this.choices[this.selectedIndex]);
             return; //does not count as typing
             case 27: //esc
                 this.Unfocus();
@@ -102,6 +103,7 @@ export class AutoCompleteController<KeyType>
                         this.selectedIndex = this.choices.length - 1;
                     else
                         this.selectedIndex = (this.selectedIndex - 1)
+                    this.input.onUpdate();
                 }
             return;
             case 40: //arrow down
@@ -111,7 +113,8 @@ export class AutoCompleteController<KeyType>
                     if(this.selectedIndex+1 == this.choices.length)
                         this.selectedIndex = 0;
                     else
-                        this.selectedIndex = (this.selectedIndex + 1)
+                        this.selectedIndex = (this.selectedIndex + 1);
+                    this.input.onUpdate();
                 }
             return;
         }
@@ -134,13 +137,13 @@ export class AutoCompleteController<KeyType>
 		if(!this.ShouldShowSuggestions())
             return null;
             
-        return <ul class="suggestions">
-            {!this.waitForSuggestions ? null : <li class="disabled" onmousedown={event => event.preventDefault()/* keep input in focus */}><ProgressSpinner /></li>}
+        return <fragment>
+            {!this.waitForSuggestions ? null : <ProgressSpinner />}
             {...this.choices.map( (choice, idx) => {
-                const className = this.selectedIndex == idx ? "selected" : "";
-                return <li class={className} onmousedown={this.OnChooseChoice.bind(this, choice)}>{choice.displayValue}</li>;
+                const className = "dropdown-item" + (idx === this.selectedIndex ? " active" : "");
+                return <li><button className={className} type="button" onclick={this.OnChooseChoice.bind(this, choice)}>{choice.displayValue}</button></li>;
             })}
-        </ul>;
+        </fragment>;
     }
 
     public Search(filterText: string)
@@ -207,10 +210,8 @@ export class AutoCompleteController<KeyType>
     //Event handlers
     private OnChooseChoice(choice: KeyDisplayValuePair<KeyType>)
     {
-        this._filterText = "";
         this._focused = false;
-        this.choices = [];
-        
+        this.selectedIndex = this.choices.indexOf(choice);        
         this.input.onChoiceSelected(choice);
     }
 

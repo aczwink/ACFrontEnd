@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -173,7 +173,7 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
     protected __jsxProperties!: CreateJSXProps<InputType, ChildrenType>;
 }
 
-interface RenderComponent<ComponentType extends Renderable, InputType extends any, ChildrenType extends RenderValue> extends RenderElement
+interface RenderComponent<ComponentType extends Renderable, InputType extends any, ChildrenType extends RenderValue> extends RenderComponentElement
 {
     type: Instantiatable<ComponentType>;
     properties: InputType;
