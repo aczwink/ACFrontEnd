@@ -69,6 +69,7 @@ import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
 import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
 import { APIServiceBase, HTTPInterceptor } from "./Services/APIServiceBase";
 import { SingleSelect } from "./Components/SingleSelect";
+import { BootstrapIcon } from "./Components/BootstrapIcon";
 
 export
 {
@@ -78,6 +79,7 @@ export
     AutoCompleteMultiSelectBox,
     AutoCompleteSelectBox,
     AutoCompleteTextLineEdit,
+    BootstrapIcon,
     CheckBox,
     Component,
     ComponentManager,

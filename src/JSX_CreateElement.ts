@@ -45,6 +45,9 @@ function RedirectProperties(sourceProperties: any)
                         if(value)
                             destProperties[key] = key;
                         break;
+                    case "role":
+                        attributes[key] = value;
+                        break;
                     default:
                         if(key.startsWith("data-"))
                             attributes[key] = value;

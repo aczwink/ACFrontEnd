@@ -127,7 +127,8 @@ declare module JSX
         };
 
         h1: {
-        };
+            children: RenderValue;
+        } & JSX_Element;
 
         h2: {
             children: RenderValue;
@@ -147,6 +148,9 @@ declare module JSX
 
         hr: {
         };
+
+        i: {
+        } & JSX_Element;
 
         iframe: {
             src: string;

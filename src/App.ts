@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,6 +28,7 @@ import { Routes } from "./Services/Router/Route";
 import { PopupManager } from "./Services/PopupManager";
 import { TitleService } from "./Services/TitleService";
 import { VirtualNode } from "./VirtualNode";
+import { VirtualInstance } from "./VirtualInstance";
 
 export interface AppProperties
 {
@@ -84,9 +85,8 @@ export class App
     //Event handlers
     private OnWindowLoaded()
     {
-        const rootComponent = ComponentManager.CreateComponent(this.properties.rootComponentClass, RootInjector);
-        if(rootComponent.vNode !== null)
-            this.root.AddChild(rootComponent.vNode);
+        const vNode = new VirtualInstance(this.properties.rootComponentClass as any, null);
+        this.root.AddChild(vNode);
     }
 
     //Private members
