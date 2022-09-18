@@ -77,17 +77,8 @@ export class RouterState
         {
             if(node.route.path.length > 0)
             {
-                const segments = node.route.path.split("/");
-                for (let segment of segments)
-                {
-                    if(segment.startsWith(":"))
-                    {
-                        const key = segment.substring(1);
-                        segment = this._routeParams[key]!;
-                    }
-
-                    finalSegments.push(segment);
-                }
+                const replaced = RouterState.ReplaceRouteParams(node.route.path, this._routeParams);
+                finalSegments.push(...replaced);
             }
 
             node = node.child;
@@ -116,6 +107,25 @@ export class RouterState
             path: decodeURI(parser.pathname),
             queryParams: URLParser.ParseQueryParams(parser.search.substr(1))
         });
+    }
+
+    public static ReplaceRouteParams(path: string, routeParams: Dictionary<string>)
+    {
+        const replacedSegments = [];
+
+        const segments = path.split("/");
+        for (let segment of segments)
+        {
+            if(segment.startsWith(":"))
+            {
+                const key = segment.substring(1);
+                segment = routeParams[key]!;
+            }
+
+            replacedSegments.push(segment);
+        }
+
+        return replacedSegments;
     }
 
     //Private members

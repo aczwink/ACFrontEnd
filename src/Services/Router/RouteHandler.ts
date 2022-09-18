@@ -135,7 +135,7 @@ export class RouteHandler
         if(routeSegment.startsWith(":") && (pathSegment.length > 0) )
         {
             const key = routeSegment.substring(1);
-            routeParams[key] = pathSegment;
+            routeParams[key] = decodeURIComponent(pathSegment);
             return true;
         }
         return routeSegment == pathSegment;
