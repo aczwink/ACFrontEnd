@@ -213,6 +213,11 @@ declare module JSX
             onload: EventHandler<Event>;
         };
 
+        optgroup: {
+            children: RenderValue;
+            label: string;
+        };
+
         option: {
             children: string;
             disabled?: boolean;

@@ -29,9 +29,11 @@ export class SingleSelect extends Component<SingleSelectInput, RenderValue>
 {
     protected Render(): RenderValue
     {
+        const children = this.UnwrapChildren(this.children);
+
         return <div className="dropdown">
-            <button className="form-select" type="button" data-bs-toggle="dropdown" aria-expanded="false">{this.children[this.input.selectedIndex]}</button>
-            <ul className="dropdown-menu">{this.children.map(this.RenderItem.bind(this))}</ul>
+            <button className="form-select" type="button" data-bs-toggle="dropdown" aria-expanded="false">{children[this.input.selectedIndex]}</button>
+            <ul className="dropdown-menu">{children.map(this.RenderItem.bind(this))}</ul>
         </div>;
     }
 
@@ -40,5 +42,12 @@ export class SingleSelect extends Component<SingleSelectInput, RenderValue>
     {
         const className = "dropdown-item" + (index === this.input.selectedIndex ? " active" : "");
         return <li><button className={className} type="button" onclick={() => this.input.onSelectionChanged(index)}>{child}</button></li>;
+    }
+
+    private UnwrapChildren(children: RenderValue[])
+    {
+        if((children.length === 1) && (Array.isArray(children[0])))
+            return children[0];
+        return children;
     }
 }
