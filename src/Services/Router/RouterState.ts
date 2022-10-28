@@ -119,7 +119,7 @@ export class RouterState
             if(segment.startsWith(":"))
             {
                 const key = segment.substring(1);
-                segment = routeParams[key]!;
+                segment = encodeURIComponent(routeParams[key]!);
             }
 
             replacedSegments.push(segment);
