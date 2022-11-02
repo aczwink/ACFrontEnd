@@ -25,6 +25,12 @@ export class InfoMessage extends Component<null, RenderValue>
 {
     protected Render(): RenderValue
     {
-        return <div className="infoMessage">{this.children}</div>;
+        return <div className="toast show" aria-live="assertive" aria-atomic="true">
+            <div className="toast-body p-0">
+                <div className="alert alert-danger m-0">
+                    {this.children}
+                </div>
+            </div>
+        </div>;
     }
 }

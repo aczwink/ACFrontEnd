@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ export class InfoMessageManager
             properties: null,
             children: [renderNode]
         };
-        const ref = this.popupManager.OpenPopup("infoMessagesContainer", message);
+        const ref = this.popupManager.OpenPopup("toast-container", message, { className: "position-fixed top-0 start-50 translate-middle-x p-5" });
 
         if(options.duration !== undefined)
             setTimeout(ref.Close.bind(ref), options.duration);

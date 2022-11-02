@@ -86,7 +86,8 @@ export class APIServiceBase
         
         return {
             statusCode: response.statusCode,
-            data: (response.statusCode === requestData.successStatusCode) ? this.ApplyFormatRules(response.body, requestData.formatRules) : response.body
+            data: (response.statusCode === requestData.successStatusCode) ? this.ApplyFormatRules(response.body, requestData.formatRules) : response.body,
+            rawBody: response.body
         };
     }
 
