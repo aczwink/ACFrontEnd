@@ -70,6 +70,7 @@ import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
 import { APIServiceBase, HTTPInterceptor } from "./Services/APIServiceBase";
 import { SingleSelect } from "./Components/SingleSelect";
 import { BootstrapIcon } from "./Components/BootstrapIcon";
+import { FileDownloadService } from "./Services/FileDownloadService";
 
 export
 {
@@ -87,6 +88,7 @@ export
     DataBindingProxy,
     DialogProperties,
     DialogRef,
+    FileDownloadService,
     FileSelect,
     FormField,
     Gallery,

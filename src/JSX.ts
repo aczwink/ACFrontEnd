@@ -135,9 +135,7 @@ declare module JSX
         } & JSX_Element;
         h3: {
             children: RenderValue;
-
-            style?: string;
-        }
+        } & JSX_Element;
         
         h4: {
         };
