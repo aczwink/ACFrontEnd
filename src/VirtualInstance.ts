@@ -26,7 +26,7 @@ interface Dictionary
     [key: string]: any;
 }
 
-export class VirtualInstance<ComponentType extends Component<InputType, ChildrenType>, InputType = Dictionary | null, ChildrenType = undefined> extends VirtualNode
+export class VirtualInstance<ComponentType extends Component<InputType, ChildrenType>, InputType extends Dictionary | null = Dictionary | null, ChildrenType = undefined> extends VirtualNode
 {
     constructor(type: Instantiatable<ComponentType>, args: InputType, subChildren?: ChildrenType)
     {
