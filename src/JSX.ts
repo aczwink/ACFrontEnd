@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -63,6 +63,7 @@ interface JSX_GlobalEventHandlers
 interface JSX_Element extends JSX_GlobalEventHandlers
 {
     className?: string;
+    id?: string;
     style?: string;
 }
 
@@ -108,6 +109,9 @@ declare module JSX
             disabled?: boolean;
             title?: string;
             type: "button" | "submit";
+        } & JSX_Element;
+
+        canvas: {
         } & JSX_Element;
 
         div: {
@@ -237,6 +241,10 @@ declare module JSX
             value: number | string;
         };
 
+        script: {
+            children: string;
+        };
+
         select: {
             children: any[];
 
@@ -263,7 +271,8 @@ declare module JSX
         } & JSX_Element;
 
         tbody: {
-        };
+            children: RenderValue;
+        } & JSX_Element;
 
         textarea: {
             children: string;
