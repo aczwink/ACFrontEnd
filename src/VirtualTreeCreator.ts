@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,9 @@ class VirtualTreeCreator
 
         if((typeof renderValue === "string") || (typeof renderValue === "number") || (typeof renderValue === "boolean"))
             return new VirtualTextNode(renderValue);
+
+        if(typeof renderValue === "function")
+            throw new Error("A function can't be used as render value: " + (renderValue as Function).name);
 
         if(IsRenderComponentElement(renderValue))
             return new VirtualInstance(renderValue.type as unknown as Instantiatable<Component<any, RenderValue[]>>, renderValue.properties, renderValue.children);

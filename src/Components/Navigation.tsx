@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,35 +18,24 @@
 import { Component } from "../Component";
 import { Injectable } from "../ComponentManager";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Router } from "../Services/Router/Router";
+import { RouterState } from "../Services/Router/RouterState";
 import { Anchor } from "./Anchor";
 
 @Injectable
 export class NavItem extends Component<{ route: string }, RenderValue>
 {
-    constructor(private router: Router)
+    constructor(private routerState: RouterState)
     {
         super();
     }
 
     protected Render(): RenderValue
     {
-        const routerUrl = this.router.state.Get().ToUrl();
+        const routerUrl = this.routerState.ToUrl();
 
         const isActive = this.input.route === "/" ? routerUrl.path === this.input.route : routerUrl.path.startsWith(this.input.route);
         const className = "nav-link" + (isActive ? " active" : "");
         return <li><Anchor class={className} route={this.input.route}>{...this.children}</Anchor></li>;
-    }
-
-    //Event handlers
-    public override OnInitiated()
-    {
-        this.router.state.Subscribe(this.OnRouterStateChanged.bind(this));
-    }
-
-    private OnRouterStateChanged()
-    {
-        this.Update();
     }
 }
 

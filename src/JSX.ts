@@ -148,6 +148,10 @@ declare module JSX
             children: string;
         } & JSX_Element;
 
+        h6: {
+            children: string;
+        } & JSX_Element;
+
         hr: {
         };
 
