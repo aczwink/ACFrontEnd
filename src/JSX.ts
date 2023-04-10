@@ -156,6 +156,7 @@ declare module JSX
         };
 
         i: {
+            children?: string;
         } & JSX_Element;
 
         iframe: {
