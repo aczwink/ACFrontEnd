@@ -295,12 +295,14 @@ declare module JSX
 
             colSpan?: string;
             onclick?: EventHandler<MouseEvent>;
+            rowSpan?: string;
         } & JSX_Element;
 
         th: {
             children: RenderValue;
 
             colSpan?: string;
+            rowSpan?: string;
         };
 
         thead: {
