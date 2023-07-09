@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -118,7 +118,18 @@ export abstract class VirtualNode
         if( (this._nextSibling !== null) || (this._prevSibling !== null) || (this._parent !== null) )
             throw new Error("Can't destroy virtual node that is still mounted in a virtual tree");
 
-        this.DropAllChildren();
+        this.realized = false;
+        this._domNode = null;
+
+        if(this._children === undefined)
+            return;
+
+        for (const child of this._children)
+        {
+            this.DropChild(child);
+            child.Destroy();
+        }
+        this._children = undefined;
     }
 
     public EnsureHasOwnInjector()

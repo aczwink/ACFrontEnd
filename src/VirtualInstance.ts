@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,6 +39,13 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
         this.injections = undefined;
 
         this.EnsureHasOwnInjector();
+    }
+
+    //Public methods
+    public override Destroy(): void
+    {
+        super.Destroy();
+        this.instance = null;
     }
 
     //Properties
