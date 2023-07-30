@@ -304,7 +304,7 @@ declare module JSX
 
             colSpan?: string;
             rowSpan?: string;
-        };
+        } & JSX_Element;
 
         thead: {
         };

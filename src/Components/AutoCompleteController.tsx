@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -48,6 +48,8 @@ export class AutoCompleteController<KeyType>
         this._focused = false;
         this.selectedIndex = 0;
         this.waitForSuggestions = false;
+
+        this.QueryChoices(""); //preload data
     }
 
     //Properties
@@ -149,7 +151,7 @@ export class AutoCompleteController<KeyType>
     public Search(filterText: string)
     {
         this._filterText = filterText;
-        this.QueryChoices();
+        this.TryQueryChoices();
     }
 
     public ShouldShowSuggestions()
@@ -177,7 +179,19 @@ export class AutoCompleteController<KeyType>
     }
 
     //Private methods
-    private async QueryChoices()
+    private async QueryChoices(filterText: string)
+    {
+        var results = await this.input.onLoadSuggestions(filterText);
+        if(this._filterText == filterText)
+        {
+            //are we still the newest filter, or was another one typed in while the async request was going on
+            this.choices = results;
+            this.waitForSuggestions = false;
+            this.input.onUpdate();
+        }
+    }
+
+    private async TryQueryChoices()
 	{
         const currentFilterText = this._filterText;
 		if(currentFilterText.length >= this.minChars)
@@ -185,14 +199,7 @@ export class AutoCompleteController<KeyType>
             this.waitForSuggestions = true;
             this.input.onUpdate();
 
-            var results = await this.input.onLoadSuggestions(currentFilterText);
-            if(this._filterText == currentFilterText)
-            {
-                //are we still the newest filter, or was another one typed in while the async request was going on
-                this.choices = results;
-                this.waitForSuggestions = false;
-                this.input.onUpdate();
-            }
+            await this.QueryChoices(currentFilterText);
 		}
 		else
 		{
@@ -222,6 +229,6 @@ export class AutoCompleteController<KeyType>
 			clearTimeout(this.timeOut);
 			this.timeOut = undefined;
 		}
-		this.QueryChoices();
+		this.TryQueryChoices();
     }
 }
