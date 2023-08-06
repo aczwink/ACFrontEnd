@@ -175,7 +175,7 @@ declare module JSX
         input: {
             checked?: boolean;
             disabled?: boolean;
-            min?: number;
+            min?: number | string;
             onblur?: EventHandler<FocusEvent>;
             onchange?: EventHandler;
             onclick?: EventHandler;
@@ -185,7 +185,7 @@ declare module JSX
             onkeyup?: EventHandler<KeyboardEvent>;
             placeholder?: string;
             step?: string;
-            type: "checkbox" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
+            type: "checkbox" | "date" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
             value?: number | string;
         } & JSX_Element;
 
