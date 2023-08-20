@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -50,6 +50,7 @@ export class PopupManager
     constructor(private root: VirtualNode)
     {
         this.popupContainers = {};
+        this.modalBackdropNode = null;
     }
 
     //Public methods
@@ -172,6 +173,12 @@ export class PopupManager
             const classes = document.body.className.split(" ").Values().ToSet();
             classes.delete("scroll-lock");
             document.body.className = classes.ToArray().join(" ");
+
+            if(this.modalBackdropNode !== null)
+            {
+                this.root.RemoveChild(this.modalBackdropNode);
+                this.modalBackdropNode = null;
+            }
         }
     }
 
@@ -189,11 +196,19 @@ export class PopupManager
         }
     }
 
+    private EnsureBackdropIsVisible()
+    {
+        if(this.modalBackdropNode === null)
+        {
+            this.modalBackdropNode = new VirtualElement("div", {}, { "class": "modal-backdrop fade show" });
+            this.root.AddChild(this.modalBackdropNode);
+        }
+    }
+
     private OpenModalInternal(modal: RenderElement, showBackdrop: boolean)
     {
         const containerId = "modalContainer";
         this.CreatePopupContainer(containerId, {
-            className: showBackdrop ? "modal-backdrop fade show" : "",
             onclick: (event: MouseEvent) => {
                 if(event.target === event.currentTarget)
                     this.CloseModal(ref)
@@ -206,6 +221,9 @@ export class PopupManager
         const popup = this.CreatePopup(containerId, modal);
         const ref = popup.ref;
         document.body.className = document.body.className.split(" ").concat(["scroll-lock"]).join(" ");
+
+        if(showBackdrop)
+            this.EnsureBackdropIsVisible();
 
         const modalRef = new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
         return { popupNode: popup.popupNode, ref: modalRef, containerId };
@@ -222,6 +240,7 @@ export class PopupManager
 
     //Private members
     private popupContainers: Dictionary<PopupContainer>;
+    private modalBackdropNode: VirtualNode | null;
 
     //Event handlers
     private OnContainerKeyDown(containerId: string, observer: Observer<KeyboardEvent>, event: Event)

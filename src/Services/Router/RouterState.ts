@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -100,10 +100,11 @@ export class RouterState
         const parser = document.createElement("a");
         parser.href = urlString;
 
+        const proto = parser.protocol.slice(0, -1);
         return new AbsURL({
-            protocol: parser.protocol.slice(0, -1) as any,
+            protocol: proto as any,
             host: parser.hostname,
-            port: parseInt(parser.port),
+            port: (parser.port.length === 0) ? this.GetDefaultPortFromProtocol(proto as any) : parseInt(parser.port),
             path: decodeURI(parser.pathname),
             queryParams: URLParser.ParseQueryParams(parser.search.substr(1))
         });
@@ -165,5 +166,16 @@ export class RouterState
             protocol: url.protocol,
             queryParams
         });
+    }
+
+    private static GetDefaultPortFromProtocol(protocol: "http" | "https")
+    {
+        switch(protocol)
+        {
+            case "http":
+                return 80;
+            case "https":
+                return 443;
+        }
     }
 }
