@@ -149,7 +149,7 @@ declare module JSX
         } & JSX_Element;
 
         h6: {
-            children: string;
+            children: RenderValue;
         } & JSX_Element;
 
         hr: {
