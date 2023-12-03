@@ -114,6 +114,10 @@ declare module JSX
         canvas: {
         } & JSX_Element;
 
+        caption: {
+            children: RenderValue;
+        };
+
         div: {
             children?: RenderValue;
             innerHTML?: string;
