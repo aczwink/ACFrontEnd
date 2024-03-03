@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -80,8 +80,14 @@ export class VirtualElement extends VirtualNode
             {
                 //update self
                 if(this.domNode !== null)
+                {
                     this.UpdateObject(this.domNode, this._properties, newNode._properties);
+                    this.UpdateAttributes(this.domNode as any, this._attributes, newNode._attributes);
+                }
+
                 this._properties = newNode._properties;
+                this._attributes = newNode._attributes;
+
                 if(this.domNode !== null)
                     this.SyncInputProperties();
                 
@@ -122,6 +128,27 @@ export class VirtualElement extends VirtualNode
                 inputNode.checked = "checked" in this._properties;
                 break;
         }
+    }
+
+    private UpdateAttributes(element: HTMLElement, oldAttributes: any, newAttributes: any)
+    {
+        const attrsToSet: any[] = [];
+        const attrsToUnset: any[] = [];
+        
+        for(var attrName in newAttributes)
+        {
+            if((attrName in oldAttributes) && (oldAttributes[attrName] === newAttributes[attrName]))
+                continue;
+            attrsToSet.push(attrName);
+        }
+        for(var attrName in oldAttributes)
+        {
+            if(!(attrName in newAttributes))
+                attrsToUnset.push(attrName);
+        }
+        
+        attrsToSet.forEach( attrName => element.setAttribute(attrName, newAttributes[attrName]) );
+        attrsToUnset.forEach( attrName => element.removeAttribute(attrName) );
     }
 
     private UpdateObject(object: any, oldProps: any, newProps: any)

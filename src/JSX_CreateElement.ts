@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import { Instantiatable } from "acts-util-core";
 
 import { Component } from "./Component";
 
-function RedirectProperties(sourceProperties: any)
+function RedirectProperties(tagName: string, sourceProperties: any)
 {
     const attributes: any = {};
     let destProperties: any = null;
@@ -34,27 +34,43 @@ function RedirectProperties(sourceProperties: any)
             {
                 const value = sourceProperties[key];
 
-                switch(key)
+                switch(tagName)
                 {
-                    case "allowFullscreen":
-                        if(value)
-                            destProperties[key] = true;
-                        break;
-                    case "checked":
-                    case "disabled":
-                        if(value)
-                            destProperties[key] = key;
-                        break;
-                    case "role":
-                        attributes[key] = value;
-                        break;
+                    case "td":
+                    case "th":
+                    {
+                        switch(key)
+                        {
+                            case "colSpan":
+                            case "rowSpan":
+                                attributes[key] = value;
+                                break;
+                        }
+                    }
+                    break;
                     default:
-                        if(key.startsWith("data-"))
-                            attributes[key] = value;
-                        else
-                            destProperties[key] = value;
+                        //TODO: classify per tag name
+                        switch(key)
+                        {
+                            case "allowFullscreen":
+                                if(value)
+                                    destProperties[key] = true;
+                                break;
+                            case "checked":
+                            case "disabled":
+                                if(value)
+                                    destProperties[key] = key;
+                                break;
+                            case "role":
+                                attributes[key] = value;
+                                break;
+                            default:
+                                if(key.startsWith("data-"))
+                                    attributes[key] = value;
+                                else
+                                    destProperties[key] = value;
+                        }
                 }
-                
             }
         }
     }
@@ -71,7 +87,7 @@ export function JSX_CreateElement(type: string | Instantiatable<Component>, prop
     {
         return {
             type,
-            ...RedirectProperties(properties),
+            ...RedirectProperties(type, properties),
             children
         };
     }
