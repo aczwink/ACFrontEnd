@@ -65,7 +65,8 @@ export class VirtualElement extends VirtualNode
             if (Object.prototype.hasOwnProperty.call(this._attributes, key))
             {
                 const value = this._attributes[key];
-                element.setAttribute(key, value);
+                if(value !== undefined)
+                    element.setAttribute(key, value);
             }
         }
 
@@ -125,7 +126,10 @@ export class VirtualElement extends VirtualNode
         switch(inputNode.type)
         {
             case "checkbox":
-                inputNode.checked = "checked" in this._properties;
+                inputNode.checked = "checked" in this._attributes;
+                break;
+            case "text":
+                inputNode.value = this._properties.value;
                 break;
         }
     }

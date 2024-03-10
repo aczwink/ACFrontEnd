@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,9 +22,10 @@ import { Injectable } from "../ComponentManager";
 interface LineEditInput
 {
     className?: string;
-    value: string;
-
+    maxLength?: number;
     password?: boolean;
+    placeholder?: string;
+    value: string;
 
     onChanged: (newValue: string) => void;
 }
@@ -36,7 +37,7 @@ export class LineEdit extends Component<LineEditInput>
     protected Render(): RenderValue
     {
         const type = this.input.password === true ? "password" : "text";
-        return <input className={"form-control " + this.input.className} type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} />;
+        return <input className={"form-control " + this.input.className} type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} placeholder={this.input.placeholder} maxLength={this.input.maxLength} />;
     }
 
     //Event handlers

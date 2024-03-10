@@ -179,6 +179,7 @@ declare module JSX
         input: {
             checked?: boolean;
             disabled?: boolean;
+            maxLength?: number;
             min?: number | string;
             onblur?: EventHandler<FocusEvent>;
             onchange?: EventHandler;

@@ -19,6 +19,62 @@ import { Instantiatable } from "acts-util-core";
 
 import { Component } from "./Component";
 
+enum KeyType
+{
+    Attribute = 0,
+    Property = 1,
+    Skip = 2,
+}
+
+function RedirectPropertiesElement(tagName: string, key: string, value: boolean): KeyType | { type: KeyType; value: boolean | string; }
+{
+    switch(tagName)
+    {
+        case "input":
+            switch(key)
+            {
+                case "checked":
+                    if(value)
+                        return { type: KeyType.Attribute, value: key };
+                    return KeyType.Skip;
+                case "maxLength":
+                case "placeholder":
+                    return KeyType.Attribute;
+            }
+        break;
+        case "td":
+        case "th":
+            switch(key)
+            {
+                case "colSpan":
+                case "rowSpan":
+                    return KeyType.Attribute;
+            }
+        break;
+        default:
+            //TODO: classify per tag name
+            switch(key)
+            {
+                case "allowFullscreen":
+                    if(value)
+                        return { type: KeyType.Property, value: true };
+                    break;
+                case "disabled":
+                    if(value)
+                        return { type: KeyType.Property, value: key };
+                    break;
+                case "role":
+                    return KeyType.Attribute;
+                default:
+                    if(key.startsWith("data-"))
+                        return KeyType.Attribute;
+                    else
+                        return KeyType.Property;
+            }
+    }
+    return KeyType.Property;
+}
+
 function RedirectProperties(tagName: string, sourceProperties: any)
 {
     const attributes: any = {};
@@ -34,42 +90,19 @@ function RedirectProperties(tagName: string, sourceProperties: any)
             {
                 const value = sourceProperties[key];
 
-                switch(tagName)
+                const result = RedirectPropertiesElement(tagName, key, value);
+                const keyType = (typeof result === "object") ? result.type : result;
+                const destValue = (typeof result === "object") ? result.value : value;
+                switch(keyType)
                 {
-                    case "td":
-                    case "th":
-                    {
-                        switch(key)
-                        {
-                            case "colSpan":
-                            case "rowSpan":
-                                attributes[key] = value;
-                                break;
-                        }
-                    }
-                    break;
-                    default:
-                        //TODO: classify per tag name
-                        switch(key)
-                        {
-                            case "allowFullscreen":
-                                if(value)
-                                    destProperties[key] = true;
-                                break;
-                            case "checked":
-                            case "disabled":
-                                if(value)
-                                    destProperties[key] = key;
-                                break;
-                            case "role":
-                                attributes[key] = value;
-                                break;
-                            default:
-                                if(key.startsWith("data-"))
-                                    attributes[key] = value;
-                                else
-                                    destProperties[key] = value;
-                        }
+                    case KeyType.Attribute:
+                        attributes[key.toLowerCase()] = destValue;
+                        break;
+                    case KeyType.Property:
+                        destProperties[key] = destValue;
+                        break;
+                    case KeyType.Skip:
+                        break;
                 }
             }
         }
