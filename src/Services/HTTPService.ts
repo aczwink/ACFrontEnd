@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ interface RequestData
     body?: string | FormData;
     headers: RequestHeaders;
     method: HTTPMethod;
+    progressTracker: ((event: ProgressEvent) => void) | null;
     responseType: "blob" | "json";
     url: string;
 }
@@ -62,6 +63,7 @@ export class HTTPService
 
         httpRequest.open(request.method, request.url, true);
         const context = this;
+        httpRequest.onprogress = request.progressTracker;
         httpRequest.onreadystatechange = function()
         {
             if(this.readyState == 4)

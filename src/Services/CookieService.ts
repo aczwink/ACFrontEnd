@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ export class CookieService
             const cookie = cookies[i];
             const [key, value] = cookie.split("=");
             if(name === key.trim())
-                return value;
+                return decodeURIComponent(value);
         }
         return undefined;
     }
@@ -38,7 +38,7 @@ export class CookieService
     public Set(name: string, value: string, expiryDuration?: Duration)
     {
         const parts = [
-            name + "=" + value,
+            name + "=" + encodeURIComponent(value),
             "path=/",
         ];
 

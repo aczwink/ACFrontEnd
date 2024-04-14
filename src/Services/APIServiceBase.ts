@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2022-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2022-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,6 +28,7 @@ interface FormatRule
 interface RequestData
 {
     path: string;
+    progressTracker?: (event: ProgressEvent) => void;
     method: HTTPMethod;
     query?: object;
     body?: object;
@@ -78,6 +79,7 @@ export class APIServiceBase
             body: this.FormatBody(requestData.body, requestData.requestBodyType),
             headers: this.CreateHeaders(requestData.body, requestData.requestBodyType),
             method: requestData.method,
+            progressTracker: (requestData.progressTracker === undefined) ? null : requestData.progressTracker,
             responseType: requestData.responseType,
             url: url.ToString()
         });

@@ -190,7 +190,7 @@ declare module JSX
             onkeyup?: EventHandler<KeyboardEvent>;
             placeholder?: string;
             step?: string;
-            type: "checkbox" | "date" | "datetime-local" | "file" | "number" | "password" | "radio" | "text",
+            type: "checkbox" | "date" | "datetime-local" | "file" | "hidden" | "number" | "password" | "radio" | "text",
             value?: number | string;
         } & JSX_Element;
 
