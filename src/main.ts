@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -72,6 +72,7 @@ import { SingleSelect } from "./Components/SingleSelect";
 import { BootstrapIcon } from "./Components/BootstrapIcon";
 import { FileDownloadService } from "./Services/FileDownloadService";
 import { DatePicker } from "./Components/DatePicker";
+import { DateTimePicker } from "./Components/DateTimePicker";
 
 export
 {
@@ -88,6 +89,7 @@ export
     CookieService,
     DataBindingProxy,
     DatePicker,
+    DateTimePicker,
     DialogProperties,
     DialogRef,
     FileDownloadService,
