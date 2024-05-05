@@ -68,6 +68,12 @@ export class HTTPService
         {
             if(this.readyState == 4)
             {
+                if(this.status === 0)
+                {
+                    reject();
+                    return;
+                }
+                
                 resolve({
                     statusCode: this.status,
                     headers: context.ParseHeaders(httpRequest.getAllResponseHeaders()),

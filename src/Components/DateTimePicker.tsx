@@ -48,6 +48,8 @@ export class DateTimePicker extends Component<DateTimePickerInput>
     private OnChanged(event: Event)
     {
         const newValue = (event.target! as HTMLInputElement).valueAsNumber;
-        this.input.onChanged(new Date(newValue));
+        const d = new Date(newValue);
+        const d2 = new Date(newValue + d.getTimezoneOffset() * 60 * 1000);
+        this.input.onChanged(d2);
     }
 }
