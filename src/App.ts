@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,6 @@ RootInjector.RegisterInstance(Injector, RootInjector);
 
 
 import { Component } from "./Component";
-import { ComponentManager } from "./ComponentManager";
 import { Router } from "./Services/Router/Router";
 import { Routes } from "./Services/Router/Route";
 import { PopupManager } from "./Services/PopupManager";
@@ -80,6 +79,9 @@ export class App
         RootInjector.RegisterInstance(PopupManager, this.popupManager);
 
         window.addEventListener("load", this.OnWindowLoaded.bind(this), false);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.SetPreferredUserTheme.bind(this));
+        
+        this.SetPreferredUserTheme();
     }
 
     //Event handlers
@@ -93,4 +95,11 @@ export class App
     private router: Router;
     private popupManager: PopupManager;
     private root: VirtualRoot;
+
+    //Private methods
+    private SetPreferredUserTheme()
+    {
+        const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', theme);
+    }
 }
