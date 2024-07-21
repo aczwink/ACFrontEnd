@@ -269,6 +269,7 @@ declare module JSX
 
         source: {
             src: string;
+            type: string;
         };
 
         span: {
