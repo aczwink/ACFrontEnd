@@ -1,18 +1,16 @@
+const path = require('path');
+
 module.exports = {
-    mode: "development",
-
+    mode: 'development',
     entry: "./src/app.ts",
-    output: {
-        path: __dirname + "/dist",
-        filename: "bundle.js",
-      },
 
-    // Enable sourcemaps for debugging webpack's output.
-    devtool: "inline-source-map",
+    output: {
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, 'dist'),
+    },
 
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx", ".js"]
+        extensions: [".ts", ".tsx", ".js"],
     },
 
     module: {
@@ -35,12 +33,17 @@ module.exports = {
         ]
     },
 
-    // When importing a module whose path matches one of the following, just
-    // assume a corresponding global variable exists and use that instead.
-    // This is important because it allows us to avoid bundling all of our
-    // dependencies, which allows browsers to cache those libraries between builds.
-    externals: {
-        "acfrontend": "window",
-        "acts-util-core": "window",
-    }
+    devServer: {
+        historyApiFallback: {
+            index: 'index.htm'
+        },
+        
+        static: {
+            directory: __dirname,
+            publicPath: '/',
+        },
+        port: 8080
+    },
+
+    devtool: "inline-source-map",
 };

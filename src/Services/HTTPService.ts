@@ -23,7 +23,7 @@ export type HTTPMethod = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
 export interface RequestHeaders
 {
     Authorization?: string;
-    "Content-Type"?: "application/json";
+    "Content-Type"?: "application/json" | "application/x-www-form-urlencoded";
 }
 
 interface RequestData

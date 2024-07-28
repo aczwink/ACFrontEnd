@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ export class FirstPageComponent extends Component< { state: SharedState } >
     protected Render(): RenderValue
     {
         return <fragment>
-            <FormField hint="Name">
+            <FormField title="Name">
                 <LineEdit value={this.input.state.name}
                     onChanged={ newValue => this.input.state.name = newValue } />
             </FormField>
@@ -44,7 +44,7 @@ export class SecondPageComponent extends Component< { state: DataBindingProxy<Sh
         return <fragment>
             Hi, {this.input.state.name}!
 
-            <FormField hint="Whats your age?">
+            <FormField title="Whats your age?">
                 <IntegerSpinner value={this.input.state.age} onChanged={newValue => this.input.state.age = newValue} />
             </FormField>
 
@@ -78,7 +78,7 @@ export class ThirdPageComponent extends Component<{ onValidationChange: (newValu
         return <fragment>
             Just to be sure you're not a bot.
             What is 4x * 5y (in alphabetical order without spaces)?
-            <FormField hint="...">
+            <FormField title="...">
                 <LineEdit value={this.answer} onChanged={newValue => {
                     this.answer = newValue;
                     this.input.onValidationChange(this.answer === "20xy");

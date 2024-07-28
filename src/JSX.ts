@@ -242,7 +242,7 @@ declare module JSX
         } & JSX_Element;
 
         p: {
-            children: string;
+            children: RenderValue;
             style?: string;
         };
         

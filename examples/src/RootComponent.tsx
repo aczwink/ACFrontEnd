@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component, RouterComponent, JSX_CreateElement, Anchor, Switch, ThemingService, Injectable } from "acfrontend";
+import { Component, RouterComponent, JSX_CreateElement, Anchor, Switch, ThemingService, Injectable, NavItem } from "acfrontend";
 
 @Injectable
 export class RootComponent extends Component
@@ -30,23 +30,26 @@ export class RootComponent extends Component
     protected Render(): RenderValue
     {
         return <fragment>
-            <div class="vertNav">
-                <div style="margin-top: 1.5rem">
-                    Dark mode:
-                    <Switch checked={this.darkMode} onChanged={this.OnThemeSwitch.bind(this)} />
+            <div className="row">
+                <div className="col-auto">
+                    <h4>ACFrontEnd examples</h4>
+                    <div className="mt-1">
+                        Dark mode:
+                        <Switch checked={this.darkMode} onChanged={this.OnThemeSwitch.bind(this)} />
+                    </div>
+                    <ul className="nav nav-pills flex-column">
+                        <NavItem route="/dialogs">Dialogs</NavItem>
+                        <NavItem route="/forms">Forms</NavItem>
+                        <NavItem route="/gallery">Gallery</NavItem>
+                        <NavItem route="/menus">Menus</NavItem>
+                        <NavItem route="/oauth2">OAuth2</NavItem>
+                        <NavItem route="/tooltips">Tooltips</NavItem>
+                        <NavItem route="/wizards">Wizards</NavItem>
+                    </ul>
                 </div>
-                <ul>
-                    <li><Anchor route="/dialogs">Dialogs</Anchor></li>
-                    <li><Anchor route="/forms">Forms</Anchor></li>
-                    <li><Anchor route="/gallery">Gallery</Anchor></li>
-                    <li><Anchor route="/menus">Menus</Anchor></li>
-                    <li><Anchor route="/tooltips">Tooltips</Anchor></li>
-                    <li><Anchor route="/wizards">Wizards</Anchor></li>
-                </ul>
-            </div>
-            <div class="indentedForVertNav">
-                <h1>ACFrontEnd examples</h1>
-                <RouterComponent />
+                <div className="col">
+                    <RouterComponent />
+                </div>
             </div>
         </fragment>;
     }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2021 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2021-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,26 +21,32 @@ import { Injectable } from "../ComponentManager";
 @Injectable
 export class ThemingService
 {
+    constructor()
+    {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.SetPreferredUserTheme.bind(this));
+    }
+
     //Public methods
     public IsDarkModeEnabled()
     {
-        return this.GetBodyClasses().has("theme-dark");
+        const attrib = document.documentElement.getAttribute("data-bs-theme");
+        return attrib === "dark";
     }
 
     public SetDarkModeStatus(enabled: boolean)
     {
-        const classes = this.GetBodyClasses();
-        if(enabled)
-            classes.add("theme-dark");
-        else
-            classes.delete("theme-dark");
+        const theme = enabled ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', theme);
+    }
 
-        document.body.className = classes.ToArray().join(" ");
+    public SetPreferredUserTheme()
+    {
+        this.SetDarkModeStatus(this.DoesUserPreferDarkMode());
     }
 
     //Private methods
-    private GetBodyClasses()
+    private DoesUserPreferDarkMode()
     {
-        return document.body.className.split(" ").Values().ToSet();
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
 }

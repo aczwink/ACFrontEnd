@@ -28,6 +28,7 @@ import { PopupManager } from "./Services/PopupManager";
 import { TitleService } from "./Services/TitleService";
 import { VirtualNode } from "./VirtualNode";
 import { VirtualInstance } from "./VirtualInstance";
+import { ThemingService } from "./main";
 
 export interface AppProperties
 {
@@ -78,10 +79,9 @@ export class App
         this.popupManager = new PopupManager(this.root);
         RootInjector.RegisterInstance(PopupManager, this.popupManager);
 
+        RootInjector.Resolve(ThemingService).SetPreferredUserTheme();
+
         window.addEventListener("load", this.OnWindowLoaded.bind(this), false);
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.SetPreferredUserTheme.bind(this));
-        
-        this.SetPreferredUserTheme();
     }
 
     //Event handlers
@@ -95,11 +95,4 @@ export class App
     private router: Router;
     private popupManager: PopupManager;
     private root: VirtualRoot;
-
-    //Private methods
-    private SetPreferredUserTheme()
-    {
-        const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-bs-theme', theme);
-    }
 }

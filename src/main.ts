@@ -73,6 +73,7 @@ import { BootstrapIcon } from "./Components/BootstrapIcon";
 import { FileDownloadService } from "./Services/FileDownloadService";
 import { DatePicker } from "./Components/DatePicker";
 import { DateTimePicker } from "./Components/DateTimePicker";
+import { OAuth2Service } from "./Services/OAuth2Service";
 
 export
 {
@@ -114,6 +115,7 @@ export
     Navigation,
     NavItem,
     NumberSpinner,
+    OAuth2Service,
     ObservableEvent,
     PaginationComponent,
     PopupManager,

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,12 +24,14 @@ import { TooltipComponent } from "./TooltipComponent";
 import { WizardComponent } from "./WizardComponent";
 import { MenusComponent } from "./MenusComponent";
 import { DialogsComponent } from "./DialogsComponent";
+import { OAuth2Component } from "./OAuth2Component";
 
 export const routes: Routes = [
     { path: "dialogs", component: DialogsComponent },
     { path: "forms", component: FormsComponent },
     { path: "gallery", component: GalleryComponent },
     { path: "menus", component: MenusComponent },
+    { path: "oauth2", component: OAuth2Component },
     { path: "tooltips", component: TooltipComponent },
     { path: "wizards", component: WizardComponent },
     { path: "", component: HomeComponent },
