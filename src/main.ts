@@ -66,7 +66,7 @@ import { Navigation, NavItem } from "./Components/Navigation";
 import { LoadingButton } from "./Components/LoadingButton";
 import { ThemingService } from "./Services/ThemingService";
 import { AutoCompleteSelectBox } from "./Components/AutoCompleteSelectBox";
-import { KeyDisplayValuePair } from "./Components/AutoCompleteController";
+import { KeyDisplayValuePair } from "./Components/AutoCompleteHandler";
 import { APIServiceBase, HTTPInterceptor } from "./Services/APIServiceBase";
 import { SingleSelect } from "./Components/SingleSelect";
 import { BootstrapIcon } from "./Components/BootstrapIcon";

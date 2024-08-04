@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 type FileSelectInput = {
-    class?: string;
+    className?: string;
     onChanged: (newValue: File | null) => void;
 };
 
@@ -31,7 +31,7 @@ export class FileSelect extends Component<FileSelectInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input className={this.input.class} type="file" onchange={this.OnValueChanged.bind(this)} />;
+        return <input className={"form-control " + this.input.className} type="file" onchange={this.OnValueChanged.bind(this)} />;
     }
 
     //Event handlers

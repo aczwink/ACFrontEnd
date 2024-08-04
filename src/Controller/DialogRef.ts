@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,6 +29,7 @@ export class DialogRef
     constructor(private closer: Function)
     {
         this._onAccept = new ObservableEvent();
+        this._onClose = new ObservableEvent();
         this._valid = new Property<boolean>(true);
         this._waiting = new Property<boolean>(false);
     }
@@ -37,6 +38,11 @@ export class DialogRef
     public get onAccept()
     {
         return this._onAccept;
+    }
+
+    public get onClose()
+    {
+        return this._onClose;
     }
 
     public get valid()
@@ -53,10 +59,12 @@ export class DialogRef
     public Close()
     {
         this.closer();
+        this._onClose.Emit();
     }
 
     //Private variables
     private _onAccept: ObservableEvent;
+    private _onClose: ObservableEvent;
     private _valid: Property<boolean>;
     private _waiting: Property<boolean>;
 }

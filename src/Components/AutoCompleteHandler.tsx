@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,12 @@ export interface ControllerConfig
     minChars?: number;
 }
 
-interface ControllerInput<KeyType> extends ControllerConfig
+interface HandlerPrivateConfig
+{
+    showSearchHelper: boolean;
+}
+
+interface ControllerInput<KeyType> extends ControllerConfig, HandlerPrivateConfig
 {
     onChoiceSelected: (choice: KeyDisplayValuePair<KeyType>) => void;
     onFilterTextChanged: (filterText: string) => void;
@@ -39,7 +44,7 @@ interface ControllerInput<KeyType> extends ControllerConfig
     onUpdate: () => void;
 }
 
-export class AutoCompleteController<KeyType>
+export class AutoCompleteHandler<KeyType>
 {
     constructor(private input: ControllerInput<KeyType>)
     {
@@ -63,13 +68,7 @@ export class AutoCompleteController<KeyType>
         return this._focused;
     }
 
-    //Public methods
-    public HandleBlur()
-    {
-        this._focused = false;
-        this.input.onUpdate();
-    }
-
+    //Public methods    
     public HandleFocus()
     {
         this._focused = true;
@@ -134,29 +133,12 @@ export class AutoCompleteController<KeyType>
         this.timeOut = setTimeout(this.OnStoppedTyping.bind(this), this.loadTimeout);
     }
 
-    public RenderSuggestions()
-	{
-		if(!this.ShouldShowSuggestions())
-            return null;
-            
-        return <fragment>
-            {!this.waitForSuggestions ? null : <ProgressSpinner />}
-            {...this.choices.map( (choice, idx) => {
-                const className = "dropdown-item" + (idx === this.selectedIndex ? " active" : "");
-                return <li><button className={className} type="button" onclick={this.OnChooseChoice.bind(this, choice)}>{choice.displayValue}</button></li>;
-            })}
-        </fragment>;
-    }
-
-    public Search(filterText: string)
+    public RenderDropDown()
     {
-        this._filterText = filterText;
-        this.TryQueryChoices();
-    }
-
-    public ShouldShowSuggestions()
-	{
-		return this.focused && ((this.choices.length > 0) || this.waitForSuggestions);
+        return <div className="dropdown-menu">
+            {this.RenderSearchHelper()}
+            {this.RenderSuggestions()}
+        </div>;
     }
 
     //Private members
@@ -191,6 +173,39 @@ export class AutoCompleteController<KeyType>
         }
     }
 
+    private RenderSearchHelper()
+    {
+        if(this.input.showSearchHelper)
+        {
+            return <fragment>
+                <div className="px-2 py-1">
+                    <input className="form-control" type="text" value={this.filterText} onkeyup={this.HandleKeyUpEvent.bind(this)} />
+                </div>
+                <div className="dropdown-divider" />
+            </fragment>;
+        }
+        return null;
+    }
+
+    private RenderSuggestions()
+	{
+		if(!this.ShouldShowSuggestions())
+            return null;
+            
+        return <fragment>
+            {!this.waitForSuggestions ? null : <ProgressSpinner />}
+            {...this.choices.map( (choice, idx) => {
+                const className = "dropdown-item" + (idx === this.selectedIndex ? " active" : "");
+                return <li><button className={className} type="button" onclick={this.OnChooseChoice.bind(this, choice)}>{choice.displayValue}</button></li>;
+            })}
+        </fragment>;
+    }
+
+    private ShouldShowSuggestions()
+	{
+		return this.focused && ((this.choices.length > 0) || this.waitForSuggestions);
+    }
+
     private async TryQueryChoices()
 	{
         const currentFilterText = this._filterText;
@@ -220,6 +235,9 @@ export class AutoCompleteController<KeyType>
         this._focused = false;
         this.selectedIndex = this.choices.indexOf(choice);        
         this.input.onChoiceSelected(choice);
+
+        this._filterText = "";
+        this.input.onFilterTextChanged(this._filterText);
     }
 
     private OnStoppedTyping(event: Event)

@@ -28,6 +28,9 @@ enum KeyType
 
 function RedirectPropertiesElement(tagName: string, key: string, value: boolean): KeyType | { type: KeyType; value: boolean | string; }
 {
+    if(key.startsWith("data-"))
+        return KeyType.Attribute;
+    
     switch(tagName)
     {
         case "input":
@@ -66,10 +69,7 @@ function RedirectPropertiesElement(tagName: string, key: string, value: boolean)
                 case "role":
                     return KeyType.Attribute;
                 default:
-                    if(key.startsWith("data-"))
-                        return KeyType.Attribute;
-                    else
-                        return KeyType.Property;
+                    return KeyType.Property;
             }
     }
     return KeyType.Property;

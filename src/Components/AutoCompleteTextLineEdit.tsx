@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { AutoCompleteController, ControllerConfig } from "./AutoCompleteController";
+import { AutoCompleteHandler, ControllerConfig } from "./AutoCompleteHandler";
 import { ProgressSpinner } from "./ProgressSpinner";
 
 interface AutocompleteTextLineEditInput extends ControllerConfig
@@ -39,31 +39,29 @@ export class AutoCompleteTextLineEdit extends Component<AutocompleteTextLineEdit
     //Protected methods
     protected Render(): RenderValue
     {
-        if(this.controller === undefined)
+        if(this.acHandler === undefined)
             return <ProgressSpinner />;
 
-        const className = "autoComplete" + (this.controller.ShouldShowSuggestions() ? " withSuggestions" : "");
         const hintText = this.input.hint || "";
 
-        return <span className={className}>
-            <input type="text" value={this.input.value} placeholder={hintText}
-                onblur={this.controller.HandleBlur.bind(this)}
-                onfocus={this.controller.HandleFocus.bind(this)}
-                onkeydown={this.controller.HandleKeyDownEvent.bind(this)}
-                onkeyup={this.controller.HandleKeyUpEvent.bind(this)}
+        return <div className="dropdown">
+            <input className="form-control" data-bs-toggle="dropdown" type="text" value={this.input.value} placeholder={hintText}
+                onfocus={this.acHandler.HandleFocus.bind(this.acHandler)}
+                onkeydown={this.acHandler.HandleKeyDownEvent.bind(this.acHandler)}
+                onkeyup={this.acHandler.HandleKeyUpEvent.bind(this.acHandler)}
                 oninput={this.OnInput.bind(this)}
                 />
-            {this.controller.RenderSuggestions()}
-        </span>;
+            {this.acHandler.RenderDropDown()}
+        </div>;
     }
 
     //Private members
-    private controller?: AutoCompleteController<string>;
+    private acHandler?: AutoCompleteHandler<string>;
     
     //Event handlers
     public override OnInitiated()
     {
-        this.controller = new AutoCompleteController<string>({
+        this.acHandler = new AutoCompleteHandler<string>({
             onChoiceSelected: keyValue => this.input.onChanged(keyValue.key),
             onFilterTextChanged: () => null,
             onLoadSuggestions: async searchText => {
@@ -75,7 +73,8 @@ export class AutoCompleteTextLineEdit extends Component<AutocompleteTextLineEdit
             },
             onUpdate: this.Update.bind(this),
             loadTimeout: this.input.loadTimeout,
-            minChars: this.input.minChars
+            minChars: this.input.minChars,
+            showSearchHelper: false
         });
     }
 

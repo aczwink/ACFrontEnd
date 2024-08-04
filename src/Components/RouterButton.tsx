@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ export class RouterButton extends Component<{ className?: string; route: string;
     //Protected methods
     protected Render(): RenderValue
     {
-        return <button className={this.input.className} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
+        return <button className={"btn " + this.input.className} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
     }
 
     //Event handlers

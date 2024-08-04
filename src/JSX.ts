@@ -123,6 +123,10 @@ declare module JSX
             innerHTML?: string;
             role?: "status";
             tabIndex?: string;
+            ondragenter?: EventHandler<DragEvent>;
+            ondragleave?: EventHandler<DragEvent>;
+            ondragover?: EventHandler<DragEvent>;
+            ondrop?: EventHandler<DragEvent>;
         } & JSX_Element;
 
         fieldset: {

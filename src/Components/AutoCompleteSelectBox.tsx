@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2021-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2021-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { AutoCompleteController, ControllerConfig, KeyDisplayValuePair } from "./AutoCompleteController";
+import { AutoCompleteHandler, ControllerConfig, KeyDisplayValuePair } from "./AutoCompleteHandler";
 import { ProgressSpinner } from "./ProgressSpinner";
 
 interface AutoCompleteSelectBoxInput<KeyType> extends ControllerConfig
@@ -34,39 +34,18 @@ export class AutoCompleteSelectBox<KeyType> extends Component<AutoCompleteSelect
     //Protected methods
     protected Render(): RenderValue
     {
-        if(this.controller === undefined)
+        if(this.acHandler === undefined)
             return <ProgressSpinner />;
 
         const displayValue = (this.input.selection === null) ? "Select an option" : this.input.selection.displayValue;
         return <div className="dropdown">
             <button className="form-select" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick={this.OnFocus.bind(this)}>{displayValue}</button>
-            <div className="dropdown-menu">
-                <div className="px-2 py-1">
-                    <input className="form-control" type="text" value={this.controller!.filterText} onkeyup={this.controller!.HandleKeyUpEvent.bind(this.controller)} />
-                </div>
-                <div className="dropdown-divider" />
-                {this.controller.RenderSuggestions()}
-            </div>
+            {this.acHandler.RenderDropDown()}
         </div>;
     }
 
     //Private members
-    private controller?: AutoCompleteController<KeyType>;
-
-    //Private methods
-    private RenderContent()
-    {
-        /*if((this.input.selection === null) || this.activeFilter)
-        {
-                onblur={this.OnBlur.bind(this)}
-                onfocus={this.controller!.HandleFocus.bind(this.controller)}
-                />;
-        }*/
-        /*
-        <li tabIndex={-1} onblur={this.controller!.HandleBlur.bind(this.controller)}>
-            </li>
-             */
-    }
+    private acHandler?: AutoCompleteHandler<KeyType>;
 
     private TryFocus()
     {
@@ -76,26 +55,22 @@ export class AutoCompleteSelectBox<KeyType> extends Component<AutoCompleteSelect
     }
 
     //Event handlers
-    private OnBlur()
-    {
-        this.controller!.HandleBlur();
-    }
-
     public override OnInitiated()
     {
-        this.controller = new AutoCompleteController<KeyType>({
+        this.acHandler = new AutoCompleteHandler<KeyType>({
             onChoiceSelected: choice => this.input.onChanged(choice),
             onFilterTextChanged: () => null,
             onLoadSuggestions: this.input.onLoadSuggestions,
             onUpdate: this.Update.bind(this),
             loadTimeout: this.input.loadTimeout,
-            minChars: this.input.minChars
+            minChars: this.input.minChars,
+            showSearchHelper: true,
         });
     }
 
     private OnFocus(event: FocusEvent)
     {
-        this.controller!.HandleFocus();
+        this.acHandler!.HandleFocus();
         this.UpdateSync();
         this.TryFocus();
     }
