@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import { PopupManager } from "./PopupManager";
 interface InfoMessageOptions
 {
     duration?: number;
+    type: "success" | "danger" | "info";
 }
 
 @Injectable
@@ -37,12 +38,26 @@ export class InfoMessageManager
     {
         const message: SingleRenderValue = {
             type: InfoMessage,
-            properties: null,
+            properties: { type: options.type },
             children: [renderNode]
         };
         const ref = this.popupManager.OpenPopup("toast-container", message, { className: "position-fixed top-0 start-50 translate-middle-x p-5" });
 
-        if(options.duration !== undefined)
-            setTimeout(ref.Close.bind(ref), options.duration);
+        if(options.duration === undefined)
+            options.duration = this.ComputeDuration(options) * 1000;
+        setTimeout(ref.Close.bind(ref), options.duration);
+    }
+
+    //Private methods
+    private ComputeDuration(options: InfoMessageOptions)
+    {
+        switch(options.type)
+        {
+            case "danger":
+                return 8;
+            case "info":
+            case "success":
+                return 4;
+        }
     }
 }

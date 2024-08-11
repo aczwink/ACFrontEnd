@@ -107,22 +107,34 @@ export class APIServiceBase
         }
     }
 
+    private ApplyFormatRule(objectOrArray: any, keys: string[], rule: FormatRule)
+    {
+        if(Array.isArray(objectOrArray))
+        {
+            for (const elem of objectOrArray)
+                this.ApplyFormatRule(elem, keys, rule);
+            return;
+        }
+
+        const object = objectOrArray; //can only be an object from here on
+        if(keys.length === 1)
+        {
+            const finalKey = keys[0];
+            object[finalKey] = this.ApplyFormat(object[finalKey], rule.format);
+        }
+        else
+        {
+            const key = keys[0];
+            const selected = object[key];
+            if(selected !== undefined)
+                this.ApplyFormatRule(selected, keys.slice(1), rule);
+        }
+    }
+
     private ApplyFormatRules(body: any, formatRules: FormatRule[])
     {
         for (const rule of formatRules)
-        {
-            let object = body;
-            for(let i = 0; i < rule.keys.length - 1; i++)
-            {
-                const key = rule.keys[i];
-                object = object[key];
-            }
-            if(object === undefined)
-                continue;
-
-            const lastKey = rule.keys[rule.keys.length - 1];
-            object[lastKey] = this.ApplyFormat(object[lastKey], rule.format);
-        }
+            this.ApplyFormatRule(body, rule.keys, rule);
         return body;
     }
 

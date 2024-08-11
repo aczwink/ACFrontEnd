@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,14 +21,16 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 
 @Injectable
-export class InfoMessage extends Component<null, RenderValue>
+export class InfoMessage extends Component<{ type: "success" | "danger" | "info" }, RenderValue>
 {
     protected Render(): RenderValue
     {
+        const className = "alert alert-" + this.input.type + " m-0 d-flex";
         return <div className="toast show" aria-live="assertive" aria-atomic="true">
             <div className="toast-body p-0">
-                <div className="alert alert-danger m-0">
+                <div className={className}>
                     {this.children}
+                    <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" />
                 </div>
             </div>
         </div>;
