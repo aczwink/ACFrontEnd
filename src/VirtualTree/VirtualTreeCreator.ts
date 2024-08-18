@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,13 +17,14 @@
  * */
 import { VirtualNode } from "./VirtualNode";
 import { VirtualTextNode } from "./VirtualTextNode";
-import { Component } from "./Component";
 import { VirtualConstNode } from "./VirtualConstNode";
 import { VirtualElement } from "./VirtualElement";
 import { VirtualFragment } from "./VirtualFragment";
 import { VirtualInstance } from "./VirtualInstance";
 import { Instantiatable } from "acts-util-core";
-import { IsRenderComponentElement } from "./RenderData";
+import { VirtualFunction } from "./VirtualFunction";
+import { Component } from "../Component";
+import { IsRenderComponentElement } from "../RenderData";
 
 class VirtualTreeCreator
 {
@@ -43,7 +44,11 @@ class VirtualTreeCreator
             throw new Error("A function can't be used as render value: " + (renderValue as Function).name);
 
         if(IsRenderComponentElement(renderValue))
-            return new VirtualInstance(renderValue.type as unknown as Instantiatable<Component<any, RenderValue[]>>, renderValue.properties, renderValue.children);
+        {
+            if(this.IsClassComponent(renderValue.type))
+                return new VirtualInstance(renderValue.type as unknown as Instantiatable<Component<any, RenderValue[]>>, renderValue.properties, renderValue.children);
+            return new VirtualFunction(renderValue.type as any, renderValue.properties, renderValue.children);
+        }
             
         if(renderValue.type === "const")
         {
@@ -64,6 +69,17 @@ class VirtualTreeCreator
     }
 
     //Private methods
+    private IsClassComponent(func: Function)
+    {
+        while(func)
+        {
+            if(func === Component)
+                return true;
+            func = Object.getPrototypeOf(func);
+        }
+        return false;
+    }
+
     private TransformArray(renderValue: RenderValue[])
     {
         return renderValue.map(child => this.TransformRenderValueToVirtualNode(child)).filter(child => child !== null) as VirtualNode[];

@@ -40,6 +40,7 @@ export class RootComponent extends Component
                     <ul className="nav nav-pills flex-column">
                         <NavItem route="/dialogs">Dialogs</NavItem>
                         <NavItem route="/forms">Forms</NavItem>
+                        <NavItem route="/functions">Functions</NavItem>
                         <NavItem route="/gallery">Gallery</NavItem>
                         <NavItem route="/menus">Menus</NavItem>
                         <NavItem route="/oauth2">OAuth2</NavItem>

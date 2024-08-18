@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,18 +15,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Instantiatable, Injector, EqualsAny } from "acts-util-core";
-
-import { Component } from "./Component";
+import { Instantiatable, Injector, EqualsAny, Dictionary } from "acts-util-core";
 import { VirtualNode } from "./VirtualNode";
-import { ComponentManager } from "./ComponentManager";
+import { Component } from "../Component";
+import { ClassComponentMemberMetadata } from "../decorators";
+import { ClassComponentConstructorMetadata, GetConstructorMetadata } from "../metadata";
+import { RouterState } from "../Services/Router/RouterState";
+import { CreateDataBindingHook } from "../DataBinding";
 
-interface Dictionary
-{
-    [key: string]: any;
-}
-
-export class VirtualInstance<ComponentType extends Component<InputType, ChildrenType>, InputType extends Dictionary | null = Dictionary | null, ChildrenType = undefined> extends VirtualNode
+export class VirtualInstance<ComponentType extends Component<InputType, ChildrenType>, InputType extends Dictionary<any> | null = Dictionary<any> | null, ChildrenType = undefined> extends VirtualNode
 {
     constructor(type: Instantiatable<ComponentType>, args: InputType, subChildren?: ChildrenType)
     {
@@ -64,8 +61,8 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
     {
         this.injector!.RegisterInstance(Injector, this.injector);
 
-        this.injections = this.injector!.ResolveInjections(this.type);
-        (this as any).instance = ComponentManager.CreateComponent(this.type, this.injector!);
+        this.injections = this.ResolveInjections();
+        this.instance = this.CreateComponentInstance();
 
         this.PassInputArgs(this.args);
         this.PassChildren();
@@ -135,15 +132,37 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
     }
 
     //Private methods
+    private CreateComponentInstance()
+    {
+        const instance = new this.type(...this.ResolveInjections()); //components are always instantiated
+
+        this.InstallDataBindings(instance);
+        
+        return instance;
+    }
+
     private InjectionsChanged(): boolean
     {
         if(this.instance !== null)
         {
-            const newInjections = this.injector!.ResolveInjections(this.type);
+            const newInjections = this.ResolveInjections();
             return !EqualsAny(this.injections, newInjections);
         }
 
         return false;
+    }
+
+    private InstallDataBindings<InputType, ChildrenType>(instance: Component<InputType, ChildrenType>)
+    {
+        const propertyKeys = Reflect.ownKeys(instance);
+        const members: Dictionary<ClassComponentMemberMetadata> | undefined = (instance as any).__members;
+        for (let i = 0; i < propertyKeys.length; i++)
+        {
+            const key = propertyKeys[i] as string;
+            if( (members !== undefined) && (key in members) && (members[key]!.installDataBinding === false) )
+                continue;
+            CreateDataBindingHook(instance, key, instance.Update.bind(instance));
+        }
     }
 
     private PassChildren()
@@ -151,9 +170,9 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
         (this.instance as any)._children = this._subChildren;
     }
 
-    private PassInputArgs(args: Dictionary | null)
+    private PassInputArgs(args: Dictionary<any> | null)
     {
-        const input: Dictionary = {};
+        const input: Dictionary<any> = {};
         if(args !== null)
         {
             for (const key in args)
@@ -163,6 +182,29 @@ export class VirtualInstance<ComponentType extends Component<InputType, Children
         }
 
         (this.instance as any)._input = input;
+    }
+
+    private ResolveInjection(argType: any, metadata?: ClassComponentConstructorMetadata)
+    {
+        switch(metadata?.type)
+        {
+            case "route-param":
+            {
+                const stringValue = this.injector!.Resolve(RouterState).routeParams[metadata.name];
+                if(argType === Number)
+                    return parseInt(stringValue!);
+                return stringValue;
+            }
+        }
+        return this.injector!.Resolve(argType);
+    }
+
+    private ResolveInjections()
+    {
+        const md = GetConstructorMetadata(this.type);
+        const argsTypes: any[] = Reflect.getMetadata('design:paramtypes', this.type) || [];
+        const injections = argsTypes.map((argType, index) => this.ResolveInjection(argType, md[index]));
+        return injections;
     }
     
     //Private members

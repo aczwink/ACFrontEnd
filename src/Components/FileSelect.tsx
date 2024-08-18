@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable } from "../ComponentManager";
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
+import { Injectable } from "../decorators";
 
 type FileSelectInput = {
     className?: string;

@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Injector } from "acts-util-core";
-
-import { MountPoint, DOM } from "./DOM";
+import { MountPoint, DOM } from "../DOM";
 
 export abstract class VirtualNode
 {

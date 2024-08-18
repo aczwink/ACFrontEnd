@@ -131,3 +131,5 @@ export function JSX_CreateElement(type: string | Instantiatable<Component>, prop
         children
     };
 }
+
+export const JSX_Fragment = "fragment";

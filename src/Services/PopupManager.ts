@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,13 +17,13 @@
  * */
 import { Dictionary, Observer } from "acts-util-core";
 
-import { Injectable } from "../ComponentManager";
 import { Dialog } from "../Components/Dialog";
 import { DialogProperties, DialogRef } from "../Controller/DialogRef";
-import { VirtualNode } from "../VirtualNode";
-import { VirtualElement } from "../VirtualElement";
 import { PopupRef } from "../Controller/PopupRef";
-import { TransformRenderValueToVirtualNode } from "../VirtualTreeCreator";
+import { Injectable } from "../decorators";
+import { VirtualElement } from "../VirtualTree/VirtualElement";
+import { TransformRenderValueToVirtualNode } from "../VirtualTree/VirtualTreeCreator";
+import { VirtualNode } from "../VirtualTree/VirtualNode";
 
 interface PopupDefinition
 {

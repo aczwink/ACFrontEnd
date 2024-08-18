@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { routes } from "./routing";
-import { RootComponent } from "./RootComponent";
-import { BootstrapApp } from "../../dist/App";
+import { BootstrapColor } from "../Bootstrap";
+import { JSX_CreateElement } from "../JSX_CreateElement";
 
-BootstrapApp({
-    mountPoint: document.body,
-    rootComponentClass: RootComponent,
-    routes: routes,
-    title: "ACFrontEnd Example",
-    version: "v1",
-});
+interface SubmitButtonInput
+{
+    children: RenderValue;
+    color: BootstrapColor;
+    enabled: boolean;
+}
+
+export function SubmitButton(input: SubmitButtonInput)
+{
+    return <button disabled={!input.enabled} type="submit" className={"btn btn-" + input.color}>{input.children}</button>;
+}

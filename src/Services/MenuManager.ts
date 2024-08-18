@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable } from "../ComponentManager";
+import { Injectable } from "../decorators";
 import { PopupManager } from "./PopupManager";
 
 @Injectable

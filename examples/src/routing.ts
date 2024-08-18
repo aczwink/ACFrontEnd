@@ -25,10 +25,12 @@ import { WizardComponent } from "./WizardComponent";
 import { MenusComponent } from "./MenusComponent";
 import { DialogsComponent } from "./DialogsComponent";
 import { OAuth2Component } from "./OAuth2Component";
+import { FunctionDemoComponent } from "./FunctionDemoComponent";
 
 export const routes: Routes = [
     { path: "dialogs", component: DialogsComponent },
     { path: "forms", component: FormsComponent },
+    { path: "functions", component: FunctionDemoComponent },
     { path: "gallery", component: GalleryComponent },
     { path: "menus", component: MenusComponent },
     { path: "oauth2", component: OAuth2Component },

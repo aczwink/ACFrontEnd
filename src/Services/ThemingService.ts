@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable } from "../ComponentManager";
+import { Injectable } from "../decorators";
 
 @Injectable
 export class ThemingService

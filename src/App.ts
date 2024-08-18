@@ -26,9 +26,9 @@ import { Router } from "./Services/Router/Router";
 import { Routes } from "./Services/Router/Route";
 import { PopupManager } from "./Services/PopupManager";
 import { TitleService } from "./Services/TitleService";
-import { VirtualNode } from "./VirtualNode";
-import { VirtualInstance } from "./VirtualInstance";
-import { ThemingService } from "./main";
+import { VirtualInstance } from "./VirtualTree/VirtualInstance";
+import { VirtualNode } from "./VirtualTree/VirtualNode";
+import { ThemingService } from "./Services/ThemingService";
 
 export interface AppProperties
 {
@@ -66,11 +66,11 @@ class VirtualRoot extends VirtualNode
 
 }
 
-export class App
+class App
 {
     constructor(private properties: AppProperties)
     {
-        this.router = new Router(properties.routes);
+        new Router(properties.routes);
 
         RootInjector.Resolve(TitleService).format = "%title% | " + properties.title + " " + properties.version;
 
@@ -91,8 +91,12 @@ export class App
         this.root.AddChild(vNode);
     }
 
-    //Private members
-    private router: Router;
+    //Private state
     private popupManager: PopupManager;
     private root: VirtualRoot;
+}
+
+export function BootstrapApp(properties: AppProperties)
+{
+    const app = new App(properties);
 }

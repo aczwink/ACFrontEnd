@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,8 +19,8 @@ import { Injector, ResolutionStrategy, Subscription } from "acts-util-core";
 
 import { Component } from "../Component";
 import { Router } from "../Services/Router/Router";
-import { Injectable } from "../ComponentManager";
 import { RouterStateNode } from "../Services/Router/RouterState";
+import { Injectable } from "../decorators";
 
 @Injectable
 export class RouterComponent extends Component

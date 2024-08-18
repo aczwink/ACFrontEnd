@@ -37,7 +37,7 @@ interface RenderDOMElement
 }
 interface RenderComponentElement
 {
-    type: Instantiatable<Renderable>;
+    type: Instantiatable<Renderable> | Function;
     properties: any;
     children: RenderValue[];
 }
@@ -279,6 +279,10 @@ declare module JSX
         span: {
             children?: RenderValue;
         } & JSX_Element;
+
+        strong: {
+            children: string;
+        };
 
         table: {
             children: RenderValue;

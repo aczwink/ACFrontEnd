@@ -16,19 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
+import { DataLink } from "../DataBinding";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
+import { Injectable } from "../decorators";
 
-interface LineEditInput
+interface LineEditDirectValue
+{
+    onChanged: (newValue: string) => void;
+    value: string;
+}
+interface LineEditLinkValue
+{
+    link: DataLink<string>;
+}
+
+type LineEditInput =
 {
     className?: string;
     maxLength?: number;
     password?: boolean;
     placeholder?: string;
-    value: string;
-
-    onChanged: (newValue: string) => void;
-}
+} &  (LineEditDirectValue | LineEditLinkValue)
 
 @Injectable
 export class LineEdit extends Component<LineEditInput>
@@ -37,14 +45,21 @@ export class LineEdit extends Component<LineEditInput>
     protected Render(): RenderValue
     {
         const type = this.input.password === true ? "password" : "text";
-        return <input className={"form-control " + this.input.className} type={type} value={this.input.value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} placeholder={this.input.placeholder} maxLength={this.input.maxLength} />;
+        const value = ("value" in this.input) ? this.input.value : this.input.link.value;
+        return <input className={"form-control " + this.input.className} type={type} value={value} onchange={this.OnValueChanged.bind(this)} onkeyup={this.OnValueChanged.bind(this)} placeholder={this.input.placeholder} maxLength={this.input.maxLength} />;
     }
 
     //Event handlers
     private OnValueChanged(event: Event)
     {
         const newValue = (event.target! as HTMLInputElement).value;
-        if(this.input.value !== newValue)
-            this.input.onChanged(newValue);
+        const value = ("value" in this.input) ? this.input.value : this.input.link.value;
+        if(value !== newValue)
+        {
+            if("onChanged" in this.input)
+                this.input.onChanged(newValue);
+            else
+                this.input.link.Set(newValue);
+        }
     }
 }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2023 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,6 +29,19 @@ export class RouterStateNode
     {
         this.route = route;
         this.child = child;
+    }
+
+    //Class functions
+    public static ExtractWildCardSegmentName(routeSegment: string)
+    {
+        if(routeSegment.startsWith(":"))
+            return routeSegment.substring(1)
+        return routeSegment.substring(1, routeSegment.length - 1);
+    }
+
+    public static IsWildCardSegment(routeSegment: string)
+    {
+        return (routeSegment.startsWith("{") && routeSegment.endsWith("}")) || routeSegment.startsWith(":");
     }
 }
 
@@ -64,6 +77,32 @@ export class RouterState
     public Activate()
     {
         return this.ActivateNode(this._root);
+    }
+
+    public ExtractParameter(source: "route", name: string): string;
+    public ExtractParameter(source: "route", name: string, format: "unsigned"): number;
+    public ExtractParameter(source: "route", name: string, format?: "unsigned"): number | string
+    {
+        switch(source)
+        {
+            case "route":
+                const param = this._routeParams[name];
+                if(param === undefined)
+                    throw new Error("Route param '" + name + "' is not defined.");
+                if(format !== undefined)
+                {
+                    switch(format)
+                    {
+                        case "unsigned":
+                            return parseInt(param);
+                        default:
+                            throw new Error("TODO: implement me");
+                    }
+                }
+                return param;
+            default:
+                throw new Error("TODO: implement me");
+        }
     }
 
     public ToUrl(): AbsURL
@@ -117,9 +156,9 @@ export class RouterState
         const segments = path.split("/");
         for (let segment of segments)
         {
-            if(segment.startsWith(":"))
+            if(RouterStateNode.IsWildCardSegment(segment))
             {
-                const key = segment.substring(1);
+                const key = RouterStateNode.ExtractWildCardSegmentName(segment);
                 segment = encodeURIComponent(routeParams[key]!);
             }
 

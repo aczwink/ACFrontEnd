@@ -16,51 +16,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, Stepper, JSX_CreateElement, StepperPage, FormField, LineEdit, IntegerSpinner, DataBindingProxy } from "acfrontend";
+import { Component, Stepper, JSX_CreateElement, StepperPage, FormField, LineEdit, IntegerSpinner, DataLink } from "acfrontend";
+import { State } from "../../dist/Component";
 
-interface SharedState
+interface WizardState
 {
     name: string;
     age: number;
 }
 
-export class FirstPageComponent extends Component< { state: SharedState } >
+export class FirstPageComponent extends Component<{ nameLink: DataLink<string>; }>
 {
     protected Render(): RenderValue
     {
         return <fragment>
             <FormField title="Name">
-                <LineEdit value={this.input.state.name}
-                    onChanged={ newValue => this.input.state.name = newValue } />
+                <LineEdit link={this.input.nameLink} />
             </FormField>
         </fragment>
     }
 }
 
-export class SecondPageComponent extends Component< { state: DataBindingProxy<SharedState> } >
+export class SecondPageComponent extends Component< { name: string; ageLink: DataLink<number>; } >
 {
     protected Render(): RenderValue
     {
         return <fragment>
-            Hi, {this.input.state.name}!
+            Hi, {this.input.name}!
 
             <FormField title="Whats your age?">
-                <IntegerSpinner value={this.input.state.age} onChanged={newValue => this.input.state.age = newValue} />
+                <IntegerSpinner link={this.input.ageLink} />
             </FormField>
 
-            {this.input.state.age < 18 ? "Sorry, but you must be at least 18 to register!" : ""}
+            {this.input.ageLink.value < 18 ? "Sorry, but you must be at least 18 to register!" : ""}
         </fragment>;
     }
 
     //Event handlers
     public OnInitiated()
     {
-        this.input.state.Bind(this);
+        this.input.ageLink.Bind(this);
     }
 
     public OnUnmounted()
     {
-        this.input.state.Unbind(this);
+        this.input.ageLink.Unbind(this);
     }
 }
 
@@ -97,9 +97,9 @@ export class WizardComponent extends Component
     {
         super();
 
-        this.sharedState = this.CreateDataBindingProxy({
-            name: "",
+        this.sharedState = this.CreateState<WizardState>({
             age: 18,
+            name: ""
         });
         this.customValidator = false;
     }
@@ -109,10 +109,10 @@ export class WizardComponent extends Component
     {
         return <Stepper onAccept={this.OnAccept.bind(this)}>
             <StepperPage title="Page one" validate={() => this.sharedState.name.trim().length > 0}>
-                <FirstPageComponent state={this.sharedState} />
+                <FirstPageComponent nameLink={this.sharedState.links.name} />
             </StepperPage>
             <StepperPage title="Page two" validate={() => this.sharedState.age >= 18}>
-                <SecondPageComponent state={this.sharedState} />
+                <SecondPageComponent name={this.sharedState.name} ageLink={this.sharedState.links.age} />
             </StepperPage>
             <StepperPage title="Page three" validate={() => this.customValidator}>
                 <ThirdPageComponent onValidationChange={newValue => this.customValidator = newValue} />
@@ -121,7 +121,7 @@ export class WizardComponent extends Component
     }
 
     //Private members
-    private sharedState: DataBindingProxy<SharedState>;
+    private sharedState: State<WizardState>;
     private customValidator: boolean;
 
     //Event handlers

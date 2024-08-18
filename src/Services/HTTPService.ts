@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Dictionary } from "acts-util-core";
-import { Injectable } from "../ComponentManager";
+import { Injectable } from "../decorators";
 
 export type HTTPMethod = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
 

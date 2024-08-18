@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,20 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { VirtualNode } from "./VirtualNode";
-import { VirtualConstNode } from "./VirtualConstNode";
-import { TransformRenderValueToVirtualNode } from "./VirtualTreeCreator";
 
-interface BindUnbind
-{
-    Bind(component: Component): void;
-    Unbind(component: Component): void;
-}
-
-export type DataBindingProxy<T> = BindUnbind & T;
+import { CreateDataBindingProxy, CreateDataLink, CreateLinkedState, LinkedState } from "./DataBinding";
+import { VirtualConstNode } from "./VirtualTree/VirtualConstNode";
+import { VirtualNode } from "./VirtualTree/VirtualNode";
+import { TransformRenderValueToVirtualNode } from "./VirtualTree/VirtualTreeCreator";
+import { DontBind } from "./decorators";
 
 type GetTypeOfArray<T> = T extends Array<infer U> ? U : T;
 type CreateJSXProps<InputType, ChildrenType> = ChildrenType extends undefined ? InputType: (InputType & { children: ChildrenType });
+export type State<T> = T & { links: LinkedState<T> };
 
 export abstract class Component<InputType = null | {}, ChildrenType = undefined>
 {
@@ -85,7 +81,7 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
         return [this._children] as any;
     }
 
-    protected get input()
+    protected get input(): Readonly<InputType>
     {
         return this._input;
     }
@@ -94,61 +90,21 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
     protected abstract Render(): RenderValue;
 
     //Protected methods
-    protected BindProperty<T>(object: T, propertyName: string | number | symbol)
+    protected CreateState<T>(initialValue: T)
     {
-        const instanceAny = object as any;
-        
-        let value: any = instanceAny[propertyName];
-        delete instanceAny[propertyName];
-
-        Object.defineProperty(instanceAny, propertyName, {			
-			get: () =>
-			{
-				return value;
-			},
-			
-			set: (newValue) =>
-			{
-				const oldValue = value;
-                value = newValue;
-                if(oldValue !== newValue)
-                    this.Update();
-			}
-		});
+        const proxy = CreateDataBindingProxy(initialValue as any, this.Update.bind(this));
+        proxy.links = CreateLinkedState(proxy);
+        return proxy as State<T>;
     }
 
-    protected CreateDataBindingProxy<T extends object>(object: T): DataBindingProxy<T>
+    protected CreateStateLink<T>(initialValue: T)
     {
-        const keys = Reflect.ownKeys(object);
-
-        const components: Component<any, any>[] = [this];
-        const result: BindUnbind = {
-            //Public methods
-            Bind(component: Component)
-            {
-                components.push(component);
-            },
-            Unbind(component: Component)
-            {
-                components.Remove(components.indexOf(component));
-            },
+        const dummy = {
+            dummy: initialValue
         };
-        for (const key of keys)
-        {
-            Object.defineProperty(result, key, {
-                get: () => (object as any)[key],
-                set: (newValue) => {
-                    if((object as any)[key] !== newValue)
-                    {
-                        (object as any)[key] = newValue;
-                        components.forEach( component => component.Update() );
-                    }
-                },
-                enumerable: true,
-            });
-        }
-
-        return result as DataBindingProxy<T>;
+        const link = CreateDataLink(dummy, "dummy");
+        link.BindComponent(this as any);
+        return link;
     }
 
     //Event handlers
@@ -166,6 +122,7 @@ export abstract class Component<InputType = null | {}, ChildrenType = undefined>
     }
 
     //Private members
+    @DontBind
     private _vNode: VirtualNode | null;
     private _input!: InputType;
     private _children!: ChildrenType;

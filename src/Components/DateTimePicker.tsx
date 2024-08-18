@@ -17,7 +17,7 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
+import { Injectable } from "../decorators";
 
 type DateTimePickerInput = {
     value: Date | number;

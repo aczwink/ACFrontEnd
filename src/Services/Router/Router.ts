@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,11 +17,11 @@
  * */
 import { Property, AbsURL } from "acts-util-core";
 
-import { Injectable } from "../../ComponentManager";
 import { Routes } from "./Route";
 import { RouteHandler } from "./RouteHandler";
 import { RouterState, RouterStateNode } from "./RouterState";
 import { RootInjector } from "../../App";
+import { Injectable } from "../../decorators";
 
 
 @Injectable

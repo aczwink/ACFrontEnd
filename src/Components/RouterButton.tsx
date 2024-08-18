@@ -18,10 +18,18 @@
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { Router } from "../Services/Router/Router";
-import { Injectable } from "../ComponentManager";
+import { BootstrapColor } from "../Bootstrap";
+import { Injectable } from "../decorators";
+
+interface RouterButtonInput
+{
+    className?: string;
+    color: BootstrapColor;
+    route: string;
+}
 
 @Injectable
-export class RouterButton extends Component<{ className?: string; route: string; }, RenderValue>
+export class RouterButton extends Component<RouterButtonInput, RenderValue>
 {
     //Constructor
     constructor(private router: Router)
@@ -32,7 +40,8 @@ export class RouterButton extends Component<{ className?: string; route: string;
     //Protected methods
     protected Render(): RenderValue
     {
-        return <button className={"btn " + this.input.className} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
+        const className = this.input.className === undefined ? "" : (" " + this.input.className);
+        return <button className={"btn btn-" + this.input.color + className} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
     }
 
     //Event handlers

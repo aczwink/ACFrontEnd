@@ -15,9 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-
-import { Injectable } from "../ComponentManager";
 import { InfoMessage } from "../Components/InfoMessage";
+import { Injectable } from "../decorators";
 import { PopupManager } from "./PopupManager";
 
 interface InfoMessageOptions

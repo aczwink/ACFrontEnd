@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,15 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component } from "../Component";
+import { DataLink } from "../DataBinding";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { Injectable } from "../ComponentManager";
+import { Injectable } from "../decorators";
 
-type IntegerSpinnerInput = {
-    hint?: string;
-    min?: number;
+interface IntegerSpinnerDirectValue
+{
     onChanged: (newValue: number) => void;
     value: number;
-};
+}
+interface IntegerSpinnerLinkValue
+{
+    link: DataLink<number>;
+}
+type IntegerSpinnerInput =
+{
+    hint?: string;
+    min?: number;
+} & (IntegerSpinnerDirectValue | IntegerSpinnerLinkValue);
 
 @Injectable
 export class IntegerSpinner extends Component<IntegerSpinnerInput>
@@ -32,13 +41,18 @@ export class IntegerSpinner extends Component<IntegerSpinnerInput>
     //Protected methods
     protected Render(): RenderValue
     {
-        return <input type="number" min={this.input.min} placeholder={this.input.hint} value={this.input.value} onchange={this.OnChanged.bind(this)} />;
+        const value = ("value" in this.input) ? this.input.value : this.input.link.value;
+        return <input type="number" className="form-control" min={this.input.min} placeholder={this.input.hint} value={value} onchange={this.OnChanged.bind(this)} />;
     }
 
     //Event handlers
     private OnChanged(event: Event)
     {
         const newValue = (event.target! as HTMLInputElement).value;
-        this.input.onChanged(parseInt(newValue));
+        const intValue = parseInt(newValue);
+        if("onChanged" in this.input)
+            this.input.onChanged(intValue);
+        else
+            this.input.link.Set(intValue);
     }
 }
