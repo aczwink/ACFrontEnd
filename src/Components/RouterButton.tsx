@@ -41,12 +41,13 @@ export class RouterButton extends Component<RouterButtonInput, RenderValue>
     protected Render(): RenderValue
     {
         const className = this.input.className === undefined ? "" : (" " + this.input.className);
-        return <button className={"btn btn-" + this.input.color + className} type="button" onclick={this.OnActivated.bind(this)}>{this.children}</button>;
+        return <a className={"btn btn-" + this.input.color + className} href={this.input.route} onclick={this.OnActivated.bind(this)}>{this.children}</a>;
     }
 
     //Event handlers
     private OnActivated(event: Event)
-    {        
+    {
+        event.preventDefault();
         this.router.RouteTo(this.input.route);
     }
 }

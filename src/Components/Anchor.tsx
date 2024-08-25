@@ -21,7 +21,7 @@ import { Router } from "../Services/Router/Router";
 import { Injectable } from "../decorators";
 
 @Injectable
-export class Anchor extends Component<{ route: string; class?: string; }, RenderValue>
+export class Anchor extends Component<{ route: string; className?: string; }, RenderValue>
 {
     //Constructor
     constructor(private router: Router)
@@ -32,7 +32,7 @@ export class Anchor extends Component<{ route: string; class?: string; }, Render
     //Protected methods
     protected Render(): RenderValue
     {
-        return <a className={this.input.class} href={this.input.route} onclick={this.OnActivated.bind(this)}>{...this.children}</a>;
+        return <a className={this.input.className} href={this.input.route} onclick={this.OnActivated.bind(this)}>{...this.children}</a>;
     }
 
     //Event handlers

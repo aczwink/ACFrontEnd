@@ -17,8 +17,10 @@
  * */
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
+import { IsFragmentElement, IsRenderComponentElement } from "../RenderData";
 import { Injectable } from "../decorators";
 import { CheckBox } from "./CheckBox";
+import { RadioButton } from "./RadioButton";
 
 @Injectable
 export class FormField extends Component<{ title: string; description?: string }, SingleRenderValue>
@@ -31,6 +33,15 @@ export class FormField extends Component<{ title: string; description?: string }
             return <div className="form-check">
                 {...this.children}
                 <label className="form-check-label">{this.input.title}</label>
+                {this.input.description === undefined ? null : <div className="form-text">{this.input.description}</div>}
+            </div>;
+        }
+        else if(this.IsRadioButtonGroup())
+        {
+            return <div className="mb-3">
+                <label className="form-label">{this.input.title}</label>
+                <br />
+                {this.WrapRadios()}
                 {this.input.description === undefined ? null : <div className="form-text">{this.input.description}</div>}
             </div>;
         }
@@ -52,5 +63,21 @@ export class FormField extends Component<{ title: string; description?: string }
         if( (typeof child === "object") && ("type" in child) )
             return child.type === CheckBox;
         return false;
+    }
+
+    private IsRadioButtonGroup()
+    {
+        if(IsFragmentElement(this.children[0]))
+        {
+            const possibleRadios = this.children[0].children;
+            return possibleRadios.Values().Map(x => IsRenderComponentElement(x) && (x.type === RadioButton)).All();
+        }
+        return false;
+    }
+
+    private WrapRadios()
+    {
+        const fragment = this.children[0] as RenderSpecialElement;
+        return fragment.children.map(x => <div className="form-check form-check-inline">{x}</div>);
     }
 }

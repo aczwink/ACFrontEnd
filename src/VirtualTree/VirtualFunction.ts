@@ -20,7 +20,7 @@ import { Dictionary, EqualsAny } from "acts-util-core";
 import { VirtualNode } from "./VirtualNode";
 import { TransformRenderValueToVirtualNode } from "./VirtualTreeCreator";
 import { SetRendererHook } from "../Hooks";
-import { CreateDataBindingProxy, CreateLinkedState, DataLink, LinkedState } from "../DataBinding";
+import { CreateDataBindingProxy, CreateLinkedState, DataLink, FunctionState } from "../DataBinding";
 
 type RenderFunction<InputType> = (input: InputType) => RenderValue;
 
@@ -59,7 +59,7 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
             proxy.links = CreateLinkedState(proxy);
             this.state = proxy;
         }
-        return this.state as T & { links: LinkedState<T> };
+        return this.state as FunctionState<T>;
     }
 
     public SetEffects(effects: { effect: Function, dependencies?: any }[])

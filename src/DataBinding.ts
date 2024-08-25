@@ -125,3 +125,5 @@ export function CreateLinkedState<T extends object>(sourceObject: T)
 
     return result as LinkedState<T>
 }
+
+export type FunctionState<T> = T & { links: LinkedState<T> };

@@ -35,7 +35,7 @@ export class NavItem extends Component<{ route: string }, RenderValue>
 
         const isActive = this.input.route === "/" ? routerUrl.path === this.input.route : routerUrl.path.startsWith(this.input.route);
         const className = "nav-link" + (isActive ? " active" : "");
-        return <li><Anchor class={className} route={this.input.route}>{...this.children}</Anchor></li>;
+        return <li><Anchor className={className} route={this.input.route}>{...this.children}</Anchor></li>;
     }
 
     //Event handlers

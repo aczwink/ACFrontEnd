@@ -126,6 +126,7 @@ export class VirtualElement extends VirtualNode
         switch(inputNode.type)
         {
             case "checkbox":
+            case "radio":
                 inputNode.checked = "checked" in this._attributes;
                 break;
             case "text":

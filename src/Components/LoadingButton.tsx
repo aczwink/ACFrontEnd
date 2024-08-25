@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020,2022 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,14 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { BootstrapColor } from "../Bootstrap";
 import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
-import { ProgressSpinner } from "./ProgressSpinner";
 
 interface LoadingButtonInput
 {
+    color: BootstrapColor;
     isLoading: boolean;
-    onclick: EventHandler<MouseEvent>;
+    enabled: boolean;
+    onActivated: () => void;
 }
 
 export class LoadingButton extends Component<LoadingButtonInput, RenderValue>
@@ -30,12 +32,8 @@ export class LoadingButton extends Component<LoadingButtonInput, RenderValue>
     //Protected methods
     protected Render(): RenderValue
     {
-        let className = "loadingButton";
-        if(this.input.isLoading)
-            className += " active";
-
-        return <button type="button" className={className} disabled={this.input.isLoading} onclick={this.input.onclick}>
-            <ProgressSpinner />
+        return <button type="button" className={"btn btn-" + this.input.color} disabled={!this.input.enabled} onclick={this.input.onActivated}>
+            {this.input.isLoading ? <span className="spinner-border spinner-border-sm" aria-hidden="true"></span> : null}
             {this.children}
         </button>;
     }

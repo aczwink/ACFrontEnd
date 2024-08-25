@@ -25,9 +25,11 @@ interface PushButtonInput
     color: BootstrapColor;
     enabled: boolean;
     onActivated: () => void;
+    small?: boolean;
 }
 
 export function PushButton(input: PushButtonInput)
 {
-    return <button disabled={!input.enabled} type="button" className={"btn btn-" + input.color} onclick={input.onActivated}>{input.children}</button>;
+    const className = (input.small === true) ? "btn-sm" : "";
+    return <button disabled={!input.enabled} type="button" className={"btn btn-" + input.color + " " + className} onclick={input.onActivated}>{input.children}</button>;
 }
