@@ -72,8 +72,8 @@ import { FileDownloadService } from "./Services/FileDownloadService";
 import { DatePicker } from "./Components/DatePicker";
 import { DateTimePicker } from "./Components/DateTimePicker";
 import { OAuth2Service } from "./Services/OAuth2Service";
-import { Use, UseEffects, UseEffectOnce, UseState, UseRouteParameter, UseDataLink } from "./Hooks";
-import { APICallState, APIStateHandler, CallAPI, InitAPIState, UseAPI } from "./RenderHelpers";
+import { Use, UseEffect, UseEffectOnce, UseState, UseRouteParameter, UseDataLink } from "./Hooks";
+import { CreateDeferredAPIState, DeferredAPIState, UseAPI, UseAPIs, UseDeferredAPI } from "./RenderHelpers";
 import { Injectable, RouteParamProperty } from "./decorators";
 import { VirtualNode } from "./VirtualTree/VirtualNode";
 import { DataLink, FunctionState } from "./DataBinding";
@@ -86,21 +86,20 @@ import { RadioButton } from "./Components/RadioButton";
 export
 {
     Anchor,
-    APICallState,
     APIServiceBase,
-    APIStateHandler,
     AutoCompleteMultiSelectBox,
     AutoCompleteSelectBox,
     AutoCompleteTextLineEdit,
     BootstrapApp,
     BootstrapIcon,
-    CallAPI,
     CheckBox,
     Component,
     CookieService,
+    CreateDeferredAPIState,
     DataLink,
     DatePicker,
     DateTimePicker,
+    DeferredAPIState,
     DialogProperties,
     DialogRef,
     FileDownloadService,
@@ -115,7 +114,6 @@ export
     I18n,
     I18nManager,
     InfoMessageManager,
-    InitAPIState,
     Injectable,
     IntegerSpinner,
     JSX_CreateElement,
@@ -169,8 +167,10 @@ export
     TooltipManager,
     Use,
     UseAPI,
+    UseAPIs,
     UseDataLink,
-    UseEffects,
+    UseDeferredAPI,
+    UseEffect,
     UseEffectOnce,
     UseRouteParameter,
     UseState,

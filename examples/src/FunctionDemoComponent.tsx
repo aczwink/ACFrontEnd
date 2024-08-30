@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, Deferred, IntegerSpinner, JSX_CreateElement, RouterState, Use, UseState } from "acfrontend";
+import { Component, IntegerSpinner, JSX_CreateElement, RouterState, Use, UseEffectOnce, UseState } from "acfrontend";
 import { TimeUtil } from "acts-util-core";
 
 function HeadlineComponent(input: { text: string; })
@@ -31,10 +31,17 @@ const HeadlineComponent2 = () => {
 
 function DeferredExample()
 {
-    return Deferred({
-        promise: TimeUtil.Delay(1000),
-        resolve: () => "Timer elapsed"
+    const state = UseState({
+        elapsed: false
     });
+    UseEffectOnce(async () => {
+        await TimeUtil.Delay(1000);
+        state.elapsed = true;
+    });
+
+    if(state.elapsed)
+        return "Timer elapsed";
+    return "Waiting...";
 }
 
 function StateExample()
@@ -47,6 +54,21 @@ function StateExample()
         <IntegerSpinner value={state.a} onChanged={newValue => state.a = newValue} />
         <IntegerSpinner link={state.links.b} />
         <p>The sum of these numbers is: {state.a + state.b}</p>
+    </fragment>;
+}
+
+function MultiStateExample()
+{
+    const s1 = UseState({
+        a: 1
+    });
+    const s2 = UseState({
+        b: 3
+    });
+    return <fragment>
+        <IntegerSpinner link={s1.links.a} />
+        <IntegerSpinner link={s2.links.b} />
+        <p>The sum of these numbers is: {s1.a + s2.b}</p>
     </fragment>;
 }
 
@@ -71,6 +93,9 @@ export class FunctionDemoComponent extends Component
 
             <p>Using state:</p>
             <StateExample />
+
+            <p>Using multiple states:</p>
+            <MultiStateExample />
 
             <p>With children:</p>
             <ChildrenExample>

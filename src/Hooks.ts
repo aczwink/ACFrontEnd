@@ -16,33 +16,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { Dictionary } from "acts-util-core";
 import { RootInjector } from "./App";
 import { VirtualFunction } from "./VirtualTree/VirtualFunction";
 import { DataLink, RouterState } from "./main";
 
 let currentRenderFunction: VirtualFunction<any> | null = null;
+let currentCounters: Dictionary<number> = {};
+
+export function GetCounterId(type: string)
+{
+    function GetCounterValue(type: string)
+    {
+        if(type in currentCounters)
+            return ++currentCounters[type]!;
+        else
+            currentCounters[type] = 0;
+        return 0;
+    }
+    return "__" + type + GetCounterValue(type);
+}
 
 export function SetRendererHook(func: VirtualFunction<any> | null)
 {
     currentRenderFunction = func;
+    currentCounters = {};
 }
 
 export function Use<T>(token: Instantiatable<T>)
 {
-    const injector = currentRenderFunction?.injector ?? RootInjector;
-    return injector.Resolve(token)!;
+    if(currentRenderFunction === null)
+        return RootInjector.Resolve(token);
+    else
+        return currentRenderFunction.ResolveInjection(token);
 }
 
-export function UseEffects(effects: { effect: Function, dependencies?: any }[])
+export function UseEffect(effect: Function, dependencies?: any)
 {
-    currentRenderFunction?.SetEffects(effects);
+    const id = GetCounterId("fx");
+    currentRenderFunction?.SetEffect(id, effect, dependencies);
 }
 
 export function UseEffectOnce(effect: Function)
 {
-    UseEffects([
-        { effect, dependencies: null}
-    ]);
+    UseEffect(effect, null);
 }
 
 export function UseState<T extends object>(initialValue: T)

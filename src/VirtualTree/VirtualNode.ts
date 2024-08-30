@@ -18,6 +18,15 @@
 import { Injector } from "acts-util-core";
 import { MountPoint, DOM } from "../DOM";
 
+export enum LifecycleState
+{
+    Created,
+    Realized,
+    Mounted,
+    Unmounted,
+    Destroyed,
+}
+
 export abstract class VirtualNode
 {
     constructor(domNode?: Node)
@@ -29,14 +38,12 @@ export abstract class VirtualNode
         if(domNode === undefined)
         {
             this._domNode = null;
-            this.mounted = false;
-            this.realized = false;
+            this._lifecycleState = LifecycleState.Created;
         }
         else
         {
             this._domNode = domNode;
-            this.mounted = true;
-            this.realized = true;
+            this._lifecycleState = LifecycleState.Mounted;
         }
     }
 
@@ -117,7 +124,7 @@ export abstract class VirtualNode
         if( (this._nextSibling !== null) || (this._prevSibling !== null) || (this._parent !== null) )
             throw new Error("Can't destroy virtual node that is still mounted in a virtual tree");
 
-        this.realized = false;
+        this._lifecycleState = LifecycleState.Destroyed;
         this._domNode = null;
 
         if(this._children === undefined)
@@ -144,20 +151,18 @@ export abstract class VirtualNode
         };
     }
 
-    public Mount(mountPoint: MountPoint): void
+    private Mount(mountPoint: MountPoint): void
     {
         this.EnsureRealized();
         if(this._domNode !== null)
+        {
+            this.MountChildren({ mountPointNode: this._domNode, reference: "appendChild" });
             DOM.Mount(this._domNode, mountPoint);
+        }
         else
             this.MountChildren(mountPoint);
-        this.mounted = true;
+        this._lifecycleState = LifecycleState.Mounted;
         this.OnMounted();
-    }
-
-    public MountAsChildOf(mountPoint: Node)
-    {
-        this.Mount({ mountPointNode: mountPoint, reference: "appendChild" });
     }
 
     public RemoveChild(child: VirtualNode)
@@ -168,24 +173,6 @@ export abstract class VirtualNode
         if(index === -1)
             throw new Error("Can't remove child if it isn't a child");
         this.RemoveChildByIndex(index);
-    }
-
-    public Unmount()
-    {
-        if(this._domNode !== null)
-        {
-            DOM.Unmount(this._domNode);
-        }
-        else if(this._children !== undefined)
-        {
-            for (let index = 0; index < this._children.length; index++)
-            {
-                const child = this._children[index];
-                child.Unmount();
-            }
-        }
-        this.mounted = false;
-        this.OnUnmounted();
     }
 
     public Update(newVNode: VirtualNode | null): VirtualNode | null
@@ -204,6 +191,12 @@ export abstract class VirtualNode
 
     //Protected members
     protected _injector?: Injector;
+
+    //Protected properties
+    protected get lifecycleState()
+    {
+        return this._lifecycleState;
+    }
 
     //Protected abstract
     protected abstract CloneSelf(): VirtualNode;
@@ -284,10 +277,14 @@ export abstract class VirtualNode
     private _parent: VirtualNode | null;
     private _nextSibling: VirtualNode | null;
     private _prevSibling: VirtualNode | null;
-    private mounted: boolean;
-    private realized: boolean;
+    private _lifecycleState: LifecycleState;
 
     //Private properties
+    private get mounted()
+    {
+        return this._lifecycleState === LifecycleState.Mounted;
+    }
+
     private set nextSibling(newNext: VirtualNode | null)
     {
         this._nextSibling = newNext;
@@ -316,7 +313,8 @@ export abstract class VirtualNode
         child._parent = null;
         child._prevSibling = null;
         child._nextSibling = null;
-        child.Unmount();
+        if(child.mounted)
+            child.Unmount();
     }
 
     private DropAllChildren()
@@ -333,13 +331,11 @@ export abstract class VirtualNode
 
     private EnsureRealized()
     {
-        if( !this.realized )
+        if(this._lifecycleState === LifecycleState.Created)
         {
             this._domNode = this.RealizeSelf();
-            this.realized = true;
+            this._lifecycleState = LifecycleState.Realized;
         }
-        if( this._domNode !== null )
-            this.MountChildren({ mountPointNode: this._domNode, reference: "appendChild" });
     }
 
     private FindMountPoint(checkChildren: boolean = true) : MountPoint | null
@@ -409,6 +405,11 @@ export abstract class VirtualNode
         }
     }
 
+    private MountAsChildOf(mountPoint: Node)
+    {
+        this.Mount({ mountPointNode: mountPoint, reference: "appendChild" });
+    }
+
     private MountChildren(mountPoint: MountPoint)
     {
         if( (this._children !== undefined) )
@@ -458,5 +459,23 @@ export abstract class VirtualNode
         else
             this.InsertChildBefore(next, newChild);
         this.RemoveChild(oldChild);
+    }
+
+    private Unmount()
+    {
+        if(this._domNode !== null)
+        {
+            DOM.Unmount(this._domNode);
+        }
+        else if(this._children !== undefined)
+        {
+            for (let index = 0; index < this._children.length; index++)
+            {
+                const child = this._children[index];
+                child.Unmount();
+            }
+        }
+        this._lifecycleState = LifecycleState.Unmounted;
+        this.OnUnmounted();
     }
 }

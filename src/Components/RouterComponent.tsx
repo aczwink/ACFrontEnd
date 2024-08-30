@@ -102,7 +102,7 @@ export class RouterComponent extends Component
             this.injector.RegisterInstance(RouterStateNode, node.child || null);
         }
 
-        this.Update();
+        this.UpdateSync(); //update is instantly required because children likely use the router state, which means that the child might need to be exchanged
     }
 
     override OnUnmounted()

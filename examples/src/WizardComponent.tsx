@@ -55,12 +55,12 @@ export class SecondPageComponent extends Component< { name: string; ageLink: Dat
     //Event handlers
     public OnInitiated()
     {
-        this.input.ageLink.Bind(this);
+        this.input.ageLink.BindComponent(this);
     }
 
     public OnUnmounted()
     {
-        this.input.ageLink.Unbind(this);
+        this.input.ageLink.UnbindComponent(this);
     }
 }
 

@@ -17,16 +17,24 @@
  * */
 
 import { JSX_CreateElement } from "./JSX_CreateElement";
-import { UseEffectOnce, UseState } from "./Hooks";
+import { GetCounterId, UseEffectOnce, UseState } from "./Hooks";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
-import { DataLink } from "./DataBinding";
+import { CreateDataLink, DataLink } from "./DataBinding";
+import { Component } from "./Component";
 
 
-interface APIResponse<DataType>
+export interface APIResponse<DataType>
 {
 	statusCode: number;
     data?: DataType;
     rawBody: any;
+}
+
+export interface DeferredAPIState<T>
+{
+    state: APICallState<T>;
+    fallback: any;
+    start: () => void;
 }
 
 interface SuccessState<T>
@@ -97,6 +105,19 @@ export async function CallAPI<T>(call: () => Promise<APIResponse<T>>, link: Data
         link.Set({ success: false, finished: true, rawBody: response.rawBody, started: true });
 }
 
+export function CreateDeferredAPIState<T, I, C>(call: () => Promise<APIResponse<T>>, component: Component<I, C>): DeferredAPIState<T>
+{
+    const state = InitAPIState<T>();
+    const result: DeferredAPIState<T> = {
+        state,
+        start: () => CallAPI(call, stateLink),
+        fallback: { type: APIStateHandler, properties: { state }} as any
+    };
+    const stateLink = CreateDataLink(result, "state");
+    stateLink.BindComponent(component as any);
+    return result;
+}
+
 export function InitAPIState<T>(): APICallState<T>
 {
     return { success: false, finished: false, started: false };
@@ -104,15 +125,124 @@ export function InitAPIState<T>(): APICallState<T>
 
 export function UseAPI<T>(call: () => Promise<APIResponse<T>>, onSuccess?: (data: T) => void)
 {
+    const id = GetCounterId("api");
     const state = UseState({
-        apiState: InitAPIState<T>()
+        [id]: InitAPIState<T>()
     });
-    UseEffectOnce(async () => {
-        CallAPI(call, state.links.apiState, onSuccess);
+    UseEffectOnce(() => CallAPI(call, state.links[id], onSuccess));
+
+    return {
+        ...state[id],
+        fallback: <APIStateHandler state={state[id]} />,
+    };
+}
+
+export function UseDeferredAPI<T>(call: () => Promise<APIResponse<T>>, onSuccess?: (data: T) => void)
+{
+    const id = GetCounterId("api");
+    const state = UseState({
+        [id]: InitAPIState<T>()
     });
 
     return {
-        ...state.apiState,
-        fallback: <APIStateHandler state={state.apiState as any} />
+        ...state[id],
+        fallback: <APIStateHandler state={state[id]} />,
+        start: () => CallAPI(call, state.links[id], onSuccess)
+    };
+}
+
+type APICallFunction<T> = () => Promise<APIResponse<T>>;
+type APICall<T> = {
+    call: APICallFunction<T>,
+    onSuccess?: (data: T) => void
+};
+type APICallObject<T> = {
+    [key in keyof T]: APICall<T[key]>;
+};
+type MuxedObject<T> = {
+    [key in keyof T]: T[key];
+};
+type APICallArray<T> = () => Promise<APIResponse<T>[]>;
+export function UseAPIs<T>(calls: APICallObject<T>): APICallState<MuxedObject<T>> & { fallback: any };
+export function UseAPIs<T>(calls: APICallArray<T>, onSuccess?: (data: T[]) => void): APICallState<T[]> & { fallback: any };
+export function UseAPIs<T>(calls: APICallObject<T> | APICallArray<T>, onSuccess?: (data: T[]) => void): (APICallState<MuxedObject<T>> | APICallState<T[]>) & { fallback: any }
+{
+    if(typeof calls === "function")
+    {
+        const id = GetCounterId("api");
+        const state = UseState({
+            [id]: InitAPIState<T[]>()
+        });
+        UseEffectOnce(async () => {
+            const responses = await calls();
+            const data: T[] = [];
+            for (const response of responses)
+            {
+                switch(response.statusCode)
+                {
+                    case 200:
+                        data.push(response.data!);
+                        break;
+                    default:
+                        throw new Error("TODO: not implemented: " + response.statusCode);
+                }
+            }
+            if(onSuccess !== undefined)
+                onSuccess(data);
+            state[id] = {
+                started: true,
+                success: true,
+                data
+            };
+        });
+
+        return {
+            ...state[id],
+            fallback: <APIStateHandler state={state[id]} />,
+        };
+    }
+
+    const apis = calls.Entries().ToDictionary(kv => kv.key as any, kv => UseAPI(kv.value.call, kv.value.onSuccess));
+    const apiValues = apis.Values().NotUndefined();
+
+    const started = apiValues.Map(x => x.started).AnyTrue();
+    if(started)
+    {
+        const success = apiValues.Map(x => x.success).All();
+        const firstFallback = apiValues.First().fallback;
+        if(success)
+        {
+            return {
+                started: true,
+                success: true,
+                data: apis.Entries().ToDictionary(kv => kv.key, kv => (kv.value! as any).data) as any,
+                fallback: firstFallback,
+            }
+        }
+
+        const errorState = apiValues.Filter(x => (x.success === false) && x.finished).FirstOrUndefined();
+        if(errorState === undefined)
+        {
+            return {
+                started: true,
+                finished: false,
+                success: false,
+                fallback: firstFallback
+            };
+        }
+        return {
+            started: true,
+            success: false,
+            finished: true,
+            rawBody: (errorState as any).rawBody,
+            fallback: <APIStateHandler state={errorState} />
+        };
+    }
+
+    return {
+        started: false,
+        finished: false,
+        success: false,
+        fallback: apiValues.First().fallback,
     };
 }

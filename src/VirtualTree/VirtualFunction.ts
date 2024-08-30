@@ -17,10 +17,11 @@
  * */
 
 import { Dictionary, EqualsAny } from "acts-util-core";
-import { VirtualNode } from "./VirtualNode";
+import { LifecycleState, VirtualNode } from "./VirtualNode";
 import { TransformRenderValueToVirtualNode } from "./VirtualTreeCreator";
 import { SetRendererHook } from "../Hooks";
 import { CreateDataBindingProxy, CreateLinkedState, DataLink, FunctionState } from "../DataBinding";
+import { RouterState } from "../Services/Router/RouterState";
 
 type RenderFunction<InputType> = (input: InputType) => RenderValue;
 
@@ -37,7 +38,7 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
     {
         super();
 
-        this.effects = [];
+        this.effects = {};
         this.boundLinks = new Set();
     }
 
@@ -53,34 +54,51 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
 
     public GetOrSetState<T extends object>(initialValue: T)
     {
-        if(this.state === undefined)
+        if(this.rawState === undefined)
+            this.rawState = {};
+
+        let changed = false;
+        for (const key in initialValue)
         {
-            const proxy = CreateDataBindingProxy(initialValue as any, this.CallFunction.bind(this));
+            if (Object.prototype.hasOwnProperty.call(initialValue, key))
+            {
+                const value = initialValue[key];
+                if(key in this.rawState)
+                    continue;
+
+                this.rawState[key] = value;
+                changed = true;
+            }
+        }
+        if(changed)
+        {
+            const proxy = CreateDataBindingProxy(this.rawState, this.CallFunction.bind(this));
             proxy.links = CreateLinkedState(proxy);
             this.state = proxy;
         }
         return this.state as FunctionState<T>;
     }
 
-    public SetEffects(effects: { effect: Function, dependencies?: any }[])
+    public ResolveInjection<T>(token: Instantiatable<T>)
     {
-        for(let i = 0; i < effects.length; i++)
-        {
-            const src = effects[i];
-            const stored = this.effects[i];
-            
-            if(stored === undefined)
-                this.effects.push({ effect: src.effect, lastDependencies: src.dependencies, callNextTime: true });
-            else
-            {
-                stored.effect = src.effect;
-                stored.callNextTime = !EqualsAny(stored.lastDependencies, src.dependencies);
-                stored.lastDependencies = src.dependencies;
-            }
-        }
+        const injected = this.injector!.Resolve(token);
+        if(token as any === RouterState)
+            this.routerState = injected as any;
+        return injected;
+    }
 
-        while(this.effects.length > effects.length)
-            this.effects.pop();
+    public SetEffect(id: string, effect: Function, dependencies: any)
+    {
+        const stored = this.effects[id];
+
+        if(stored === undefined)
+            this.effects[id] = { effect, callNextTime: true, lastDependencies: dependencies };
+        else
+        {
+            stored.effect = effect;
+            stored.callNextTime ||= !EqualsAny(stored.lastDependencies, dependencies);
+            stored.lastDependencies = dependencies;
+        }
     }
 
     //Protected methods    
@@ -100,12 +118,18 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
         if(newNode instanceof VirtualFunction)
         {
             if((this.func === newNode.func) && EqualsAny(this.input, newNode.input) && EqualsAny(this.subChildren, newNode.subChildren))
+            {
+                if(this.DidEnvironmentChange())
+                {
+                    this.ResetState();
+                    this.CallFunction();
+                }
                 return this;
+            }
 
             if(this.func !== newNode.func)
             {
-                this.effects = [];
-                this.state = undefined;
+                this.ResetState();
                 this.boundLinks = new Set();
             }
 
@@ -122,17 +146,20 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
     //Private methods
     private CallEffects()
     {
-        this.effects.forEach(effect => {
+        this.effects.Values().NotUndefined().ForEach(effect => {
             if(effect.callNextTime)
             {
-                effect.effect();
                 effect.callNextTime = false;
+                effect.effect();
             }
         });
     }
 
     private CallFunction()
     {
+        if((this.lifecycleState === LifecycleState.Unmounted) || (this.lifecycleState === LifecycleState.Destroyed))
+            return;
+
         SetRendererHook(this);
         const result = this.func({
             ...this.input,
@@ -167,8 +194,30 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
         this.CallEffects();
     }
 
+    private DidEnvironmentChange()
+    {
+        if(this.routerState !== undefined)
+        {
+            const oldState = this.routerState;
+            const newState = this.ResolveInjection(RouterState);
+
+            const isEqual = EqualsAny(oldState.queryParams, newState.queryParams) && EqualsAny(oldState.routeParams, newState.routeParams)
+            return !isEqual;
+        }
+        return false;
+    }
+
+    private ResetState()
+    {
+        this.effects = {};
+        this.state = undefined;
+        this.rawState = undefined;
+    }
+
     //State
-    private effects: Effect[];
-    private state: any;
+    private effects: Dictionary<Effect>;
+    private state: FunctionState<any>;
+    private rawState: any;
     private boundLinks: Set<DataLink<any>>;
+    private routerState?: RouterState;
 }
