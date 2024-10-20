@@ -17,6 +17,7 @@
  * */
 import { Injectable } from "../decorators";
 import { HTTPService } from "./HTTPService";
+import { OAuth2Config, OAuth2TokenManager } from "./OAuth2TokenManager";
 
 interface OAuth2Request
 {
@@ -24,6 +25,15 @@ interface OAuth2Request
     clientId: string;
     redirectURI: string;
     scopes: string[];
+    state?: string;
+}
+
+interface OAuth2TokenRequest
+{
+    clientId: string;
+    code: string;
+    redirectURI: string;
+    tokenEndpoint: string;
 }
 
 export interface OAuth2TokenResponse
@@ -39,59 +49,73 @@ export interface OAuth2TokenResponse
 @Injectable
 export class OAuth2Service
 {
-    constructor(private httpService: HTTPService)
+    constructor(private httpService: HTTPService, private oAuth2TokenManager: OAuth2TokenManager)
     {
     }
 
     //Public methods
-    public async PerformRedirectLogin(request: OAuth2Request)
+    public async HandleRedirectResult()
     {
-        const codeVerifier = this.GenerateRandomString(64);
+        const params = this.ExtractPostRedirectParameters();
+        if(params !== undefined)
+        {
+            const config: OAuth2Config = JSON.parse(window.sessionStorage.getItem("OAuth2Service")!);
+            const response = await this.RedeemAuthorizationCode({
+                clientId: config.clientId,
+                code: params.code,
+                redirectURI: config.redirectURI,
+                tokenEndpoint: config.tokenEndpoint
+            });
+            if("error" in response)
+                throw new Error("TODO: implement me");
 
-        const challengeMethod = "S256"; //plain
-        const codeChallenge = await this.GenerateCodeChallenge(codeVerifier);
+            this.oAuth2TokenManager.AddToken(config, response.access_token, response.scope.split(" "));
 
-        window.sessionStorage.setItem("code_verifier", codeVerifier);
-
-        var args = new URLSearchParams({
-            response_type: "code",
-            client_id: request.clientId,
-            code_challenge_method: challengeMethod,
-            code_challenge: codeChallenge,
-            redirect_uri: request.redirectURI,
-            scope: request.scopes.join(" ")
-        });
-        window.location.href = request.authorizeEndpoint + "/?" + args;
+            return params.state!;
+        }
     }
 
-    public async RedeemAuthorizationCode(tokenEndpoint: string, clientId: string, code: string)
+    public RequestScopes(config: OAuth2Config, scopes: string[])
     {
-        const response = await this.httpService.SendRequest({
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            method: "POST",
-            progressTracker: null,
-            responseType: "json",
-            url: tokenEndpoint,
-            body: new URLSearchParams({
-                client_id: clientId,
-                code_verifier: window.sessionStorage.getItem("code_verifier")!,
-                grant_type: "authorization_code",
-                redirect_uri: location.href.replace(location.search, ''),
-                code: code
-            }).toString()
-        });
+        const scopesToRequest = this.oAuth2TokenManager.FetchScopesToGrant(config, scopes);
+        if(scopesToRequest !== undefined)
+        {
+            window.sessionStorage.setItem("OAuth2Service", JSON.stringify(config));
+            this.PerformRedirectLogin({
+                authorizeEndpoint: config.authorizeEndpoint,
+                clientId: config.clientId,
+                redirectURI: config.redirectURI,
+                scopes: scopesToRequest,
+                state: window.location.pathname
+            });
+        }
 
-        if(response.statusCode === 200)
-            return response.body as OAuth2TokenResponse;
-        return {
-            error: response.body.error as string,
-            description: response.body.error_description as string
-        };
+        return this.oAuth2TokenManager.AreScopesGranted(config, scopes);
     }
 
     //Private methods
+    private ExtractPostRedirectParameters()
+    {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+
+        const error = urlParams.get("error");
+        if(error !== null)
+        {
+            alert(error);
+            throw new Error(error);
+        }
+
+        if(code === null)
+            return undefined;
+
+        const state = urlParams.get("state");
+        return {
+            code,
+            state: (state === null) ? undefined : decodeURIComponent(state)
+        };
+    }
+
     private async GenerateCodeChallenge(codeVerifier: string)
     {
         var digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(codeVerifier));
@@ -109,5 +133,54 @@ export class OAuth2Service
         }
 
         return text;
+    }
+
+    private async PerformRedirectLogin(request: OAuth2Request)
+    {
+        const codeVerifier = this.GenerateRandomString(64);
+
+        const challengeMethod = "S256"; //plain
+        const codeChallenge = await this.GenerateCodeChallenge(codeVerifier);
+
+        window.sessionStorage.setItem("code_verifier", codeVerifier);
+
+        var args = new URLSearchParams({
+            response_type: "code",
+            client_id: request.clientId,
+            code_challenge_method: challengeMethod,
+            code_challenge: codeChallenge,
+            redirect_uri: request.redirectURI,
+            scope: request.scopes.join(" "),
+        });
+        if(request.state !== undefined)
+            args.set("state", request.state);
+        window.location.href = request.authorizeEndpoint + "/?" + args;
+    }
+
+    private async RedeemAuthorizationCode(request: OAuth2TokenRequest)
+    {
+        const response = await this.httpService.SendRequest({
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            method: "POST",
+            progressTracker: null,
+            responseType: "json",
+            url: request.tokenEndpoint,
+            body: new URLSearchParams({
+                client_id: request.clientId,
+                code_verifier: window.sessionStorage.getItem("code_verifier")!,
+                grant_type: "authorization_code",
+                redirect_uri: request.redirectURI,
+                code: request.code
+            }).toString()
+        });
+
+        if(response.statusCode === 200)
+            return response.body as OAuth2TokenResponse;
+        return {
+            error: response.body.error as string,
+            description: response.body.error_description as string
+        };
     }
 }

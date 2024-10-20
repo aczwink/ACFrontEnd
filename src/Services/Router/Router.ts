@@ -36,7 +36,7 @@ export class Router
 
         const state = this.CreateRouterState(RouterState.ParseURL(window.location.href));
         this._state = new Property<RouterState>(state);
-        this.UpdateRouterState(state);
+        this.SetRouterState(state);
 
         window.onpopstate = this.OnPopHistoryState.bind(this);
     }
@@ -54,7 +54,7 @@ export class Router
             url = RouterState.CreateAbsoluteUrl(url);
 
         const newState = this.CreateRouterState(url);
-        this.UpdateRouterState(newState);
+        this.SetRouterState(newState);
     }
 
     //Private methods
@@ -80,16 +80,6 @@ export class Router
     private mainRouteHandler: RouteHandler;
 
     //Private methods
-    private UpdateRouterState(state: RouterState)
-    {
-        if(this.SetRouterState(state))
-        {
-            this.AddURLToHistory(state.ToUrl().ToString());
-            return true;
-        }
-        return false;
-    }
-
     private SetRouterState(state: RouterState)
     {
         if(state.Activate())
@@ -97,6 +87,7 @@ export class Router
             RootInjector.RegisterInstance(RouterState, state);
             RootInjector.RegisterInstance(RouterStateNode, state.root);
 
+            this.AddURLToHistory(state.ToUrl().ToString());
             if(this._state.Get() !== state)
                 this._state.Set(state);
 

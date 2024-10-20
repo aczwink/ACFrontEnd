@@ -82,6 +82,8 @@ import { I18nManager } from "./Services/I18nManager";
 import { I18n } from "./Components/I18n";
 import { SubmitButton } from "./Components/SubmitButton";
 import { RadioButton } from "./Components/RadioButton";
+import { OAuth2Guard } from "./Services/Router/OAuth2Guard";
+import { OAuth2Config, OAuth2TokenManager } from "./Services/OAuth2TokenManager";
 
 export
 {
@@ -128,7 +130,10 @@ export
     Navigation,
     NavItem,
     NumberSpinner,
+    OAuth2Config,
+    OAuth2Guard,
     OAuth2Service,
+    OAuth2TokenManager,
     ObservableEvent,
     PaginationComponent,
     PopupManager,

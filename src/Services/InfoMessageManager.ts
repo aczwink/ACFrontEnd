@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
+import { BootstrapColor } from "../Bootstrap";
 import { InfoMessage } from "../Components/InfoMessage";
 import { Injectable } from "../decorators";
 import { PopupManager } from "./PopupManager";
@@ -22,7 +23,7 @@ import { PopupManager } from "./PopupManager";
 interface InfoMessageOptions
 {
     duration?: number;
-    type: "success" | "danger" | "info";
+    type: BootstrapColor;
 }
 
 @Injectable
@@ -55,8 +56,12 @@ export class InfoMessageManager
             case "danger":
                 return 8;
             case "info":
+            case "primary":
+            case "secondary":
             case "success":
                 return 4;
+            case "warning":
+                return 6;
         }
     }
 }

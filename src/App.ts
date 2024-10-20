@@ -29,6 +29,7 @@ import { TitleService } from "./Services/TitleService";
 import { VirtualInstance } from "./VirtualTree/VirtualInstance";
 import { VirtualNode } from "./VirtualTree/VirtualNode";
 import { ThemingService } from "./Services/ThemingService";
+import { OAuth2Service } from "./Services/OAuth2Service";
 
 export interface AppProperties
 {
@@ -70,7 +71,13 @@ class App
 {
     constructor(private properties: AppProperties)
     {
-        new Router(properties.routes);
+        RootInjector.Resolve(OAuth2Service).HandleRedirectResult().then(redirect => {
+            if(redirect !== undefined)
+                router.RouteTo(redirect);
+            }
+        );
+        const router = new Router(properties.routes);
+
 
         RootInjector.Resolve(TitleService).format = "%title% | " + properties.title + " " + properties.version;
 

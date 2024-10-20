@@ -180,7 +180,7 @@ export class RouterState
         {
             for (const guard of node.route.guards)
             {
-                const instance = RootInjector.Resolve(guard);
+                const instance = ("CanActivate" in guard) ? guard : RootInjector.Resolve(guard);
                 if(!instance.CanActivate())
                 {
                     instance.OnActivationFailure(this);
