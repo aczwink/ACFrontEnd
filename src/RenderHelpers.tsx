@@ -21,6 +21,7 @@ import { GetCounterId, UseEffectOnce, UseState } from "./Hooks";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
 import { CreateDataLink, DataLink } from "./DataBinding";
 import { Component } from "./Component";
+import { ObjectExtensions } from "acts-util-core";
 
 
 export interface APIResponse<DataType>
@@ -202,8 +203,8 @@ export function UseAPIs<T>(calls: APICallObject<T> | APICallArray<T>, onSuccess?
         };
     }
 
-    const apis = calls.Entries().ToDictionary(kv => kv.key as any, kv => UseAPI(kv.value.call, kv.value.onSuccess));
-    const apiValues = apis.Values().NotUndefined();
+    const apis = ObjectExtensions.Entries(calls).ToDictionary(kv => kv.key as any, kv => UseAPI(kv.value.call, kv.value.onSuccess));
+    const apiValues = ObjectExtensions.Values(apis).NotUndefined();
 
     const started = apiValues.Map(x => x.started).AnyTrue();
     if(started)
@@ -215,7 +216,7 @@ export function UseAPIs<T>(calls: APICallObject<T> | APICallArray<T>, onSuccess?
             return {
                 started: true,
                 success: true,
-                data: apis.Entries().ToDictionary(kv => kv.key, kv => (kv.value! as any).data) as any,
+                data: ObjectExtensions.Entries(apis).ToDictionary(kv => kv.key, kv => (kv.value! as any).data) as any,
                 fallback: firstFallback,
             }
         }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Dictionary, EqualsAny } from "acts-util-core";
+import { Dictionary, EqualsAny, ObjectExtensions } from "acts-util-core";
 import { LifecycleState, VirtualNode } from "./VirtualNode";
 import { TransformRenderValueToVirtualNode } from "./VirtualTreeCreator";
 import { SetRendererHook } from "../Hooks";
@@ -146,7 +146,7 @@ export class VirtualFunction<InputType extends Dictionary<any> | null> extends V
     //Private methods
     private CallEffects()
     {
-        this.effects.Values().NotUndefined().ForEach(effect => {
+        ObjectExtensions.Values(this.effects).NotUndefined().ForEach(effect => {
             if(effect.callNextTime)
             {
                 effect.callNextTime = false;
