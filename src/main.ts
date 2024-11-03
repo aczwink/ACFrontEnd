@@ -73,7 +73,7 @@ import { DatePicker } from "./Components/DatePicker";
 import { DateTimePicker } from "./Components/DateTimePicker";
 import { OAuth2Service } from "./Services/OAuth2Service";
 import { Use, UseEffect, UseEffectOnce, UseState, UseRouteParameter, UseDataLink } from "./Hooks";
-import { CreateDeferredAPIState, DeferredAPIState, UseAPI, UseAPIs, UseDeferredAPI } from "./RenderHelpers";
+import { APIResponse, CreateDeferredAPIState, DeferredAPIState, UseAPI, UseAPIs, UseDeferredAPI } from "./RenderHelpers";
 import { Injectable, RouteParamProperty } from "./decorators";
 import { VirtualNode } from "./VirtualTree/VirtualNode";
 import { DataLink, FunctionState } from "./DataBinding";
@@ -88,6 +88,7 @@ import { OAuth2Config, OAuth2TokenManager } from "./Services/OAuth2TokenManager"
 export
 {
     Anchor,
+    APIResponse,
     APIServiceBase,
     AutoCompleteMultiSelectBox,
     AutoCompleteSelectBox,

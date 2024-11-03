@@ -46,6 +46,8 @@ export interface OAuth2TokenResponse
     id_token?: string;
 }
 
+const sessionStorageKey = "ACFrontEnd.OAuth2Service";
+
 @Injectable
 export class OAuth2Service
 {
@@ -59,7 +61,7 @@ export class OAuth2Service
         const params = this.ExtractPostRedirectParameters();
         if(params !== undefined)
         {
-            const config: OAuth2Config = JSON.parse(window.sessionStorage.getItem("OAuth2Service")!);
+            const config: OAuth2Config = this.GetPendingRequestConfig()!;
             const response = await this.RedeemAuthorizationCode({
                 clientId: config.clientId,
                 code: params.code,
@@ -69,7 +71,8 @@ export class OAuth2Service
             if("error" in response)
                 throw new Error("TODO: implement me");
 
-            this.oAuth2TokenManager.AddToken(config, response.access_token, response.scope.split(" "));
+            window.sessionStorage.removeItem(sessionStorageKey);
+            this.oAuth2TokenManager.AddToken(config, response.access_token, response.scope.split(" "), response.expires_in, response.id_token);
 
             return params.state!;
         }
@@ -78,9 +81,9 @@ export class OAuth2Service
     public RequestScopes(config: OAuth2Config, scopes: string[])
     {
         const scopesToRequest = this.oAuth2TokenManager.FetchScopesToGrant(config, scopes);
-        if(scopesToRequest !== undefined)
+        if((scopesToRequest !== undefined) && (this.GetPendingRequestConfig() === undefined))
         {
-            window.sessionStorage.setItem("OAuth2Service", JSON.stringify(config));
+            window.sessionStorage.setItem(sessionStorageKey, JSON.stringify(config));
             this.PerformRedirectLogin({
                 authorizeEndpoint: config.authorizeEndpoint,
                 clientId: config.clientId,
@@ -133,6 +136,15 @@ export class OAuth2Service
         }
 
         return text;
+    }
+
+    private GetPendingRequestConfig()
+    {
+        const data = window.sessionStorage.getItem(sessionStorageKey);
+        if(data === null)
+            return undefined;
+        const config: OAuth2Config = JSON.parse(data);
+        return config;
     }
 
     private async PerformRedirectLogin(request: OAuth2Request)

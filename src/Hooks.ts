@@ -19,7 +19,8 @@
 import { Dictionary } from "acts-util-core";
 import { RootInjector } from "./App";
 import { VirtualFunction } from "./VirtualTree/VirtualFunction";
-import { DataLink, RouterState } from "./main";
+import { DataLink } from "./DataBinding";
+import { RouterState } from "./Services/Router/RouterState";
 
 let currentRenderFunction: VirtualFunction<any> | null = null;
 let currentCounters: Dictionary<number> = {};
@@ -41,6 +42,11 @@ export function SetRendererHook(func: VirtualFunction<any> | null)
 {
     currentRenderFunction = func;
     currentCounters = {};
+}
+
+interface Instantiatable<T> extends Function
+{
+    new (...args: any[]): T;
 }
 
 export function Use<T>(token: Instantiatable<T>)

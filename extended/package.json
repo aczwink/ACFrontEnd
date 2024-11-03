@@ -1,0 +1,25 @@
+{
+  "name": "acfrontendex",
+  "version": "1.0.0-dev",
+  "description": "A framework for automated declarative generation of frontends",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "compile": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aczwink/ACFrontEnd.git"
+  },
+  "keywords": [],
+  "author": "Amir Czwink",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/aczwink/ACFrontEnd/issues"
+  },
+  "homepage": "https://github.com/aczwink/ACFrontEnd#readme",
+  "dependencies": {
+    "acfrontend": "*",
+    "jwt-decode": "^4.0.0"
+  }
+}

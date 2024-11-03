@@ -30,22 +30,35 @@ export interface OAuth2Config
 interface TokenStateJSON
 {
     accessToken: string;
+    expiryTime: number;
+    idToken: string | undefined;
     grantedScopes: string[];
     totalRequestedScopes: string[];
 }
 interface TokenState
 {
     accessToken: string;
+    expiryTime: number;
+    idToken: string | undefined;
     grantedScopes: Set<string>;
     totalRequestedScopes: Set<string>;
 }
+
+interface TokenIssuedData
+{
+    accessToken: string;
+    idToken: string | undefined;
+    resourceServer: string;
+}
+
+const sessionStorageKey = "ACFrontEnd.OAuth2TokenManager";
 
 @Injectable
 export class OAuth2TokenManager
 {
     constructor()
     {
-        this._tokenIssued = new Property({ accessToken: "", resourceServer: "" });
+        this._tokenIssued = new Property({ accessToken: "", idToken: undefined, resourceServer: "" });
 
         const state = this.ReadState();
         for (const key in state)
@@ -55,6 +68,7 @@ export class OAuth2TokenManager
                 const value = state[key]!;
                 this._tokenIssued.Set({
                     accessToken: value.accessToken,
+                    idToken: value.idToken,
                     resourceServer: key
                 });
             }
@@ -68,18 +82,21 @@ export class OAuth2TokenManager
     }
 
     //Public methods
-    public AddToken(config: OAuth2Config, accessToken: string, grantedScopes: string[])
+    public AddToken(config: OAuth2Config, accessToken: string, grantedScopes: string[], expiresIn: number, idToken: string | undefined)
     {
         const granted = new Set(grantedScopes);
         const s = this.ReadStateOf(config.authorizeEndpoint);
 
         this.SetStateOf(config.authorizeEndpoint, {
             accessToken,
+            expiryTime: Date.now() + expiresIn * 1000,
+            idToken,
             grantedScopes: granted,
             totalRequestedScopes: s.totalRequestedScopes.Union(granted)
         });
         this._tokenIssued.Set({
             accessToken,
+            idToken,
             resourceServer: config.authorizeEndpoint
         });
     }
@@ -87,6 +104,11 @@ export class OAuth2TokenManager
     public AreScopesGranted(config: OAuth2Config, scopes: string[])
     {
         const s = this.ReadStateOf(config.authorizeEndpoint);
+        if(s.idToken !== undefined)
+        {
+            const oidcScopes = ["openid", "email", "profile"];
+            return s.grantedScopes.IsSuperSetOf(new Set(scopes).Without(new Set(oidcScopes)));
+        }
         return s.grantedScopes.IsSuperSetOf(new Set(scopes));
     }
 
@@ -96,12 +118,14 @@ export class OAuth2TokenManager
         const requestedScopes = new Set(scopes);
         const requestableScopes = requestedScopes.Without(s.totalRequestedScopes);
 
-        const requireRequest = (s === undefined) || (requestableScopes.size > 0);
+        const requireRequest = (s === undefined) || (requestableScopes.size > 0) || (s.expiryTime < Date.now());
 
         if(requireRequest)
         {
             this.SetStateOf(config.authorizeEndpoint, {
                 accessToken: s.accessToken,
+                expiryTime: s.expiryTime,
+                idToken: s.idToken,
                 grantedScopes: s.grantedScopes,
                 totalRequestedScopes: s.totalRequestedScopes.Union(requestableScopes)
             });
@@ -113,7 +137,7 @@ export class OAuth2TokenManager
     //Private methods
     private ReadState(): Dictionary<TokenStateJSON>
     {
-        const state = window.sessionStorage.getItem("OAuth2TokenManager");
+        const state = window.sessionStorage.getItem(sessionStorageKey);
         if(state === null)
         {
             return {
@@ -131,6 +155,8 @@ export class OAuth2TokenManager
         {
             return {
                 accessToken: "",
+                expiryTime: 0,
+                idToken: undefined,
                 totalRequestedScopes: new Set(),
                 grantedScopes: new Set()
             };
@@ -138,6 +164,8 @@ export class OAuth2TokenManager
 
         return {
             accessToken: found.accessToken,
+            expiryTime: found.expiryTime,
+            idToken: found.idToken,
             totalRequestedScopes: new Set(found.totalRequestedScopes),
             grantedScopes: new Set(found.grantedScopes)
         };
@@ -145,18 +173,19 @@ export class OAuth2TokenManager
 
     private SetStateOf(authorizeEndpoint: string, tokenState: TokenState)
     {
-        const key = "OAuth2TokenManager";
 
         const js: TokenStateJSON = {
             accessToken: tokenState.accessToken,
+            expiryTime: tokenState.expiryTime,
+            idToken: tokenState.idToken,
             totalRequestedScopes: tokenState.totalRequestedScopes.ToArray(),
             grantedScopes: tokenState.grantedScopes.ToArray()
         };
 
-        const state = window.sessionStorage.getItem(key);
+        const state = window.sessionStorage.getItem(sessionStorageKey);
         if(state === null)
         {
-            window.sessionStorage.setItem(key, JSON.stringify({
+            window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
                 authorizeEndpoint: js
             }));
         }
@@ -164,10 +193,10 @@ export class OAuth2TokenManager
         {
             const parsed = JSON.parse(state) as Dictionary<TokenStateJSON>;
             parsed[authorizeEndpoint] = js;
-            window.sessionStorage.setItem(key, JSON.stringify(parsed));
+            window.sessionStorage.setItem(sessionStorageKey, JSON.stringify(parsed));
         }
     }
 
     //State
-    private _tokenIssued: Property<{ accessToken: string; resourceServer: string }>;
+    private _tokenIssued: Property<TokenIssuedData>;
 }
