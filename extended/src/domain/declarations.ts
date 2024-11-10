@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIResponse } from "acfrontend";
+import { APIResponse, Component, RouteGuard } from "acfrontend";
 import { OpenAPI } from "acts-util-core";
 import { IdBoundObjectAction } from "./IdBoundActions";
 import { ObjectBoundAction } from "./ObjectBoundAction";
@@ -29,11 +29,23 @@ export interface CollectionContentSetup<ObjectType, IdType>
     dataSource: DataSourceSetup<ObjectType, IdType, ObjectType[]>;
 }
 
+export interface ComponentContentSetup
+{
+    type: "component";
+    component: Instantiatable<Component<null | {}>>;
+}
+
 interface CreateContentSetup<ObjectType, IdType>
 {
     type: "create";
     call: (ids: IdType, data: ObjectType) => Promise<APIResponse<number | string | void>>;
     schema: OpenAPI.ObjectSchema;
+}
+
+export interface ElementViewModel<IdType>
+{
+    type: "element";
+    element: (ids: IdType) => RenderElement;
 }
 
 interface PageGroupEntry
@@ -67,7 +79,7 @@ export interface ObjectContentSetup<ObjectType, IdType>
     schema: OpenAPI.ObjectSchema;
 }
 
-type ContentSetup<ContentType, IdType> = CollectionContentSetup<ContentType, IdType> | CreateContentSetup<ContentType, IdType> | ListContentSetup<ContentType, IdType> | MultiPageContentSetup<IdType> | ObjectContentSetup<ContentType, IdType>;
+type ContentSetup<IdType, ContentType = null> = CollectionContentSetup<ContentType, IdType> | ComponentContentSetup | CreateContentSetup<ContentType, IdType> | ElementViewModel<IdType> | ListContentSetup<ContentType, IdType> | MultiPageContentSetup<IdType> | ObjectContentSetup<ContentType, IdType>;
 
 export interface DataSourceSetup<ObjectType, IdType, ResultType = ObjectType>
 {
@@ -80,6 +92,7 @@ export interface RouteSetup<ContentType, IdType = {}>
 {
     content: ContentSetup<ContentType, IdType>;
     displayText: string;
+    guards?: (RouteGuard | Instantiatable<RouteGuard>)[];
     icon: string;
     requiredScopes?: string[];
     routingKey: string;

@@ -16,25 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { APIResponse, Injectable } from "acfrontend";
-import { DataSourceSetup } from "../domain/declarations";
+import { Component, JSX_CreateElement, ProgressSpinner } from "acfrontend";
 
-@Injectable
-export class DataSourcesManager
+export class DelayedStaticContentComponent extends Component<{ contentLoader: () => RenderElement }>
 {
-    public async CreateArrayQueryFunction<T extends object>(args: any, dataSource: DataSourceSetup<T[], any>): Promise<T[]>
+    constructor()
     {
-        const response = await dataSource.call(args);
-        return this.HandleAPIResponse(response);
+        super();
+
+        this.data = null;
+        this.hasData = false;
+    }
+    
+    protected Render(): RenderValue
+    {
+        if(!this.hasData)
+        {
+            return <fragment>
+                <ProgressSpinner />
+            </fragment>;
+        };
+
+        return this.data;
     }
 
-    public HandleAPIResponse(response: APIResponse<any>): Promise<any>
+    //Private members
+    private data: any;
+    private hasData: boolean;
+
+    //Event handlers
+    override async OnInitiated(): Promise<void>
     {
-        if(response.data === undefined)
-        {
-            alert("TODO: implement me");
-            throw new Error("TODO: implement me");
-        }
-        return response.data;
+        this.data = this.input.contentLoader();
+        this.hasData = true;
     }
 }

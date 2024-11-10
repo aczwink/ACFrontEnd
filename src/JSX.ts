@@ -161,7 +161,7 @@ declare module JSX
         } & JSX_Element;
 
         hr: {
-        };
+        } & JSX_Element;
 
         i: {
             children?: string;

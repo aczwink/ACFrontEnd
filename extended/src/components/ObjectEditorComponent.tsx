@@ -16,14 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, Component, FileSelect, FormField, Injectable, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
-import { OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
+import { BootstrapIcon, CheckBox, Component, FileSelect, FormField, Injectable, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
+import { Dictionary, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { RenderTitle } from "./ValuePresentation";
 import { CustomFormatRegistry } from "../services/CustomFormatRegistry";
 
+export type ObjectEditorContext = Dictionary<string>;
+
 interface ObjectEditorInput
 {
+    context?: ObjectEditorContext;
     object: any;
     onObjectUpdated?: (newValue: any) => void;
     schema: OpenAPI.Schema;
@@ -192,12 +195,17 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
         if("oneOf" in schema)
             throw new Error("TODO");
         if("$ref" in schema)
-            throw new Error("TODO");
+            return this.RenderValue(value, this.apiSchemaService.ResolveReference(schema), valueChanged, schema.title || fallback);
 
         switch(schema.type)
         {
             case "array":
                 return this.RenderArray(value, schema, valueChanged, fallback);
+
+            case "boolean":
+                return <FormField title={RenderTitle(schema, fallback)} description={schema.description}>
+                    <CheckBox value={value} onChanged={valueChanged} />
+                </FormField>;
 
             case "number":
                 return <FormField title={RenderTitle(schema, fallback)} description={schema.description}>

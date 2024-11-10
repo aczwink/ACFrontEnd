@@ -16,8 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Dictionary } from "acts-util-core";
-import { Anchor, APIResponse, BootstrapIcon, JSX_CreateElement, RouterState } from "acfrontend";
+import { Dictionary, OpenAPI } from "acts-util-core";
+import { Anchor, APIResponse, BootstrapIcon, JSX_CreateElement, RootInjector, RouterState } from "acfrontend";
+import { APIResponseHandler } from "../main";
+
+interface IdBoundActivateAction<IdType>
+{
+    type: "activate";
+    execute: (ids: IdType) => Promise<APIResponse<void>>;
+    icon: string;
+    title: string;
+}
+
+interface IdBoundConfirmAction<IdType>
+{
+    type: "confirm";
+    confirmText: string;
+    execute: (ids: IdType) => Promise<APIResponse<void>>;
+    icon: string;
+    title: string;
+}
 
 interface ManagedDeleteObjectAction<IdType>
 {
@@ -25,8 +43,20 @@ interface ManagedDeleteObjectAction<IdType>
     deleteResource: (ids: IdType) => Promise<APIResponse<void>>;
 }
 
+interface ManagedEditResourceAction<IdType, ObjectType>
+{
+    type: "edit";
+    //loadContext?: (service: APIService, ids: IdType) => Promise<ObjectEditorContext>;
+    requestObject: (ids: IdType) => Promise<APIResponse<ObjectType>>;
+    schema: OpenAPI.ObjectSchema;
+    updateResource: (ids: IdType, properties: ObjectType) => Promise<APIResponse<void>>;
+}
+
 export type IdBoundObjectAction<IdType, PropertiesType> =
-    ManagedDeleteObjectAction<IdType>;
+    IdBoundActivateAction<IdType>
+    | IdBoundConfirmAction<IdType>
+    | ManagedDeleteObjectAction<IdType>
+    | ManagedEditResourceAction<IdType, PropertiesType>;
 
 export function RenderBoundAction(baseRoute: string, routeParams: Dictionary<string>, action: IdBoundObjectAction<any, any>, reloadData: (beginOrFinish: boolean) => void)
 {
@@ -35,7 +65,28 @@ export function RenderBoundAction(baseRoute: string, routeParams: Dictionary<str
     const route = RouterState.ReplaceRouteParams(varRoute, routeParams).join("/");
     switch(action.type)
     {
+        case "activate":
+            async function ExecuteAction(action: IdBoundActivateAction<any>)
+            {
+                reloadData(true);
+                RootInjector.Resolve(APIResponseHandler).ShowErrorMessageOnErrorFromResponse(await action.execute(routeParams));
+                reloadData(false);
+            }
+            return <a onclick={ExecuteAction.bind(undefined, action)} role="button" className="d-flex align-items-center text-decoration-none"><BootstrapIcon>{action.icon}</BootstrapIcon> {action.title}</a>;
+
+        case "confirm":
+            async function ConfirmAction(action: IdBoundConfirmAction<any>)
+            {
+                reloadData(true);
+                if(confirm(action.confirmText))
+                    RootInjector.Resolve(APIResponseHandler).ShowErrorMessageOnErrorFromResponse(await action.execute(routeParams));
+                reloadData(false);
+            }
+            return <a onclick={ConfirmAction.bind(undefined, action)} role="button" className="d-flex align-items-center text-decoration-none"><BootstrapIcon>{action.icon}</BootstrapIcon> {action.title}</a>;
+
         case "delete":
             return <Anchor className="d-flex align-items-center text-decoration-none link-danger" route={route}><BootstrapIcon>trash</BootstrapIcon> Delete</Anchor>;
+        case "edit":
+            return <Anchor className="d-flex align-items-center text-decoration-none" route={route}><BootstrapIcon>pencil</BootstrapIcon> Edit</Anchor>;
     }
 }

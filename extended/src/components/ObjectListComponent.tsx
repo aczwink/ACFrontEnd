@@ -16,14 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { Dictionary, ObjectExtensions, OpenAPI } from "acts-util-core";
+import { Anchor, APIResponse, BootstrapIcon, Component, Injectable, JSX_CreateElement, PopupManager, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
+import { Dictionary, EqualsAny, ObjectExtensions, OpenAPI } from "acts-util-core";
 import { RenderReadOnlyValue } from "./ValuePresentation";
 import { ReflectiveSchemaCreator } from "../services/ReflectiveSchemaCreator";
 import { RouteSetup } from "../domain/declarations";
 import { ReplaceRouteParams } from "../Shared";
 import { IdBoundObjectAction } from "../domain/IdBoundActions";
-import { DeleteAction, ObjectBoundAction } from "../domain/ObjectBoundAction";
+import { DeleteAction, EditAction, ObjectBoundAction } from "../domain/ObjectBoundAction";
+import { APIResponseHandler } from "../services/APIResponseHandler";
+import { ObjectEditorComponent } from "./ObjectEditorComponent";
 
 interface ObjectListInput<T extends object>
 {
@@ -32,14 +34,16 @@ interface ObjectListInput<T extends object>
     idBoundActions: IdBoundObjectAction<any, any>[];
     idKey: keyof T;
     objectBoundActions: ObjectBoundAction<T, any>[];
-    queryDataSource: (routeParams: Dictionary<string>) => Promise<T[]>;
+    queryDataSource: (routeParams: Dictionary<string>) => Promise<APIResponse<T[]>>;
     unboundActions: RouteSetup<T, any>[];
 }
 
 @Injectable
 export class ObjectListComponent<T extends object> extends Component<ObjectListInput<T>>
 {
-    constructor(private reflectiveSchemaCreator: ReflectiveSchemaCreator, private routerState: RouterState)
+    constructor(private reflectiveSchemaCreator: ReflectiveSchemaCreator, private routerState: RouterState, private apiResponseHandler: APIResponseHandler,
+        private popupManager: PopupManager
+    )
     {
         super();
 
@@ -81,7 +85,20 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
 
     private async QueryData()
     {
-        const data = await this.input.queryDataSource(this.routerState.routeParams);
+        const response = await this.input.queryDataSource(this.routerState.routeParams);
+        const result = await this.apiResponseHandler.ExtractDataFromResponseOrShowErrorMessageOnError(response);
+        if(!result.ok)
+        {
+            this.data = [];
+            this.objectSchema = {
+                type: "object",
+                additionalProperties: false,
+                properties: {},
+                required: [],
+            }
+            return;
+        }
+        const data = result.value;
 
         if(this.input.elementSchema === undefined)
             this.objectSchema = this.reflectiveSchemaCreator.Create(data).items as OpenAPI.ObjectSchema;
@@ -129,6 +146,9 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
         {
             case "delete":
                 return <a className="link-danger" role="button" onclick={this.OnDelete.bind(this, action, object)}><BootstrapIcon>trash</BootstrapIcon></a>;
+
+            case "edit":
+                return <a className="link-primary" role="button" onclick={this.OnEdit.bind(this, action, object)}><BootstrapIcon>pencil</BootstrapIcon></a>;
         }
     }
 
@@ -177,6 +197,21 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
             await action.deleteResource(this.routerState.routeParams, object);
             this.QueryData();
         }
+    }
+
+    private OnEdit(action: EditAction<any, any>, object: object)
+    {
+        const index = this.data!.findIndex(x => EqualsAny(x, object));
+        const clone = ObjectExtensions.DeepClone(object);
+        const ref = this.popupManager.OpenDialog(<ObjectEditorComponent object={clone} schema={action.schema} />, { title: "Edit" });
+        ref.onAccept.Subscribe( async () => {
+            this.data = null;
+            ref.Close();
+
+            await action.updateResource(this.routerState.routeParams, clone, object, index);
+
+            this.QueryData();
+        });
     }
     
     override OnInitiated(): void

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { RootInjector } from "acfrontend";
-import { OpenAPI } from "acts-util-core";
+import { JSX_CreateElement, RootInjector } from "acfrontend";
+import { ObjectExtensions, OpenAPI } from "acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { CustomFormatRegistry } from "../services/CustomFormatRegistry";
 
@@ -43,6 +43,11 @@ export function RenderReadOnlyValue(value: any, schemaOrRef: OpenAPI.Schema | Op
 
     switch(schema.type)
     {
+        case "boolean":
+            return <div className="form-check">
+                <input className="form-check-input" type="checkbox" value="" checked={value} disabled />
+            </div>;
+            
         case "number":
             if(schema.format !== undefined)
             {
@@ -53,10 +58,28 @@ export function RenderReadOnlyValue(value: any, schemaOrRef: OpenAPI.Schema | Op
 
             return RenderNumber(value, schema);
 
+        case "object":
+            return <table>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+                {ObjectExtensions.Entries(value).Map( (kv: any) => <tr>
+                    <td>{kv.key}</td>
+                    <td>{RenderReadOnlyValue(kv.value, RootInjector.Resolve(NamedSchemaRegistry).ResolveSchemaOrReference(schema.properties[kv.key]!))}</td>
+                </tr>).ToArray()}
+            </table>;
+
         case "string":
         {
             if(schema.format !== undefined)
             {
+                switch(schema.format)
+                {
+                    case "date-time":
+                        return new Date(value).toLocaleString();
+                }
+
                 const cfm = RootInjector.Resolve(CustomFormatRegistry);
                 if(cfm.HasFormatEntry("string", true, schema.format))
                     return cfm.Present("string", schema.format, value);

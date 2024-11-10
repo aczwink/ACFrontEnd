@@ -22,7 +22,6 @@ import {JSX_CreateElement, JSX_Fragment} from "./JSX_CreateElement";
 import { RouterComponent } from "./Components/RouterComponent";
 import { Route, Routes } from "./Services/Router/Route";
 import { Anchor } from "./Components/Anchor";
-import { MatIcon } from "./Components/MatIcon";
 import { PopupManager } from "./Services/PopupManager";
 import { FormField } from "./Components/FormField";
 import { DialogProperties, DialogRef } from "./Controller/DialogRef";
@@ -124,7 +123,6 @@ export
     KeyDisplayValuePair,
     LineEdit,
     LoadingButton,
-    MatIcon,
     Menu,
     MenuItem,
     MenuManager,

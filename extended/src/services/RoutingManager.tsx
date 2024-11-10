@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable, JSX_CreateElement, OAuth2Guard, Route, Routes } from "acfrontend";
-import { CollectionContentSetup, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup } from "../domain/declarations";
+import { Injectable, JSX_CreateElement, OAuth2Guard, RootInjector, Route, Router, Routes } from "acfrontend";
+import { CollectionContentSetup, ComponentContentSetup, ElementViewModel, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup } from "../domain/declarations";
 import { ObjectListComponent } from "../components/ObjectListComponent";
-import { DataSourcesManager } from "./DataSourcesManager";
 import { FeaturesManager } from "./FeaturesManager";
 import { CreateObjectComponent } from "../components/CreateObjectComponent";
 import { ViewObjectComponent } from "../components/ViewObjectComponent";
@@ -28,6 +27,8 @@ import { DeleteObjectComponent } from "../components/DeleteObjectComponent";
 import { MultiPageNavComponent } from "../components/MultiPageNavComponent";
 import { Dictionary, OpenAPI } from "acts-util-core";
 import { ReplaceRouteParams } from "../Shared";
+import { EditObjectComponent } from "../components/EditObjectComponent";
+import { DelayedStaticContentComponent } from "../components/DelayedStaticContentComponent";
 
 class PathTraceNode
 {
@@ -78,7 +79,7 @@ class PathTraceNode
 @Injectable
 export class RoutingManager
 {
-    constructor(private dataSourcesManager: DataSourcesManager, private featuresManager: FeaturesManager)
+    constructor(private featuresManager: FeaturesManager)
     {
         this.rootRoutes = [];
     }
@@ -90,7 +91,8 @@ export class RoutingManager
 
         const staticRoutes: Routes = [
             { path: "accessdenied", component: <p>TODO: Access denied</p>},
-            { path: "", redirect: rootRoutes[0].path }
+            { path: "", redirect: rootRoutes[0].path },
+            { path: "*", component: <h1>404</h1>},
         ];
 
         return rootRoutes.concat(staticRoutes);
@@ -100,11 +102,6 @@ export class RoutingManager
     {
         const pathTrace = this.rootRoutes.Values().Map(x => this.FindRouteSetup(x, routeSetup, new PathTraceNode)).NotUndefined().First();
         return ReplaceRouteParams(pathTrace.path, routeParams);
-    }
-
-    public GetRootRouteSetups()
-    {
-        return this.rootRoutes;
     }
 
     public RegisterRootRouteSetup(routeSetup: RouteSetup<any, any>): void
@@ -117,6 +114,16 @@ export class RoutingManager
     {
         switch(action.type)
         {
+            case "edit":
+                return <EditObjectComponent
+                    formTitle={formTitle}
+                    postUpdateUrl={parentNode.path}
+                    requestObject={async ids => (await action.requestObject(ids))}
+                    schema={action.schema}
+                    updateResource={(ids, obj) => action.updateResource(ids, obj)}
+                    />;
+                    //loadContext={(action.loadContext === undefined) ? undefined : (ids => action.loadContext!(RootInjector.Resolve(APIService), ids))}
+
             case "delete":
                 return <DeleteObjectComponent
                     deleteResource={ids => action.deleteResource(ids)}
@@ -153,7 +160,7 @@ export class RoutingManager
                         idBoundActions={this.FindActions(content.child)}
                         idKey={dataSource.id}
                         objectBoundActions={[]}
-                        queryDataSource={routeParams => this.dataSourcesManager.CreateArrayQueryFunction(routeParams, dataSource)}
+                        queryDataSource={routeParams => dataSource.call(routeParams)}
                         unboundActions={actions}
                     />,
                     path: "",
@@ -162,6 +169,24 @@ export class RoutingManager
             guards: this.CreateRouteGuards(routeSetup),
             path: routeSetup.routingKey,
         };
+    }
+
+    private BuildComponentRoutesFromSetup(routeSetup: RouteSetup<any, any>, viewModel: ComponentContentSetup): Route
+    {
+        return {
+            component: viewModel.component,
+            guards: this.CreateRouteGuards(routeSetup),
+            path: routeSetup.routingKey,
+        };
+    }
+
+    private BuildElementRoutesFromSetup(routeSetup: RouteSetup<any, any>, viewModel: ElementViewModel<any>): Route
+    {
+        return {
+            component: <DelayedStaticContentComponent contentLoader={() => viewModel.element(RootInjector.Resolve(Router).state.Get().routeParams)} />,
+            guards: this.CreateRouteGuards(routeSetup),
+            path: routeSetup.routingKey,
+        }
     }
 
     private BuildListRoutesFromSetup(routeSetup: RouteSetup<any, any>, content: ListContentSetup<any, any>, parentNode: PathTraceNode): Route
@@ -188,7 +213,7 @@ export class RoutingManager
                         //idKey={content.dataSource.id}
                         idKey={""} //for lists we don't want to show links to child objects
                         objectBoundActions={content.boundActions ?? []}
-                        queryDataSource={routeParams => this.dataSourcesManager.CreateArrayQueryFunction(routeParams, content.dataSource)}
+                        queryDataSource={routeParams => content.dataSource.call(routeParams)}
                         unboundActions={actions}
                         elementSchema={mappedSchema}
                         />,
@@ -243,7 +268,7 @@ export class RoutingManager
                         actions={content.actions}
                         baseRoute={ownNode.path}
                         heading={content.formTitle}
-                        requestObject={async routeParams => this.dataSourcesManager.HandleAPIResponse(await content.requestObject(routeParams))}
+                        requestObject={routeParams => content.requestObject(routeParams)}
                         schema={content.schema}
                         />,
                     path: ""
@@ -261,6 +286,9 @@ export class RoutingManager
             case "collection":
                 return this.BuildCollectionRoutesFromSetup(routeSetup, routeSetup.content, parentNode);
 
+            case "component":
+                return this.BuildComponentRoutesFromSetup(routeSetup, routeSetup.content);
+
             case "create":
             {
                 return {
@@ -273,6 +301,9 @@ export class RoutingManager
                 };
             }
 
+            case "element":
+                return this.BuildElementRoutesFromSetup(routeSetup, routeSetup.content);
+
             case "list":
                 return this.BuildListRoutesFromSetup(routeSetup, routeSetup.content, parentNode);
 
@@ -284,10 +315,11 @@ export class RoutingManager
         }
     }
 
-    private CreateRouteGuards(routeSetup: RouteSetup<any, any>)
+    private CreateOAuth2RouteGuard(routeSetup: RouteSetup<any, any>)
     {
         if(routeSetup.requiredScopes === undefined)
             return undefined;
+
         const oidcScopes = ["openid", "email", "profile"];
         const scopes = this.featuresManager.OIDC ? routeSetup.requiredScopes.concat(oidcScopes) : routeSetup.requiredScopes;
         return [
@@ -295,12 +327,24 @@ export class RoutingManager
         ];
     }
 
+    private CreateRouteGuards(routeSetup: RouteSetup<any, any>)
+    {
+        const oAuth2Guard = this.CreateOAuth2RouteGuard(routeSetup);
+        if(routeSetup.guards === undefined)
+            return oAuth2Guard;
+        if(oAuth2Guard === undefined)
+            return routeSetup.guards;
+        return routeSetup.guards.concat(oAuth2Guard);
+    }
+
     private FindActions(routeSetup: RouteSetup<any, any>)
     {
         switch(routeSetup.content.type)
         {
             case "collection":
+            case "component":
             case "create":
+            case "element":
             case "list":
                 return [];
             case "multiPage":

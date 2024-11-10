@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { jwtDecode } from "jwt-decode";
-import { Component, Injectable, JSX_CreateElement, OAuth2TokenManager } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, OAuth2TokenManager } from "acfrontend";
+import { LayoutManager } from "../services/LayoutManager";
 
 interface OIDC_Claims
 {
@@ -28,7 +29,7 @@ interface OIDC_Claims
 @Injectable
 export class SessionComponent extends Component
 {
-    constructor(private oAuth2TokenManager: OAuth2TokenManager)
+    constructor(private oAuth2TokenManager: OAuth2TokenManager, private layoutManager: LayoutManager)
     {
         super();
 
@@ -39,8 +40,22 @@ export class SessionComponent extends Component
     {
         if(this.decodedIdToken === null)
             return null;
-        return <div className="d-flex align-items-center">
-            Welcome, {this.decodedIdToken.given_name}!
+
+        const user = this.layoutManager.layout.user;
+
+        return <div className="dropdown">
+            <a href="#" className="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                <BootstrapIcon>person-circle</BootstrapIcon> {this.decodedIdToken.given_name}
+            </a>
+            <ul className="dropdown-menu text-small shadow">
+                {user.map(x => <li>
+                    <Anchor className="dropdown-item" route={"/" + x.routingKey}>
+                        <BootstrapIcon>{x.icon}</BootstrapIcon> {x.displayText}
+                    </Anchor>
+                </li>)}
+                <li><hr className="dropdown-divider" /></li>
+                <li><a className="dropdown-item" href="#"><BootstrapIcon>x-octagon-fill</BootstrapIcon> Sign out</a></li>
+            </ul>
         </div>;
     }
 

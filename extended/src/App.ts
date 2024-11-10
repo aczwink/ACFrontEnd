@@ -20,15 +20,20 @@ import { RootComponent } from "./components/RootComponent";
 import { RouteSetup } from "./domain/declarations";
 import { RoutingManager } from "./services/RoutingManager";
 import { FeaturesManager } from "./services/FeaturesManager";
+import { OpenAPI } from "acts-util-core";
+import { NamedSchemaRegistry } from "./services/NamedSchemaRegistry";
+import { Layout, LayoutManager } from "./services/LayoutManager";
 
 interface AppProperties
 {
+    additionalRoutes?: RouteSetup<any, any>[];
     features: {
         oAuth2?: OAuth2Config;
         OIDC?: boolean;
+        openAPI?: OpenAPI.Root;
     };
     mountPoint: HTMLElement;
-    routes: RouteSetup<any, any>[];
+    layout: Layout;
     title: string;
     version: string;
 }
@@ -40,8 +45,19 @@ export function BootstrapApp(properties: AppProperties)
         fm.oAuth2Config = properties.features.oAuth2;
     fm.OIDC = properties.features.OIDC === true;
 
+    if(properties.features.openAPI !== undefined)
+    {
+        const nsr = RootInjector.Resolve(NamedSchemaRegistry);
+        nsr.RegisterSchemas(properties.features.openAPI.components.schemas);
+    }
+
     const rm = RootInjector.Resolve(RoutingManager);
-    properties.routes.forEach(x => rm.RegisterRootRouteSetup(x));
+    properties.layout.navbar.forEach(x => x.forEach(y => rm.RegisterRootRouteSetup(y)));
+    properties.layout.user.forEach(x => rm.RegisterRootRouteSetup(x));
+    properties.additionalRoutes?.forEach(x => rm.RegisterRootRouteSetup(x));
+
+    const lm = RootInjector.Resolve(LayoutManager);
+    lm.layout = properties.layout;
 
     acfrontendBootstrapApp({
         mountPoint: properties.mountPoint,

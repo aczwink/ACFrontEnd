@@ -71,6 +71,11 @@ class App
 {
     constructor(private properties: AppProperties)
     {
+        this.root = new VirtualRoot(this.properties.mountPoint);
+
+        this.popupManager = new PopupManager(this.root);
+        RootInjector.RegisterInstance(PopupManager, this.popupManager);
+        
         RootInjector.Resolve(OAuth2Service).HandleRedirectResult().then(redirect => {
             if(redirect !== undefined)
                 router.RouteTo(redirect);
@@ -80,11 +85,6 @@ class App
 
 
         RootInjector.Resolve(TitleService).format = "%title% | " + properties.title + " " + properties.version;
-
-        this.root = new VirtualRoot(this.properties.mountPoint);
-
-        this.popupManager = new PopupManager(this.root);
-        RootInjector.RegisterInstance(PopupManager, this.popupManager);
 
         RootInjector.Resolve(ThemingService).SetPreferredUserTheme();
 

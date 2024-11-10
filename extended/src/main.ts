@@ -17,14 +17,20 @@
  * */
 
 import { BootstrapApp } from "./App";
+import { ObjectEditorComponent } from "./components/ObjectEditorComponent";
 import { RouteSetup } from "./domain/declarations";
+import { APIResponseHandler } from "./services/APIResponseHandler";
 import { CustomFormatRegistry } from "./services/CustomFormatRegistry";
+import { NamedSchemaRegistry } from "./services/NamedSchemaRegistry";
 import { RoutingManager } from "./services/RoutingManager";
 
 export
 {
+    APIResponseHandler,
     BootstrapApp,
     CustomFormatRegistry,
+    NamedSchemaRegistry,
+    ObjectEditorComponent,
     RouteSetup,
     RoutingManager,
 };

@@ -56,6 +56,18 @@ export class NamedSchemaRegistry
         return this.schemas[name]!;
     }
 
+    public RegisterSchemas(schemas: Dictionary<OpenAPI.Schema>)
+    {
+        for (const key in schemas)
+        {
+            if (Object.prototype.hasOwnProperty.call(schemas, key))
+            {
+                const schema = schemas[key];
+                this.schemas[key] = schema;
+            }
+        }
+    }
+
     public ResolveReference(reference: OpenAPI.Reference): OpenAPI.Schema | OpenAPI.Reference
     {
         const last = reference.$ref.split("/").pop();

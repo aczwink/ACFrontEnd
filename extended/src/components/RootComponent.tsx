@@ -16,26 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { Component, JSX_CreateElement, JSX_Fragment, Injectable, Navigation, NavItem, RouterComponent, BootstrapIcon } from "acfrontend";
-import { RoutingManager } from "../services/RoutingManager";
 import { SessionComponent } from "./SessionComponent";
+import { LayoutManager } from "../services/LayoutManager";
 
 @Injectable
 export class RootComponent extends Component
 {
-    constructor(private routingManager: RoutingManager)
+    constructor(private layoutManager: LayoutManager)
     {
         super();
     }
     
     protected Render()
     {
-        const rootSetups = this.routingManager.GetRootRouteSetups();
+        const navbar = this.layoutManager.layout.navbar;
 
         return <>
             <Navigation>
-                <ul className="nav nav-pills">
-                    {rootSetups.map(x => <NavItem route={"/" + x.routingKey}><BootstrapIcon>{x.icon}</BootstrapIcon> {x.displayText}</NavItem>)}
-                </ul>
+                {navbar.map(y => <ul className="nav nav-pills">
+                    {y.map(x => <NavItem route={"/" + x.routingKey}><BootstrapIcon>{x.icon}</BootstrapIcon> {x.displayText}</NavItem>)}
+                </ul>)}
                 <SessionComponent />
             </Navigation>
             <div className="container-fluid">

@@ -24,6 +24,18 @@ export class ReflectiveSchemaCreator
 {
     public Create<T extends object>(data: T[]): OpenAPI.ArraySchema
     {
+        if(data.length === 0)
+        {
+            return {
+                type: "array",
+                items: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {},
+                    required: []
+                }
+            };
+        }
         return {
             type: "array",
             items: {
@@ -43,10 +55,26 @@ export class ReflectiveSchemaCreator
                 return {
                     type: "number"
                 };
+
+            case "object":
+                if(value === null)
+                {
+                    return {
+                        type: "'null'"
+                    };
+                }
+                return {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: ObjectExtensions.Entries(value).ToDictionary(kv => kv.key as string, kv => this.CreatePropertySchema(kv.value)),
+                    required: ObjectExtensions.OwnKeys(value).ToArray() as string[],
+                };
+
             case "string":
                 return {
                     type: "string",
                 };
+
             default:
                 throw new Error("TODO: not implemented for" + typeof value);
         }

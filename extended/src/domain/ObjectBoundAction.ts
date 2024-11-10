@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
+import { OpenAPI } from "acts-util-core";
 import { APIResponse } from "../../../dist/RenderHelpers";
 
 export interface DeleteAction<ObjectType, IdType>
@@ -24,4 +25,11 @@ export interface DeleteAction<ObjectType, IdType>
     deleteResource: (ids: IdType, object: ObjectType) => Promise<APIResponse<void>>;
 }
 
-export type ObjectBoundAction<ObjectType, IdType> = DeleteAction<ObjectType, IdType>;
+export interface EditAction<ObjectType, IdType>
+{
+    type: "edit";
+    schema: OpenAPI.ObjectSchema;
+    updateResource: (ids: IdType, newProperties: ObjectType, oldProperties: ObjectType, index: number) => Promise<APIResponse<void>>;
+}
+
+export type ObjectBoundAction<ObjectType, IdType> = DeleteAction<ObjectType, IdType> | EditAction<ObjectType, IdType>;
