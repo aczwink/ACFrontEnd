@@ -31,8 +31,9 @@ interface ObjectListInput<T extends object>
 {
     baseUrl: string;
     elementSchema?: OpenAPI.ObjectSchema;
+    hasChild: boolean;
     idBoundActions: IdBoundObjectAction<any, any>[];
-    idKey: keyof T;
+    id: (keyof T) | ((object: T) => string);
     objectBoundActions: ObjectBoundAction<T, any>[];
     queryDataSource: (routeParams: Dictionary<string>) => Promise<APIResponse<T[]>>;
     unboundActions: RouteSetup<T, any>[];
@@ -74,7 +75,9 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
     //Private methods
     private ExtractId(object: any)
     {
-        return object[this.input.idKey];
+        if(typeof this.input.id === "function")
+            return this.input.id(object);
+        return object[this.input.id];
     }
 
     private GetPropertiesOrdered()
@@ -144,6 +147,9 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
     {
         switch(action.type)
         {
+            case "custom":
+                return <a role="button" onclick={() => action.action(this.routerState.routeParams, object)}><BootstrapIcon>{action.icon}</BootstrapIcon></a>;
+
             case "delete":
                 return <a className="link-danger" role="button" onclick={this.OnDelete.bind(this, action, object)}><BootstrapIcon>trash</BootstrapIcon></a>;
 
@@ -159,7 +165,8 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
 
     private RenderObjectPropertyEntry(obj: any, key: string, idx: number, isRequired: boolean)
     {
-        if(key === this.input.idKey)
+        const isIdColumn = (key === this.input.id) || ((idx === 0) && this.input.hasChild);
+        if(isIdColumn)
         {
             const id = this.ExtractId(obj);
             const route = this.ReplaceRouteParams(this.input.baseUrl + "/" + encodeURIComponent(id as string));

@@ -16,25 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterState } from "acfrontend";
+import { APIResponse, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterState } from "acfrontend";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { Dictionary, OpenAPI } from "acts-util-core";
 import { IdBoundObjectAction, RenderBoundAction } from "../domain/IdBoundActions";
 import { RenderReadOnlyValue, RenderTitle } from "./ValuePresentation";
+import { APIResponseHandler } from "../services/APIResponseHandler";
 
 interface ObjectInput<ObjectType>
 {
     actions: IdBoundObjectAction<any, any>[];
     baseRoute: string;
     heading: (ids: any, obj: ObjectType) => string;
-    requestObject: (routeParams: Dictionary<string>) => Promise<ObjectType>;
+    requestObject: (routeParams: Dictionary<string>) => Promise<APIResponse<ObjectType>>;
     schema: OpenAPI.ObjectSchema;
 }
 
 @Injectable
 export class ViewObjectComponent<ObjectType extends object> extends Component<ObjectInput<ObjectType>>
 {
-    constructor(private routerState: RouterState, private apiSchemaService: NamedSchemaRegistry)
+    constructor(private routerState: RouterState, private apiSchemaService: NamedSchemaRegistry, private apiResponseHandler: APIResponseHandler)
     {
         super();
 
@@ -71,9 +72,13 @@ export class ViewObjectComponent<ObjectType extends object> extends Component<Ob
 
     private async LoadData()
     {
-        const result = await this.input.requestObject(this.routerState.routeParams);
-        this.data = result;
-        this.heading = this.input.heading(this.routerState.routeParams, this.data);
+        const response = await this.input.requestObject(this.routerState.routeParams);
+        const result = await this.apiResponseHandler.ExtractDataFromResponseOrShowErrorMessageOnError(response);
+        if(result.ok)
+        {
+            this.data = result.value;
+            this.heading = this.input.heading(this.routerState.routeParams, this.data);
+        }
     }
 
     private RenderOneOf(value: any, oneOfSchema: OpenAPI.OneOfSchema, tables: SingleRenderValue[]): RenderValue

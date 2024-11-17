@@ -17,7 +17,7 @@
  * */
 
 import { APIResponse, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterState } from "acfrontend";
-import { ObjectEditorComponent } from "./ObjectEditorComponent";
+import { ObjectEditorComponent, ObjectEditorContext } from "./ObjectEditorComponent";
 import { Dictionary, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { ReplaceRouteParams } from "../Shared";
@@ -25,6 +25,7 @@ import { ReplaceRouteParams } from "../Shared";
 interface CreateObjectInput
 {
     createResource: (routeParams: Dictionary<string>, data: any) => Promise<APIResponse<number | string | void>>;
+    loadContext?: (routeParams: Dictionary<string>) => Promise<any>;
     postCreationURL: string;
     schema: OpenAPI.ObjectSchema;
 }
@@ -52,7 +53,7 @@ export class CreateObjectComponent<ObjectType extends object> extends Component<
         };
 
         return <form onsubmit={this.OnSave.bind(this)}>
-            <ObjectEditorComponent object={this.data} schema={this.input.schema} onObjectUpdated={this.OnObjectUpdated.bind(this)} />
+            <ObjectEditorComponent context={this.context} object={this.data} schema={this.input.schema} onObjectUpdated={this.OnObjectUpdated.bind(this)} />
             <button disabled={!this.isValid} className="btn btn-primary" type="submit"><BootstrapIcon>floppy</BootstrapIcon> Save</button>
         </form>;
     }
@@ -62,6 +63,7 @@ export class CreateObjectComponent<ObjectType extends object> extends Component<
     {
         this.loading = true;
 
+        this.context = await this.input.loadContext?.call(undefined, this.routerState.routeParams);
         const newData = this.apiSchemaService.CreateDefault(this.input.schema);
         this.OnObjectUpdated(newData);
 
@@ -93,6 +95,7 @@ export class CreateObjectComponent<ObjectType extends object> extends Component<
 
     //State
     private data: ObjectType | null;
+    private context?: ObjectEditorContext;
     private isValid: boolean;
     private loading: boolean;
 }

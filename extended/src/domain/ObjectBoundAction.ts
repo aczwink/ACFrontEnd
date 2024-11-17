@@ -19,6 +19,13 @@
 import { OpenAPI } from "acts-util-core";
 import { APIResponse } from "../../../dist/RenderHelpers";
 
+interface CustomAction<ObjectType, IdType>
+{
+    type: "custom";
+    action: (ids: IdType, object: ObjectType) => Promise<void>;
+    icon: string;
+}
+
 export interface DeleteAction<ObjectType, IdType>
 {
     type: "delete";
@@ -32,4 +39,4 @@ export interface EditAction<ObjectType, IdType>
     updateResource: (ids: IdType, newProperties: ObjectType, oldProperties: ObjectType, index: number) => Promise<APIResponse<void>>;
 }
 
-export type ObjectBoundAction<ObjectType, IdType> = DeleteAction<ObjectType, IdType> | EditAction<ObjectType, IdType>;
+export type ObjectBoundAction<ObjectType, IdType> = CustomAction<ObjectType, IdType> | DeleteAction<ObjectType, IdType> | EditAction<ObjectType, IdType>;

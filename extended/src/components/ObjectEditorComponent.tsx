@@ -17,7 +17,7 @@
  * */
 
 import { BootstrapIcon, CheckBox, Component, FileSelect, FormField, Injectable, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
-import { Dictionary, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
+import { Dictionary, ObjectExtensions, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { RenderTitle } from "./ValuePresentation";
 import { CustomFormatRegistry } from "../services/CustomFormatRegistry";
@@ -124,7 +124,7 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
     private RenderNumber(value: any, schema: OpenAPI.NumberSchema, valueChanged: (newValue: any) => void)
     {
         if((schema.format !== undefined) && this.customFormatRegistry.HasFormatEntry("number", false, schema.format))
-            return this.customFormatRegistry.CreateEditor("number", schema.format, value, valueChanged);
+            return this.customFormatRegistry.CreateEditor("number", schema.format, value, valueChanged, this.input.context);
 
         let className = "";
         if((schema.minimum !== undefined) || (schema.maximum !== undefined))
@@ -158,6 +158,58 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
         </fragment>;
     }
 
+    private RenderOneOf(value: any, oneOfSchema: OpenAPI.OneOfSchema, valueChanged: (newValue: any) => void, fallback: string)
+    {
+        if(oneOfSchema.discriminator === undefined)
+            throw new Error("NOT IMPLEMENTED. NEEED A DISCRIMINATOR");
+        const discriminatorPropName = oneOfSchema.discriminator.propertyName;
+
+        function ExtractKey(schema: OpenAPI.ObjectSchema)
+        {
+            const x = schema.properties[discriminatorPropName] as OpenAPI.StringSchema;
+            return x.enum![0];
+        }
+
+        const schemasMap = oneOfSchema.oneOf.Values()
+            .Map(x => this.apiSchemaService.ResolveSchemaOrReference(x) as OpenAPI.ObjectSchema)
+            .ToDictionary(x => ExtractKey(x), x => x);
+        const context = this;
+
+        function GetSelectedSchema(selectedDiscriminator: string)
+        {
+            return schemasMap[selectedDiscriminator]!;
+        }
+        function OnSelectionChanged(newSelectedDiscriminator: string)
+        {
+            const newSchema = schemasMap[newSelectedDiscriminator]!;
+            const newValue = context.apiSchemaService.CreateDefault(newSchema);
+            valueChanged(newValue);
+        }
+        function CreateSchemaWithoutDiscriminator(schema: OpenAPI.ObjectSchema): OpenAPI.ObjectSchema
+        {
+            return {
+                additionalProperties: schema.additionalProperties,
+                properties: ObjectExtensions.Entries(schema.properties).Filter(kv => kv.key !== discriminatorPropName).ToDictionary(kv => kv.key, kv => kv.value!),
+                required: schema.required.filter(x => x !== discriminatorPropName),
+                type: "object",
+                description: schema.description,
+                title: schema.title
+            };
+        }
+
+        const selectedDiscriminator = value[discriminatorPropName];
+        const selectedSchema = GetSelectedSchema(selectedDiscriminator);
+
+        return <fragment>
+            <FormField title={RenderTitle(selectedSchema, discriminatorPropName)} description={selectedSchema.description}>
+                <Select onChanged={newValue => OnSelectionChanged(newValue[0])}>
+                    {ObjectExtensions.OwnKeys(schemasMap).OrderBy(x => x).Map(x => <option selected={selectedDiscriminator === x}>{x.toString()}</option>).ToArray()}
+                </Select>
+            </FormField>
+            {this.RenderObject(value, CreateSchemaWithoutDiscriminator(selectedSchema), valueChanged, fallback)}
+        </fragment>;
+    }
+
     private RenderString(value: any, schema: OpenAPI.StringSchema, valueChanged: (newValue: any) => void)
     {
         if(schema.enum !== undefined)
@@ -182,7 +234,7 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
             }
 
             if((schema.format !== undefined) && this.customFormatRegistry.HasFormatEntry("string", false, schema.format))
-                return this.customFormatRegistry.CreateEditor("string", schema.format, value, valueChanged);
+                return this.customFormatRegistry.CreateEditor("string", schema.format, value, valueChanged, this.input.context);
         }
 
         return <LineEdit className={className} value={value.toString()} onChanged={valueChanged} />;
@@ -193,7 +245,7 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
         if("anyOf" in schema)
             throw new Error("anyof not implemented");
         if("oneOf" in schema)
-            throw new Error("TODO");
+            return this.RenderOneOf(value, schema, valueChanged, fallback);
         if("$ref" in schema)
             return this.RenderValue(value, this.apiSchemaService.ResolveReference(schema), valueChanged, schema.title || fallback);
 

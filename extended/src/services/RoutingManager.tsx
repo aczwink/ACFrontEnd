@@ -17,7 +17,7 @@
  * */
 
 import { Injectable, JSX_CreateElement, OAuth2Guard, RootInjector, Route, Router, Routes } from "acfrontend";
-import { CollectionContentSetup, ComponentContentSetup, ElementViewModel, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup } from "../domain/declarations";
+import { CollectionContentSetup, ComponentContentSetup, CreateContentSetup, ElementViewModel, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup, RoutingViewModel } from "../domain/declarations";
 import { ObjectListComponent } from "../components/ObjectListComponent";
 import { FeaturesManager } from "./FeaturesManager";
 import { CreateObjectComponent } from "../components/CreateObjectComponent";
@@ -114,6 +114,15 @@ export class RoutingManager
     {
         switch(action.type)
         {
+            case "custom_edit":
+                return <EditObjectComponent
+                    formTitle={formTitle}
+                    postUpdateUrl={parentNode.path}
+                    requestObject={async ids => (await action.requestObject(ids))}
+                    updateResource={(ids, obj) => action.updateResource(ids, obj)}
+                    schema={action.schema}
+                    />;
+                    
             case "edit":
                 return <EditObjectComponent
                     formTitle={formTitle}
@@ -136,15 +145,14 @@ export class RoutingManager
     {
         return {
             component: this.BuildBoundActionComponent(action, formTitle, parentNode),
-            //path: (action.type === "custom_edit" ? action.key : action.type)
-            path: action.type
+            path: (action.type === "custom_edit" ? action.key : action.type)
         };
     }
 
     private BuildCollectionRoutesFromSetup(routeSetup: RouteSetup<any, any>, content: CollectionContentSetup<any, any>, parentNode: PathTraceNode): Route
     {
         const actions = content.actions ?? [];
-        const dataSource = content.dataSource;
+        const dataSource = content;
 
         const ownNode = parentNode.CreateChild(routeSetup.routingKey);
         const childRoute = this.BuildRoutesFromSetup(content.child, ownNode);
@@ -157,10 +165,11 @@ export class RoutingManager
                     component: <ObjectListComponent<any>
                         baseUrl={ownNode.path}
                         elementSchema={dataSource.schema}
+                        hasChild={true}
                         idBoundActions={this.FindActions(content.child)}
-                        idKey={dataSource.id}
+                        id={dataSource.id}
                         objectBoundActions={[]}
-                        queryDataSource={routeParams => dataSource.call(routeParams)}
+                        queryDataSource={routeParams => dataSource.requestObjects(routeParams)}
                         unboundActions={actions}
                     />,
                     path: "",
@@ -180,6 +189,19 @@ export class RoutingManager
         };
     }
 
+    private BuildCreateRoutesFromSetup(routeSetup: RouteSetup<any, any>, content: CreateContentSetup<any, any>, parentNode: PathTraceNode): Route
+    {
+        return {
+            component: <CreateObjectComponent
+                createResource={content.call}
+                loadContext={(content.loadContext === undefined) ? undefined : (ids => content.loadContext!(ids))}
+                postCreationURL={parentNode.path}
+                schema={content.schema} />,
+            guards: this.CreateRouteGuards(routeSetup),
+            path: routeSetup.routingKey,
+        };
+    }
+
     private BuildElementRoutesFromSetup(routeSetup: RouteSetup<any, any>, viewModel: ElementViewModel<any>): Route
     {
         return {
@@ -192,7 +214,7 @@ export class RoutingManager
     private BuildListRoutesFromSetup(routeSetup: RouteSetup<any, any>, content: ListContentSetup<any, any>, parentNode: PathTraceNode): Route
     {
         const actions = content.actions ?? [];
-        const schema = content.dataSource.schema;
+        const schema = content.schema;
 
         let mappedSchema;
         if((schema !== undefined) && ("oneOf" in schema))
@@ -209,11 +231,11 @@ export class RoutingManager
                 {
                     component: <ObjectListComponent
                         baseUrl={ownNode.path}
+                        hasChild={false}
                         idBoundActions={[]}
-                        //idKey={content.dataSource.id}
-                        idKey={""} //for lists we don't want to show links to child objects
+                        id={""} //for lists we don't want to show links to child objects
                         objectBoundActions={content.boundActions ?? []}
-                        queryDataSource={routeParams => content.dataSource.call(routeParams)}
+                        queryDataSource={routeParams => content.requestObjects(routeParams)}
                         unboundActions={actions}
                         elementSchema={mappedSchema}
                         />,
@@ -227,6 +249,13 @@ export class RoutingManager
 
     private BuildMultiPageRoutesFromSetup(routeSetup: RouteSetup<any>, content: MultiPageContentSetup<any>, parentNode: PathTraceNode): Route
     {
+        if(content.entries.length === 0)
+        {
+            return {
+                path: "",
+            };
+        }
+
         const cats = content.entries.map(x => (
             {
                 catName: x.displayName,
@@ -244,6 +273,7 @@ export class RoutingManager
 
         return {
             children: [
+                ...content.actions.map(action => this.BuildBoundActionRoute(action, content.formTitle, parentNode)),
                 ...content.entries.Values().Map(x => x.entries.Values()).Flatten().Map(x => this.BuildRoutesFromSetup(x, ownNode)).ToArray(),
                 {
                     path: "",
@@ -279,6 +309,16 @@ export class RoutingManager
         };
     }
 
+    private BuildRoutingViewModelRoutes(routeSetup: RouteSetup<any, any>, content: RoutingViewModel, parentNode: PathTraceNode): Route
+    {
+        const ownNode = parentNode.CreateChild(routeSetup.routingKey);
+        return {
+            children: content.entries.map(x => this.BuildRoutesFromSetup(x, ownNode)),
+            guards: this.CreateRouteGuards(routeSetup),
+            path: routeSetup.routingKey,
+        }
+    }
+
     private BuildRoutesFromSetup(routeSetup: RouteSetup<any, any>, parentNode: PathTraceNode): Route
     {
         switch(routeSetup.content.type)
@@ -290,16 +330,7 @@ export class RoutingManager
                 return this.BuildComponentRoutesFromSetup(routeSetup, routeSetup.content);
 
             case "create":
-            {
-                return {
-                    component: <CreateObjectComponent
-                        createResource={routeSetup.content.call}
-                        postCreationURL={parentNode.path}
-                        schema={routeSetup.content.schema} />,
-                    guards: this.CreateRouteGuards(routeSetup),
-                    path: routeSetup.routingKey,
-                };
-            }
+                return this.BuildCreateRoutesFromSetup(routeSetup, routeSetup.content, parentNode);
 
             case "element":
                 return this.BuildElementRoutesFromSetup(routeSetup, routeSetup.content);
@@ -312,6 +343,9 @@ export class RoutingManager
 
             case "object":
                 return this.BuildObjectRoutesFromSetup(routeSetup, routeSetup.content, parentNode);
+                
+            case "routing":
+                return this.BuildRoutingViewModelRoutes(routeSetup, routeSetup.content, parentNode);
         }
     }
 
@@ -346,6 +380,7 @@ export class RoutingManager
             case "create":
             case "element":
             case "list":
+            case "routing":
                 return [];
             case "multiPage":
                 return routeSetup.content.actions;

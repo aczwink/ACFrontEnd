@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,9 @@ export interface CollectionContentSetup<ObjectType, IdType>
     type: "collection";
     actions?: RouteSetup<any, any>[];
     child: RouteSetup<any, any>;
-    dataSource: DataSourceSetup<ObjectType, IdType, ObjectType[]>;
+    id: (keyof ObjectType) | ((object: ObjectType) => string);
+    requestObjects: (ids: IdType) => Promise<APIResponse<ObjectType[]>>;
+    schema?: OpenAPI.ObjectSchema;
 }
 
 export interface ComponentContentSetup
@@ -35,10 +37,11 @@ export interface ComponentContentSetup
     component: Instantiatable<Component<null | {}>>;
 }
 
-interface CreateContentSetup<ObjectType, IdType>
+export interface CreateContentSetup<ObjectType, IdType>
 {
     type: "create";
     call: (ids: IdType, data: ObjectType) => Promise<APIResponse<number | string | void>>;
+    loadContext?: (ids: IdType) => Promise<object>;
     schema: OpenAPI.ObjectSchema;
 }
 
@@ -59,7 +62,8 @@ export interface ListContentSetup<ObjectType, IdType>
     type: "list";
     actions?: RouteSetup<any, any>[];
     boundActions?: ObjectBoundAction<ObjectType, IdType>[];
-    dataSource: DataSourceSetup<ObjectType, IdType, ObjectType[]>;
+    requestObjects: (ids: IdType) => Promise<APIResponse<ObjectType[]>>;
+    schema?: OpenAPI.ObjectSchema;
 }
 
 export interface MultiPageContentSetup<IdType>
@@ -79,18 +83,18 @@ export interface ObjectContentSetup<ObjectType, IdType>
     schema: OpenAPI.ObjectSchema;
 }
 
-type ContentSetup<IdType, ContentType = null> = CollectionContentSetup<ContentType, IdType> | ComponentContentSetup | CreateContentSetup<ContentType, IdType> | ElementViewModel<IdType> | ListContentSetup<ContentType, IdType> | MultiPageContentSetup<IdType> | ObjectContentSetup<ContentType, IdType>;
-
-export interface DataSourceSetup<ObjectType, IdType, ResultType = ObjectType>
+export interface RoutingViewModel
 {
-    call: (ids: IdType) => Promise<APIResponse<ResultType>>;
-    id: keyof ObjectType;
-    schema?: OpenAPI.ObjectSchema;
+    type: "routing";
+
+    entries: RouteSetup<any, any>[];
 }
 
-export interface RouteSetup<ContentType, IdType = {}>
+type ContentSetup<IdType, ContentType = null> = CollectionContentSetup<ContentType, IdType> | ComponentContentSetup | CreateContentSetup<ContentType, IdType> | ElementViewModel<IdType> | ListContentSetup<ContentType, IdType> | MultiPageContentSetup<IdType> | ObjectContentSetup<ContentType, IdType> | RoutingViewModel;
+
+export interface RouteSetup<IdType = {}, ContentType = {}>
 {
-    content: ContentSetup<ContentType, IdType>;
+    content: ContentSetup<IdType, ContentType>;
     displayText: string;
     guards?: (RouteGuard | Instantiatable<RouteGuard>)[];
     icon: string;

@@ -19,6 +19,7 @@
 import { BootstrapApp } from "./App";
 import { ObjectEditorComponent } from "./components/ObjectEditorComponent";
 import { RouteSetup } from "./domain/declarations";
+import { IdBoundObjectAction } from "./domain/IdBoundActions";
 import { APIResponseHandler } from "./services/APIResponseHandler";
 import { CustomFormatRegistry } from "./services/CustomFormatRegistry";
 import { NamedSchemaRegistry } from "./services/NamedSchemaRegistry";
@@ -29,6 +30,7 @@ export
     APIResponseHandler,
     BootstrapApp,
     CustomFormatRegistry,
+    IdBoundObjectAction,
     NamedSchemaRegistry,
     ObjectEditorComponent,
     RouteSetup,

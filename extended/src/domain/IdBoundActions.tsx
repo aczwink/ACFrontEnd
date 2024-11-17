@@ -37,6 +37,17 @@ interface IdBoundConfirmAction<IdType>
     title: string;
 }
 
+interface ManagedCustomEditResourceAction<IdType, ObjectType>
+{
+    type: "custom_edit";
+    key: string;
+    title: string;
+    icon: string;
+    requestObject: (ids: IdType) => Promise<APIResponse<ObjectType>>;
+    schema: OpenAPI.ObjectSchema;
+    updateResource: (ids: IdType, properties: ObjectType) => Promise<APIResponse<void>>;
+}
+
 interface ManagedDeleteObjectAction<IdType>
 {
     type: "delete";
@@ -55,13 +66,13 @@ interface ManagedEditResourceAction<IdType, ObjectType>
 export type IdBoundObjectAction<IdType, PropertiesType> =
     IdBoundActivateAction<IdType>
     | IdBoundConfirmAction<IdType>
+    | ManagedCustomEditResourceAction<IdType, PropertiesType>
     | ManagedDeleteObjectAction<IdType>
     | ManagedEditResourceAction<IdType, PropertiesType>;
 
 export function RenderBoundAction(baseRoute: string, routeParams: Dictionary<string>, action: IdBoundObjectAction<any, any>, reloadData: (beginOrFinish: boolean) => void)
 {
-    //const varRoute = baseRoute + "/" + (action.type === "custom_edit" ? action.key : action.type);
-    const varRoute = baseRoute + "/" + action.type;
+    const varRoute = baseRoute + "/" + (action.type === "custom_edit" ? action.key : action.type);
     const route = RouterState.ReplaceRouteParams(varRoute, routeParams).join("/");
     switch(action.type)
     {
@@ -84,8 +95,12 @@ export function RenderBoundAction(baseRoute: string, routeParams: Dictionary<str
             }
             return <a onclick={ConfirmAction.bind(undefined, action)} role="button" className="d-flex align-items-center text-decoration-none"><BootstrapIcon>{action.icon}</BootstrapIcon> {action.title}</a>;
 
+        case "custom_edit":
+            return <Anchor className="d-flex align-items-center text-decoration-none" route={route}><BootstrapIcon>{action.icon}</BootstrapIcon> {action.title}</Anchor>;
+
         case "delete":
             return <Anchor className="d-flex align-items-center text-decoration-none link-danger" route={route}><BootstrapIcon>trash</BootstrapIcon> Delete</Anchor>;
+
         case "edit":
             return <Anchor className="d-flex align-items-center text-decoration-none" route={route}><BootstrapIcon>pencil</BootstrapIcon> Edit</Anchor>;
     }

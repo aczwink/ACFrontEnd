@@ -19,14 +19,20 @@
 import { Injectable } from "acfrontend";
 import { Dictionary } from "acts-util-core";
 
-type Editor<T> = (data: T, valueChanged: (newValue: T | null) => void) => SingleRenderValue;
+type Editor<T> = (data: T, valueChanged: (newValue: T | null) => void, format: string, context: any) => SingleRenderValue;
 type FormatDataType = "number" | "string";
 type Presenter<T> = (data: T) => string;
 
-interface Entry<T>
+interface FormatEntry<T>
 {
     editor?: Editor<T>;
     presenter?: Presenter<T>;
+}
+
+interface TypeEntry<T>
+{
+    direct: Dictionary<FormatEntry<T>>;
+    regExpBased: { regExp: RegExp; entry: FormatEntry<T> }[];
 }
 
 @Injectable
@@ -38,59 +44,82 @@ export class CustomFormatRegistry
     }
 
     //Public methods
-    public CreateEditor(type: "number", format: string, value: number, valueChanged: (newValue: number | null) => void): SingleRenderValue;
-    public CreateEditor(type: "string", format: string, value: string, valueChanged: (newValue: string | null) => void): SingleRenderValue;
-    public CreateEditor(type: FormatDataType, format: string, value: number | string, valueChanged: (newValue: any) => void)
+    public CreateEditor(type: "number", format: string, value: number, valueChanged: (newValue: number | null) => void, context: any): SingleRenderValue;
+    public CreateEditor(type: "string", format: string, value: string, valueChanged: (newValue: string | null) => void, context: any): SingleRenderValue;
+    public CreateEditor(type: FormatDataType, format: string, value: number | string, valueChanged: (newValue: any) => void, context: any)
     {
-        const formatEntry = this.GetFormatEntry(type, format);
-        return formatEntry.editor!(value, valueChanged);
+        const formatEntry = this.FindFormatEntry(type, format)!;
+        return formatEntry.editor!(value, valueChanged, format, context);
     }
 
     public HasFormatEntry(type: FormatDataType, readOnly: boolean, format: string)
     {
-        const typeEntry = this.entries[type];
-        if(typeEntry === undefined)
+        const formatEntry = this.FindFormatEntry(type, format);
+        if(formatEntry === undefined)
             return false;
-        const formatEntry = typeEntry[format];
+
         if(readOnly)
-            return formatEntry?.presenter !== undefined;
-        return formatEntry?.editor !== undefined;
+            return formatEntry.presenter !== undefined;
+        return formatEntry.editor !== undefined;
     }
 
     public Present(type: FormatDataType, format: string, value: number | string)
     {
-        return this.entries[type]![format]!.presenter!(value);
+        return this.FindFormatEntry(type, format)!.presenter!(value);
     }
 
-    public RegisterFormatEditor(type: "number", format: string, presenter: Editor<number>): void;
-    public RegisterFormatEditor(type: "string", format: string, presenter: Editor<string>): void;
-    public RegisterFormatEditor(type: FormatDataType, format: string, formatter: Editor<any>)
+    public RegisterFormat(type: "number", format: RegExp | string, entry: { editor?: Editor<number>, presenter?: Presenter<number> }): void;
+    public RegisterFormat(type: "string", format: RegExp | string, entry: { editor?: Editor<string>, presenter?: Presenter<string> }): void;
+    public RegisterFormat(type: FormatDataType, format: RegExp | string, entry: { editor?: Editor<any>, presenter?: Presenter<any> })
     {
-        const formatEntry = this.GetFormatEntry(type, format);
-        formatEntry.editor = formatter;
-    }
-
-    public RegisterFormatPresenter(type: "number", format: string, presenter: Presenter<number>): void;
-    public RegisterFormatPresenter(type: "string", format: string, presenter: Presenter<string>): void;
-    public RegisterFormatPresenter(type: FormatDataType, format: string, presenter: Presenter<any>)
-    {
-        const formatEntry = this.GetFormatEntry(type, format);
-        formatEntry.presenter = presenter;
+        const formatEntry = this.GetOrInsertFormatEntry(type, format);
+        formatEntry.editor = entry.editor;
+        formatEntry.presenter = entry.presenter;
     }
 
     //Private methods
-    private GetFormatEntry(type: FormatDataType, format: string)
+    private FindFormatEntry(type: FormatDataType, format: string)
     {
         const typeEntry = this.entries[type];
         if(typeEntry === undefined)
-            this.entries[type] = {};
+            return undefined;
 
-        const formatEntry = this.entries[type]![format];
+        const direct = typeEntry.direct[format];
+        if(direct !== undefined)
+            return direct;
+
+        for (const entry of typeEntry.regExpBased)
+        {
+            if(format.match(entry.regExp) !== null)
+                return entry.entry;
+        }
+        return undefined;
+    }
+
+    private GetOrInsertFormatEntry(type: FormatDataType, format: RegExp | string)
+    {
+        let typeEntry = this.entries[type];
+        if(typeEntry === undefined)
+            this.entries[type] = typeEntry = { direct: {}, regExpBased: [] };
+
+        if(format instanceof RegExp)
+        {
+            const formatEntry = typeEntry.regExpBased.find(x => x.regExp === format);
+            if(formatEntry === undefined)
+            {
+                const entry: FormatEntry<number | string> = {};
+                typeEntry.regExpBased.push({ regExp: format, entry });
+                return entry;
+            }
+            return formatEntry.entry;
+        }
+
+        const formatEntry = typeEntry.direct[format];
         if(formatEntry === undefined)
-            this.entries[type]![format] = {};
-        return this.entries[type]![format]!;
+            typeEntry.direct[format] = {};
+        return typeEntry.direct[format]!;
     }
 
     //State
-    private entries: Dictionary<Dictionary<Entry<number | string>>>;
+    private entries: Dictionary<TypeEntry<number | string>>;
 }

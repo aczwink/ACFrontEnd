@@ -43,6 +43,10 @@ export function RenderReadOnlyValue(value: any, schemaOrRef: OpenAPI.Schema | Op
 
     switch(schema.type)
     {
+        case "array":
+            const childSchema = apiSchemaService.ResolveSchemaOrReference(schema.items);
+            return <ol>{value.map( (x: any) => <li>{RenderReadOnlyValue(x, childSchema)}</li>)}</ol>;
+            
         case "boolean":
             return <div className="form-check">
                 <input className="form-check-input" type="checkbox" value="" checked={value} disabled />
