@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable, JSX_CreateElement, OAuth2Guard, RootInjector, Route, Router, Routes } from "acfrontend";
+import { Injectable, JSX_CreateElement, OAuth2Guard, OAuth2Service, OAuth2TokenManager, ProgressSpinner, RootInjector, Route, Router, Routes, Use, UseEffectOnce } from "acfrontend";
 import { CollectionContentSetup, ComponentContentSetup, CreateContentSetup, ElementViewModel, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup, RoutingViewModel } from "../domain/declarations";
 import { ObjectListComponent } from "../components/ObjectListComponent";
 import { FeaturesManager } from "./FeaturesManager";
@@ -25,10 +25,11 @@ import { ViewObjectComponent } from "../components/ViewObjectComponent";
 import { IdBoundObjectAction } from "../domain/IdBoundActions";
 import { DeleteObjectComponent } from "../components/DeleteObjectComponent";
 import { MultiPageNavComponent } from "../components/MultiPageNavComponent";
-import { Dictionary, OpenAPI } from "acts-util-core";
+import { Dictionary, ObjectExtensions, OpenAPI } from "acts-util-core";
 import { ReplaceRouteParams } from "../Shared";
 import { EditObjectComponent } from "../components/EditObjectComponent";
 import { DelayedStaticContentComponent } from "../components/DelayedStaticContentComponent";
+import { NamedSchemaRegistry } from "./NamedSchemaRegistry";
 
 class PathTraceNode
 {
@@ -76,10 +77,29 @@ class PathTraceNode
     }
 }
 
+function OAuth2LoginRedirectHandler()
+{
+    UseEffectOnce(async () => {
+        const redirect = await Use(OAuth2Service).HandleRedirectResult();
+        if(redirect !== undefined)
+            Use(Router).RouteTo(redirect);
+    });
+    return <ProgressSpinner />;
+}
+
+function OAuth2LogoutHandler()
+{
+    UseEffectOnce(async () => {
+        Use(OAuth2TokenManager).RemoveToken(Use(FeaturesManager).oAuth2Config);
+        Use(Router).RouteTo("/");
+    });
+    return <ProgressSpinner />;
+}
+
 @Injectable
 export class RoutingManager
 {
-    constructor(private featuresManager: FeaturesManager)
+    constructor(private featuresManager: FeaturesManager, private namedSchemaRegistry: NamedSchemaRegistry)
     {
         this.rootRoutes = [];
     }
@@ -89,13 +109,22 @@ export class RoutingManager
     {
         const rootRoutes: Routes = this.rootRoutes.map(x => this.BuildRoutesFromSetup(x, new PathTraceNode));
 
-        const staticRoutes: Routes = [
-            { path: "accessdenied", component: <p>TODO: Access denied</p>},
-            { path: "", redirect: rootRoutes[0].path },
-            { path: "*", component: <h1>404</h1>},
+        const oAuth2Routes: Routes = [
+            { path: "oauth2loggedin", component: <OAuth2LoginRedirectHandler /> },
+            { path: "oauth2loggedout", component: <OAuth2LogoutHandler /> },
         ];
 
-        return rootRoutes.concat(staticRoutes);
+        const staticRoutes: Routes = [
+            { path: "accessdenied", component: <div className="container text-center">
+                <h1>Access denied!</h1>
+            </div>},
+            { path: "", redirect: rootRoutes[0].path },
+            { path: "*", component: <div className="container text-center">
+                <h1>404</h1>
+            </div>},
+        ];
+
+        return rootRoutes.concat(oAuth2Routes, staticRoutes);
     }
 
     public BuildURL(routeSetup: RouteSetup<any, any>, routeParams: Dictionary<string>)
@@ -126,12 +155,12 @@ export class RoutingManager
             case "edit":
                 return <EditObjectComponent
                     formTitle={formTitle}
+                    loadContext={action.loadContext}
                     postUpdateUrl={parentNode.path}
                     requestObject={async ids => (await action.requestObject(ids))}
                     schema={action.schema}
                     updateResource={(ids, obj) => action.updateResource(ids, obj)}
                     />;
-                    //loadContext={(action.loadContext === undefined) ? undefined : (ids => action.loadContext!(RootInjector.Resolve(APIService), ids))}
 
             case "delete":
                 return <DeleteObjectComponent
@@ -166,6 +195,7 @@ export class RoutingManager
                         baseUrl={ownNode.path}
                         elementSchema={dataSource.schema}
                         hasChild={true}
+                        heading={routeSetup.displayText}
                         idBoundActions={this.FindActions(content.child)}
                         id={dataSource.id}
                         objectBoundActions={[]}
@@ -194,6 +224,7 @@ export class RoutingManager
         return {
             component: <CreateObjectComponent
                 createResource={content.call}
+                heading={routeSetup.displayText}
                 loadContext={(content.loadContext === undefined) ? undefined : (ids => content.loadContext!(ids))}
                 postCreationURL={parentNode.path}
                 schema={content.schema} />,
@@ -219,7 +250,27 @@ export class RoutingManager
         let mappedSchema;
         if((schema !== undefined) && ("oneOf" in schema))
         {
-            throw new Error("TODO: implement me");
+            function Combine(a: Dictionary<OpenAPI.Schema | OpenAPI.Reference>, b: Dictionary<OpenAPI.Schema | OpenAPI.Reference>): Dictionary<OpenAPI.Schema | OpenAPI.Reference>
+            {
+                const aOnly = ObjectExtensions.OwnKeys(a).Filter(k => !(k in b));
+                const bOnly = ObjectExtensions.OwnKeys(b).Filter(k => !(k in a));
+                const both = ObjectExtensions.OwnKeys(a).ToSet().Without(aOnly.ToSet());
+
+                const dict = aOnly.ToDictionary(k => k, k => a[k]!);
+                bOnly.ForEach(k => dict[k] = b[k]);
+                both.forEach(k => dict[k] = a[k]); //TODO: should create union type
+
+                return dict;
+            }
+
+            const schemas = schema.oneOf.map(x => this.namedSchemaRegistry.ResolveSchemaOrReference(x)) as OpenAPI.ObjectSchema[];
+            const intersection: OpenAPI.ObjectSchema = {
+                additionalProperties: false,
+                properties: schemas.Values().Map( x => x.properties).Accumulate(Combine),
+                required: schemas.Values().Map(x => x.required.Values().ToSet()).Accumulate( (x, y) => x.Intersect(y) ).ToArray(),
+                type: "object",
+            };
+            mappedSchema = intersection;
         }
         else
             mappedSchema = schema as OpenAPI.ObjectSchema;
@@ -232,6 +283,7 @@ export class RoutingManager
                     component: <ObjectListComponent
                         baseUrl={ownNode.path}
                         hasChild={false}
+                        heading={routeSetup.displayText}
                         idBoundActions={[]}
                         id={""} //for lists we don't want to show links to child objects
                         objectBoundActions={content.boundActions ?? []}

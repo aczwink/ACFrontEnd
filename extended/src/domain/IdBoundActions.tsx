@@ -57,7 +57,7 @@ interface ManagedDeleteObjectAction<IdType>
 interface ManagedEditResourceAction<IdType, ObjectType>
 {
     type: "edit";
-    //loadContext?: (service: APIService, ids: IdType) => Promise<ObjectEditorContext>;
+    loadContext?: (ids: IdType) => Promise<object>;
     requestObject: (ids: IdType) => Promise<APIResponse<ObjectType>>;
     schema: OpenAPI.ObjectSchema;
     updateResource: (ids: IdType, properties: ObjectType) => Promise<APIResponse<void>>;

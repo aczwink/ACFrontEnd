@@ -63,7 +63,7 @@ export interface ListContentSetup<ObjectType, IdType>
     actions?: RouteSetup<any, any>[];
     boundActions?: ObjectBoundAction<ObjectType, IdType>[];
     requestObjects: (ids: IdType) => Promise<APIResponse<ObjectType[]>>;
-    schema?: OpenAPI.ObjectSchema;
+    schema?: OpenAPI.ObjectSchema | OpenAPI.OneOfSchema;
 }
 
 export interface MultiPageContentSetup<IdType>

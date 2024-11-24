@@ -25,6 +25,14 @@ import { CustomFormatRegistry } from "./services/CustomFormatRegistry";
 import { NamedSchemaRegistry } from "./services/NamedSchemaRegistry";
 import { RoutingManager } from "./services/RoutingManager";
 
+export function CreateOAuth2RedirectURIs(baseURL: string)
+{
+    return {
+        redirectURI: baseURL + "/oauth2loggedin",
+        postLogoutRedirectURI: baseURL + "/oauth2loggedout",
+    };
+}
+
 export
 {
     APIResponseHandler,

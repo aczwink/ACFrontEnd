@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,10 +21,12 @@ import { ObjectEditorComponent, ObjectEditorContext } from "./ObjectEditorCompon
 import { Dictionary, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { ReplaceRouteParams } from "../Shared";
+import { APIResponseHandler } from "../services/APIResponseHandler";
 
 interface CreateObjectInput
 {
     createResource: (routeParams: Dictionary<string>, data: any) => Promise<APIResponse<number | string | void>>;
+    heading: string;
     loadContext?: (routeParams: Dictionary<string>) => Promise<any>;
     postCreationURL: string;
     schema: OpenAPI.ObjectSchema;
@@ -33,7 +35,7 @@ interface CreateObjectInput
 @Injectable
 export class CreateObjectComponent<ObjectType extends object> extends Component<CreateObjectInput>
 {
-    constructor(private router: Router, private routerState: RouterState, private apiSchemaService: NamedSchemaRegistry)
+    constructor(private router: Router, private routerState: RouterState, private apiSchemaService: NamedSchemaRegistry, private apiResponseHandler: APIResponseHandler)
     {
         super();
 
@@ -53,6 +55,7 @@ export class CreateObjectComponent<ObjectType extends object> extends Component<
         };
 
         return <form onsubmit={this.OnSave.bind(this)}>
+            <h1>{this.input.heading + " | Create"}</h1>
             <ObjectEditorComponent context={this.context} object={this.data} schema={this.input.schema} onObjectUpdated={this.OnObjectUpdated.bind(this)} />
             <button disabled={!this.isValid} className="btn btn-primary" type="submit"><BootstrapIcon>floppy</BootstrapIcon> Save</button>
         </form>;
@@ -84,7 +87,8 @@ export class CreateObjectComponent<ObjectType extends object> extends Component<
         this.loading = true;
 
         const response = await this.input.createResource(this.routerState.routeParams, this.data);
-        if(response)
+        const result = await this.apiResponseHandler.ExtractDataFromResponseOrShowErrorMessageOnError(response);
+        if(result.ok)
         {
             const route = ReplaceRouteParams(this.input.postCreationURL, this.routerState.routeParams);
             this.router.RouteTo(route);

@@ -29,7 +29,6 @@ import { TitleService } from "./Services/TitleService";
 import { VirtualInstance } from "./VirtualTree/VirtualInstance";
 import { VirtualNode } from "./VirtualTree/VirtualNode";
 import { ThemingService } from "./Services/ThemingService";
-import { OAuth2Service } from "./Services/OAuth2Service";
 
 export interface AppProperties
 {
@@ -75,12 +74,7 @@ class App
 
         this.popupManager = new PopupManager(this.root);
         RootInjector.RegisterInstance(PopupManager, this.popupManager);
-        
-        RootInjector.Resolve(OAuth2Service).HandleRedirectResult().then(redirect => {
-            if(redirect !== undefined)
-                router.RouteTo(redirect);
-            }
-        );
+
         const router = new Router(properties.routes);
 
 

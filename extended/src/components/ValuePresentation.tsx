@@ -39,7 +39,23 @@ export function RenderReadOnlyValue(value: any, schemaOrRef: OpenAPI.Schema | Op
     if("anyOf" in schema)
         throw new Error("anyof not implemented");
     if("oneOf" in schema)
-        throw new Error("anyof not implemented");
+    {
+        const discriminatorPropName = schema.discriminator!.propertyName;
+        const discriminator: string = value[discriminatorPropName];
+
+        function ExtractKeys(schema: OpenAPI.ObjectSchema)
+        {
+            const x = schema.properties[discriminatorPropName] as OpenAPI.StringSchema;
+            return x.enum!;
+        }
+
+        const matchedSchema = schema.oneOf.Values()
+            .Map(x => apiSchemaService.ResolveSchemaOrReference(x) as OpenAPI.ObjectSchema)
+            .Filter(x => ExtractKeys(x).Contains(discriminator))
+            .First();
+
+        return RenderReadOnlyValue(value, matchedSchema);
+    }
 
     switch(schema.type)
     {
@@ -82,6 +98,13 @@ export function RenderReadOnlyValue(value: any, schemaOrRef: OpenAPI.Schema | Op
                 {
                     case "date-time":
                         return new Date(value).toLocaleString();
+                }
+                switch(schema.format as string)
+                {
+                    case "multi-line":
+                        return <textarea className="form-control" cols="80" readOnly rows="12">{value}</textarea>;
+                    case "secret":
+                        return <input className="form-control" type="password" value={value} disabled />;
                 }
 
                 const cfm = RootInjector.Resolve(CustomFormatRegistry);

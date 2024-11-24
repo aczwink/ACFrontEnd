@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 import { jwtDecode } from "jwt-decode";
-import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, OAuth2TokenManager } from "acfrontend";
+import { Anchor, BootstrapIcon, Component, Injectable, JSX_CreateElement, OAuth2Service, OAuth2TokenManager } from "acfrontend";
 import { LayoutManager } from "../services/LayoutManager";
+import { FeaturesManager } from "../services/FeaturesManager";
 
 interface OIDC_Claims
 {
@@ -29,7 +30,9 @@ interface OIDC_Claims
 @Injectable
 export class SessionComponent extends Component
 {
-    constructor(private oAuth2TokenManager: OAuth2TokenManager, private layoutManager: LayoutManager)
+    constructor(private oAuth2TokenManager: OAuth2TokenManager, private layoutManager: LayoutManager, private oAuth2Service: OAuth2Service,
+        private featuresManager: FeaturesManager
+    )
     {
         super();
 
@@ -54,7 +57,7 @@ export class SessionComponent extends Component
                     </Anchor>
                 </li>)}
                 <li><hr className="dropdown-divider" /></li>
-                <li><a className="dropdown-item" href="#"><BootstrapIcon>x-octagon-fill</BootstrapIcon> Sign out</a></li>
+                <li><a className="dropdown-item text-danger" role="button" onclick={this.OnLogout.bind(this)}><BootstrapIcon>x-octagon-fill</BootstrapIcon> Sign out</a></li>
             </ul>
         </div>;
     }
@@ -63,6 +66,11 @@ export class SessionComponent extends Component
     override OnInitiated(): void
     {
         this.oAuth2TokenManager.tokenIssued.Subscribe(x => this.OnNewTokenIssued(x.idToken));
+    }
+
+    private OnLogout()
+    {
+        this.oAuth2Service.PerformRedirectLogout(this.featuresManager.oAuth2Config);
     }
 
     private OnNewTokenIssued(idToken?: string)

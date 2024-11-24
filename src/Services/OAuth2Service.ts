@@ -78,6 +78,15 @@ export class OAuth2Service
         }
     }
 
+    public PerformRedirectLogout(config: OAuth2Config)
+    {
+        var args = new URLSearchParams({
+            client_id: config.clientId,
+            post_logout_redirect_uri: config.postLogoutRedirectURI
+        });
+        window.location.href = config.endSessionEndpoint + "/?" + args;
+    }
+
     public RequestScopes(config: OAuth2Config, scopes: string[])
     {
         const scopesToRequest = this.oAuth2TokenManager.FetchScopesToGrant(config, scopes);

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Component, JSX_CreateElement, JSX_Fragment, Injectable, Navigation, NavItem, RouterComponent, BootstrapIcon } from "acfrontend";
+import { Component, JSX_CreateElement, JSX_Fragment, Injectable, Navigation, NavItem, BootstrapIcon } from "acfrontend";
 import { SessionComponent } from "./SessionComponent";
 import { LayoutManager } from "../services/LayoutManager";
+import { MainRoutingComponent } from "./SpecializedRoutingComponent";
 
 @Injectable
 export class RootComponent extends Component
@@ -39,7 +40,7 @@ export class RootComponent extends Component
                 <SessionComponent />
             </Navigation>
             <div className="container-fluid">
-                <RouterComponent />
+                <MainRoutingComponent />
             </div>
         </>;
     }

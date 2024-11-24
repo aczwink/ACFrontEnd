@@ -18,7 +18,7 @@
 
 import { Anchor, APIResponse, BootstrapIcon, Component, Injectable, JSX_CreateElement, PopupManager, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
 import { Dictionary, EqualsAny, ObjectExtensions, OpenAPI } from "acts-util-core";
-import { RenderReadOnlyValue } from "./ValuePresentation";
+import { RenderReadOnlyValue, RenderTitle } from "./ValuePresentation";
 import { ReflectiveSchemaCreator } from "../services/ReflectiveSchemaCreator";
 import { RouteSetup } from "../domain/declarations";
 import { ReplaceRouteParams } from "../Shared";
@@ -32,6 +32,7 @@ interface ObjectListInput<T extends object>
     baseUrl: string;
     elementSchema?: OpenAPI.ObjectSchema;
     hasChild: boolean;
+    heading: string;
     idBoundActions: IdBoundObjectAction<any, any>[];
     id: (keyof T) | ((object: T) => string);
     objectBoundActions: ObjectBoundAction<T, any>[];
@@ -49,6 +50,8 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
         super();
 
         this.data = null;
+        this.sortKey = "";
+        this.sortAscending = false;
     }
 
     protected Render()
@@ -57,6 +60,7 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
             return <ProgressSpinner />;
 
         return <div className="container">
+            <h1>{this.input.heading}</h1>
             <table className="table table-hover table-striped">
                 <thead>
                     <tr>
@@ -86,6 +90,20 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
         return props;
     }
 
+    private OrderByDirection(v1: any, v2: any, ascending: boolean)
+    {
+        if(ascending)
+            return this.OrderValue(v1, v2);
+        return this.OrderValue(v2, v1);
+    }
+
+    private OrderValue(v1: any, v2: any)
+    {
+        if(typeof v1 === "number")
+            return v1 - v2;
+        return v1.toString().localeCompare(v2);
+    }
+
     private async QueryData()
     {
         const response = await this.input.queryDataSource(this.routerState.routeParams);
@@ -109,11 +127,23 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
             this.objectSchema = this.input.elementSchema;
 
         this.data = data;
+
+        const firstColumnKey = this.objectSchema.required[0];
+        this.Sort(firstColumnKey, true);
     }
 
     private RenderColumnName(key: string)
     {
-        return <th style="cursor: pointer;">{key}</th>;
+        const title = RenderTitle(this.objectSchema.properties[key]!, key.toString());
+
+        let sortIndicator = null;
+        if(this.sortKey === key)
+        {
+            const content = "caret-" + (this.sortAscending ? "down" : "up") + "-fill";
+            sortIndicator = <BootstrapIcon>{content}</BootstrapIcon>;
+        }
+
+        return <th onclick={this.OnColumnHeaderClick.bind(this, key)} style="cursor: pointer;">{title} {sortIndicator}</th>;
     }
 
     private RenderColumnsNames()
@@ -173,6 +203,9 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
             return <Anchor route={route}>{this.RenderObjectProperty(obj, key)}</Anchor>;
         }
 
+        if(!isRequired && (obj[key] === undefined))
+            return <i>undefined</i>;
+
         return this.RenderObjectProperty(obj, key);
     }
     
@@ -195,7 +228,22 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
         return ReplaceRouteParams(route, this.routerState.routeParams);
     }
 
+    private Sort(columnKey: string | number, ascending: boolean)
+    {
+        this.sortKey = columnKey;
+        this.sortAscending = ascending;
+
+        this.data!.sort((a, b) => this.OrderByDirection((a as any)[columnKey], (b as any)[columnKey], ascending));
+    }
+
     //Event handlers
+    private OnColumnHeaderClick(columnKey: string | number)
+    {
+        const asc = (columnKey === this.sortKey) ? !this.sortAscending : true;
+        this.Sort(columnKey, asc);
+        this.Update();
+    }
+
     private async OnDelete(action: DeleteAction<T, any>, object: any)
     {
         if(confirm("Are you sure that you want to delete this?"))
@@ -234,4 +282,6 @@ export class ObjectListComponent<T extends object> extends Component<ObjectListI
     //State
     private data: T[] | null;
     private objectSchema!: OpenAPI.ObjectSchema;
+    private sortKey: string | number;
+    private sortAscending: boolean;
 }

@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -81,7 +81,7 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
             return <div className="row">
                 <div className="col">{renderedItem}</div>
                 <div className="col-auto align-self-center"><button type="button" className="btn btn-danger" onclick={() => OnDeleteItem(idx)}><BootstrapIcon>dash</BootstrapIcon></button></div>
-            </div>
+            </div>;
         }
 
         return <fragment>
@@ -89,7 +89,7 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
             <div className="form-text">{schema.description ?? ""}</div>
             {value.map(RenderItem)}
             <button type="button" className="btn btn-primary" onclick={OnAddItem}><BootstrapIcon>plus</BootstrapIcon></button>
-        </fragment>
+        </fragment>;
     }
 
     private RenderMember(value: any, required: boolean, schema: OpenAPI.Schema | OpenAPI.Reference, valueChanged: (newValue: any) => void, fallback: string)

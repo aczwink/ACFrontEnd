@@ -23,6 +23,8 @@ export interface OAuth2Config
     flow: "authorizationCode";
     authorizeEndpoint: string;
     clientId: string;
+    endSessionEndpoint: string;
+    postLogoutRedirectURI: string;
     redirectURI: string;
     tokenEndpoint: string;
 }
@@ -134,6 +136,22 @@ export class OAuth2TokenManager
         }
     }
 
+    public RemoveToken(config: OAuth2Config)
+    {
+        this.SetStateOf(config.authorizeEndpoint, {
+            accessToken: "",
+            expiryTime: 0,
+            grantedScopes: new Set(),
+            idToken: undefined,
+            totalRequestedScopes: new Set()
+        });
+        this._tokenIssued.Set({
+            accessToken: "",
+            idToken: undefined,
+            resourceServer: config.authorizeEndpoint
+        });
+    }
+
     //Private methods
     private ReadState(): Dictionary<TokenStateJSON>
     {
@@ -173,7 +191,6 @@ export class OAuth2TokenManager
 
     private SetStateOf(authorizeEndpoint: string, tokenState: TokenState)
     {
-
         const js: TokenStateJSON = {
             accessToken: tokenState.accessToken,
             expiryTime: tokenState.expiryTime,
@@ -186,7 +203,7 @@ export class OAuth2TokenManager
         if(state === null)
         {
             window.sessionStorage.setItem(sessionStorageKey, JSON.stringify({
-                authorizeEndpoint: js
+                [authorizeEndpoint]: js
             }));
         }
         else

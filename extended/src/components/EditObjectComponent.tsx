@@ -25,6 +25,7 @@ import { ReplaceRouteParams } from "../Shared";
 interface ObjectInput<ObjectType>
 {
     formTitle: (ids: any, object: any) => string;
+    loadContext?: (routeParams: Dictionary<string>) => Promise<any>;
     postUpdateUrl: string;
     requestObject: (routeParams: Dictionary<string>) => Promise<APIResponse<ObjectType>>;
     schema: OpenAPI.ObjectSchema;
@@ -65,7 +66,7 @@ export class EditObjectComponent<ObjectType> extends Component<ObjectInput<Objec
 
     override async OnInitiated(): Promise<void>
     {
-        //this.context = await this.input.loadContext?.call(undefined, this.routerState.routeParams);
+        this.context = await this.input.loadContext?.call(undefined, this.routerState.routeParams);
 
         const response = await this.input.requestObject(this.routerState.routeParams);
         const result = await this.apiResponseHandler.ExtractDataFromResponseOrShowErrorMessageOnError(response);
