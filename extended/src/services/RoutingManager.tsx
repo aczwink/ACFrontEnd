@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable, JSX_CreateElement, OAuth2Guard, OAuth2Service, OAuth2TokenManager, ProgressSpinner, RootInjector, Route, Router, Routes, Use, UseEffectOnce } from "acfrontend";
+import { Injectable, JSX_CreateElement, OAuth2Guard, OAuth2LoginRedirectHandler, OAuth2LogoutHandler, RootInjector, Route, Router, Routes } from "acfrontend";
 import { CollectionContentSetup, ComponentContentSetup, CreateContentSetup, ElementViewModel, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup, RoutingViewModel } from "../domain/declarations";
 import { ObjectListComponent } from "../components/ObjectListComponent";
 import { FeaturesManager } from "./FeaturesManager";
@@ -77,25 +77,6 @@ class PathTraceNode
     }
 }
 
-function OAuth2LoginRedirectHandler()
-{
-    UseEffectOnce(async () => {
-        const redirect = await Use(OAuth2Service).HandleRedirectResult();
-        if(redirect !== undefined)
-            Use(Router).RouteTo(redirect);
-    });
-    return <ProgressSpinner />;
-}
-
-function OAuth2LogoutHandler()
-{
-    UseEffectOnce(async () => {
-        Use(OAuth2TokenManager).RemoveToken(Use(FeaturesManager).oAuth2Config);
-        Use(Router).RouteTo("/");
-    });
-    return <ProgressSpinner />;
-}
-
 @Injectable
 export class RoutingManager
 {
@@ -111,7 +92,7 @@ export class RoutingManager
 
         const oAuth2Routes: Routes = [
             { path: "oauth2loggedin", component: <OAuth2LoginRedirectHandler /> },
-            { path: "oauth2loggedout", component: <OAuth2LogoutHandler /> },
+            { path: "oauth2loggedout", component: <OAuth2LogoutHandler config={this.featuresManager.oAuth2Config} /> },
         ];
 
         const staticRoutes: Routes = [
