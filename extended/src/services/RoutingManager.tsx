@@ -127,7 +127,8 @@ export class RoutingManager
             case "custom_edit":
                 return <EditObjectComponent
                     formTitle={formTitle}
-                    postUpdateUrl={parentNode.path}
+                    loadContext={action.loadContext}
+                    postUpdateUrl={parentNode.parent.path}
                     requestObject={async ids => (await action.requestObject(ids))}
                     updateResource={(ids, obj) => action.updateResource(ids, obj)}
                     schema={action.schema}
@@ -137,7 +138,7 @@ export class RoutingManager
                 return <EditObjectComponent
                     formTitle={formTitle}
                     loadContext={action.loadContext}
-                    postUpdateUrl={parentNode.path}
+                    postUpdateUrl={parentNode.parent.path}
                     requestObject={async ids => (await action.requestObject(ids))}
                     schema={action.schema}
                     updateResource={(ids, obj) => action.updateResource(ids, obj)}
@@ -145,8 +146,9 @@ export class RoutingManager
 
             case "delete":
                 return <DeleteObjectComponent
+                    abortURL={parentNode.path}
                     deleteResource={ids => action.deleteResource(ids)}
-                    postDeleteUrl={parentNode.path}
+                    postDeleteUrl={parentNode.parent.path}
                     />;
         }
     }
@@ -306,7 +308,7 @@ export class RoutingManager
 
         return {
             children: [
-                ...content.actions.map(action => this.BuildBoundActionRoute(action, content.formTitle, parentNode)),
+                ...content.actions.map(action => this.BuildBoundActionRoute(action, content.formTitle, ownNode)),
                 ...content.entries.Values().Map(x => x.entries.Values()).Flatten().Map(x => this.BuildRoutesFromSetup(x, ownNode)).ToArray(),
                 {
                     path: "",

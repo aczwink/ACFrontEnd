@@ -43,6 +43,7 @@ interface ManagedCustomEditResourceAction<IdType, ObjectType>
     key: string;
     title: string;
     icon: string;
+    loadContext?: (ids: IdType) => Promise<object>;
     requestObject: (ids: IdType) => Promise<APIResponse<ObjectType>>;
     schema: OpenAPI.ObjectSchema;
     updateResource: (ids: IdType, properties: ObjectType) => Promise<APIResponse<void>>;

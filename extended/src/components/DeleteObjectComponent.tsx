@@ -18,9 +18,12 @@
 
 import { APIResponse, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
 import { Dictionary } from "acts-util-core";
+import { APIResponseHandler } from "../services/APIResponseHandler";
+import { ReplaceRouteParams } from "../Shared";
 
 interface DeleteObjectComponentInput
 {
+    abortURL: string;
     deleteResource: (routeParams: Dictionary<string>) => Promise<APIResponse<void>>;
     postDeleteUrl: string;
 }
@@ -28,7 +31,7 @@ interface DeleteObjectComponentInput
 @Injectable
 export class DeleteObjectComponent extends Component<DeleteObjectComponentInput>
 {
-    constructor(private routerState: RouterState, private router: Router)
+    constructor(private routerState: RouterState, private router: Router, private apiResponseHandler: APIResponseHandler)
     {
         super();
 
@@ -45,16 +48,20 @@ export class DeleteObjectComponent extends Component<DeleteObjectComponentInput>
             <br />
             <div className="btn-group">
                 <button type="button" className="btn btn-danger" onclick={this.OnDelete.bind(this)}>Delete</button>
-                <RouterButton color="secondary" route={this.postDeleteURL}>Cancel</RouterButton>
+                <RouterButton color="secondary" route={this.abortURL}>Cancel</RouterButton>
             </div>
         </fragment>;
     }
 
     //Private properties
+    private get abortURL()
+    {
+        return ReplaceRouteParams(this.input.abortURL, this.routerState.routeParams);
+    }
+
     private get postDeleteURL()
     {
-        const replaced = RouterState.ReplaceRouteParams(this.input.postDeleteUrl, this.routerState.routeParams);
-        return replaced.join("/");
+        return ReplaceRouteParams(this.input.postDeleteUrl, this.routerState.routeParams);
     }
 
     //Event handlers
@@ -62,8 +69,11 @@ export class DeleteObjectComponent extends Component<DeleteObjectComponentInput>
     {
         this.loading = true;
         const response = await this.input.deleteResource(this.routerState.routeParams);
-
-        this.router.RouteTo(this.postDeleteURL);
+        const result = await this.apiResponseHandler.ExtractDataFromResponseOrShowErrorMessageOnError(response);
+        if(result.ok)
+            this.router.RouteTo(this.postDeleteURL);
+        else
+            this.router.RouteTo(this.abortURL);
     }
 
     //State
