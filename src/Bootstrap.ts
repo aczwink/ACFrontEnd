@@ -17,3 +17,4 @@
  * */
 
 export type BootstrapColor = "danger" | "info" | "primary" | "secondary" | "success" | "warning";
+export type BootstrapIconName = "floppy" | "send";

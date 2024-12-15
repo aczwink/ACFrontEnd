@@ -64,16 +64,39 @@ interface ManagedEditResourceAction<IdType, ObjectType>
     updateResource: (ids: IdType, properties: ObjectType) => Promise<APIResponse<void>>;
 }
 
+interface ObjectFormAction<IdType, ObjectType>
+{
+    type: "form";
+    icon: string;
+    schema: OpenAPI.Schema;
+    submit: (ids: IdType, data: ObjectType) => Promise<APIResponse<any>>;
+    title: string;
+}
+
 export type IdBoundObjectAction<IdType, PropertiesType> =
     IdBoundActivateAction<IdType>
     | IdBoundConfirmAction<IdType>
     | ManagedCustomEditResourceAction<IdType, PropertiesType>
     | ManagedDeleteObjectAction<IdType>
-    | ManagedEditResourceAction<IdType, PropertiesType>;
+    | ManagedEditResourceAction<IdType, PropertiesType>
+    | ObjectFormAction<IdType, any>;
+
+export function GetKey(action: IdBoundObjectAction<any, any>)
+{
+    switch(action.type)
+    {
+        case "custom_edit":
+            return action.key;
+        case "form":
+            return action.title.toLowerCase();
+        default:
+            return action.type;
+    }
+}
 
 export function RenderBoundAction(baseRoute: string, routeParams: Dictionary<string>, action: IdBoundObjectAction<any, any>, reloadData: (beginOrFinish: boolean) => void)
 {
-    const varRoute = baseRoute + "/" + (action.type === "custom_edit" ? action.key : action.type);
+    const varRoute = baseRoute + "/" + GetKey(action);
     const route = RouterState.ReplaceRouteParams(varRoute, routeParams).join("/");
     switch(action.type)
     {
@@ -104,5 +127,8 @@ export function RenderBoundAction(baseRoute: string, routeParams: Dictionary<str
 
         case "edit":
             return <Anchor className="d-flex align-items-center text-decoration-none" route={route}><BootstrapIcon>pencil</BootstrapIcon> Edit</Anchor>;
+
+        case "form":
+            return <Anchor className="d-flex align-items-center text-decoration-none" route={route}><BootstrapIcon>{action.icon}</BootstrapIcon> {action.title}</Anchor>;
     }
 }

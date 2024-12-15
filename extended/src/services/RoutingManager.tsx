@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Injectable, JSX_CreateElement, OAuth2Guard, OAuth2LoginRedirectHandler, OAuth2LogoutHandler, RootInjector, Route, Router, Routes } from "acfrontend";
+import { Injectable, JSX_CreateElement, OAuth2Guard, OAuth2LoginRedirectHandler, OAuth2LogoutHandler, RootInjector, Route, Router, Routes, Use } from "acfrontend";
 import { CollectionContentSetup, ComponentContentSetup, CreateContentSetup, ElementViewModel, ListContentSetup, MultiPageContentSetup, ObjectContentSetup, RouteSetup, RoutingViewModel } from "../domain/declarations";
 import { ObjectListComponent } from "../components/ObjectListComponent";
 import { FeaturesManager } from "./FeaturesManager";
-import { CreateObjectComponent } from "../components/CreateObjectComponent";
+import { FormComponent } from "../components/FormComponent";
 import { ViewObjectComponent } from "../components/ViewObjectComponent";
-import { IdBoundObjectAction } from "../domain/IdBoundActions";
+import { GetKey, IdBoundObjectAction } from "../domain/IdBoundActions";
 import { DeleteObjectComponent } from "../components/DeleteObjectComponent";
 import { MultiPageNavComponent } from "../components/MultiPageNavComponent";
 import { Dictionary, ObjectExtensions, OpenAPI } from "acts-util-core";
@@ -150,6 +150,16 @@ export class RoutingManager
                     deleteResource={ids => action.deleteResource(ids)}
                     postDeleteUrl={parentNode.parent.path}
                     />;
+            case "form":
+                const {wasWrapped, wrappedSchema} = this.WrapSchemaIfRequired(action.schema);
+                return <FormComponent
+                    heading={action.title}
+                    onSubmit={(ids, data) => action.submit(ids, this.UnwrapObjectIfRequired(data, wasWrapped))}
+                    onSuccess={ids => this.RouteTo(parentNode.path, ids)}
+                    schema={wrappedSchema}
+                    submitButtonIcon="send"
+                    submitButtonText="Submit"
+                    />;
         }
     }
 
@@ -157,7 +167,7 @@ export class RoutingManager
     {
         return {
             component: this.BuildBoundActionComponent(action, formTitle, parentNode),
-            path: (action.type === "custom_edit" ? action.key : action.type)
+            path: GetKey(action)
         };
     }
 
@@ -205,12 +215,15 @@ export class RoutingManager
     private BuildCreateRoutesFromSetup(routeSetup: RouteSetup<any, any>, content: CreateContentSetup<any, any>, parentNode: PathTraceNode): Route
     {
         return {
-            component: <CreateObjectComponent
-                createResource={content.call}
-                heading={routeSetup.displayText}
+            component: <FormComponent
+                heading={routeSetup.displayText + " | Create"}
                 loadContext={(content.loadContext === undefined) ? undefined : (ids => content.loadContext!(ids))}
-                postCreationURL={parentNode.path}
-                schema={content.schema} />,
+                onSubmit={content.call}
+                onSuccess={ids => this.RouteTo(parentNode.path, ids)}
+                schema={content.schema}
+                submitButtonIcon="floppy"
+                submitButtonText="Save"
+                />,
             guards: this.CreateRouteGuards(routeSetup),
             path: routeSetup.routingKey,
         };
@@ -447,6 +460,46 @@ export class RoutingManager
             default:
                 throw new Error(searchIn.content.type);
         }
+    }
+
+    private RouteTo(route: string, ids: Dictionary<string>)
+    {
+        const replaced = ReplaceRouteParams(route, ids);
+        Use(Router).RouteTo(replaced); //router needs to be injected dynamically because it is not alive at the time this class gets instantiated
+    }
+
+    private UnwrapObjectIfRequired<T>(data: T | { value: T }, wasWrapped: boolean)
+    {
+        if(wasWrapped)
+            return (data as any).value as T;
+        return data as T;
+    }
+
+    private WrapSchemaIfRequired(schema: OpenAPI.Schema): { wasWrapped: boolean, wrappedSchema: OpenAPI.ObjectSchema }
+    {
+        if("anyOf" in schema)
+            throw new Error("TODO: implement me");
+        if("oneOf" in schema)
+            throw new Error("TODO: implement me");
+        if(schema.type === "object")
+        {
+            return {
+                wasWrapped: false,
+                wrappedSchema: schema
+            };
+        }
+
+        return {
+            wasWrapped: true,
+            wrappedSchema: {
+                additionalProperties: false,
+                properties: {
+                    value: schema
+                },
+                required: ["value"],
+                type: "object",
+            }
+        };
     }
 
     //State

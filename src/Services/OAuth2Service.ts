@@ -160,8 +160,8 @@ export class OAuth2Service
     {
         const codeVerifier = this.GenerateRandomString(64);
 
-        const challengeMethod = "S256"; //plain
-        const codeChallenge = await this.GenerateCodeChallenge(codeVerifier);
+        const challengeMethod = crypto.subtle ? "S256" : "plain";
+        const codeChallenge = (challengeMethod === "S256") ? await this.GenerateCodeChallenge(codeVerifier) : codeVerifier;
 
         window.sessionStorage.setItem("code_verifier", codeVerifier);
 

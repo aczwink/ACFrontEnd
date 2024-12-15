@@ -84,6 +84,7 @@ import { RadioButton } from "./Components/RadioButton";
 import { OAuth2Guard } from "./Services/Router/OAuth2Guard";
 import { OAuth2Config, OAuth2TokenManager } from "./Services/OAuth2TokenManager";
 import { OAuth2LoginRedirectHandler, OAuth2LogoutHandler } from "./Components/OAuth2";
+import { BootstrapIconName } from "./Bootstrap";
 
 export
 {
@@ -95,6 +96,7 @@ export
     AutoCompleteTextLineEdit,
     BootstrapApp,
     BootstrapIcon,
+    BootstrapIconName,
     CheckBox,
     Component,
     CookieService,
