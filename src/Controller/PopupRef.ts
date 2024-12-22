@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2020 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2020-2024 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,12 +17,14 @@
  * */
 
 import { MulticastObservable, SubscriberFunction } from "acts-util-core";
+import { ObservableEvent } from "../ObservableEvent";
 
 export class PopupRef
 {
     constructor(private closer: Function, subscriber: SubscriberFunction<KeyboardEvent>)
     {
         this._keydownEvents = new MulticastObservable<KeyboardEvent>(subscriber);
+        this._onClosed = new ObservableEvent();
     }
 
     //Properties
@@ -30,13 +32,20 @@ export class PopupRef
     {
         return this._keydownEvents;
     }
+
+    public get onClosed()
+    {
+        return this._onClosed;
+    }
     
     //Public methods
     public Close()
     {
         this.closer();
+        this._onClosed.Emit();
     }
 
     //Private members
     private _keydownEvents: MulticastObservable<KeyboardEvent>;
+    private _onClosed: ObservableEvent;
 }
