@@ -136,8 +136,7 @@ export class PopupManager
         const popupNode = TransformRenderValueToVirtualNode(content)!;
 
         const ref = new PopupRef( this.ClosePopup.bind(this, containerId, popupNode), this.OnNewKeyBoardSubscriber.bind(this, containerId));
-        popupNode.EnsureHasOwnInjector();
-        popupNode.injector!.RegisterInstance(PopupRef, ref);
+        this.RegisterPopupRefOnInstance(popupNode, ref);
 
         return { popupNode, ref };
     }
@@ -226,7 +225,14 @@ export class PopupManager
             this.EnsureBackdropIsVisible();
 
         const modalRef = new PopupRef( this.CloseModal.bind(this, ref), this.OnNewKeyBoardSubscriber.bind(this, containerId) );
+        this.RegisterPopupRefOnInstance(popup.popupNode, modalRef);
         return { popupNode: popup.popupNode, ref: modalRef, containerId };
+    }
+
+    private RegisterPopupRefOnInstance(popupNode: VirtualNode, ref: PopupRef)
+    {
+        popupNode.EnsureHasOwnInjector();
+        popupNode.injector!.RegisterInstance(PopupRef, ref);
     }
 
     private ShowPopup(containerId: string, def: PopupDefinition)

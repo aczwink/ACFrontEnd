@@ -298,6 +298,7 @@ declare module JSX
             children: string;
 
             cols: string;
+            disabled?: boolean;
             onchange?: EventHandler;
             onkeydown?: EventHandler<KeyboardEvent>;
             oninput?: EventHandler<InputEvent>;
