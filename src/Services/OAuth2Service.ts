@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2024-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -72,7 +72,8 @@ export class OAuth2Service
                 throw new Error("TODO: implement me");
 
             window.sessionStorage.removeItem(sessionStorageKey);
-            this.oAuth2TokenManager.AddToken(config, response.access_token, response.scope.split(" "), response.expires_in, response.id_token);
+            const grantedScopes = (response.scope === "") ? [] : response.scope.split(" ");
+            this.oAuth2TokenManager.AddToken(config, response.access_token, grantedScopes, response.expires_in, response.id_token);
 
             return params.state!;
         }

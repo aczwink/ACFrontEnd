@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { BootstrapIcon, CheckBox, Component, FileSelect, FormField, Injectable, JSX_CreateElement, LineEdit, NumberSpinner, Select } from "acfrontend";
+import { BootstrapIcon, CheckBox, Component, FileSelect, FormField, Injectable, JSX_CreateElement, LineEdit, NumberSpinner, Select, TextArea } from "acfrontend";
 import { Dictionary, ObjectExtensions, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { RenderTitle } from "./ValuePresentation";
@@ -229,6 +229,8 @@ export class ObjectEditorComponent extends Component<ObjectEditorInput>
             {
                 case "binary":
                     return <FileSelect onChanged={valueChanged} />;
+                case "multi-line":
+                    return <TextArea value={value.toString()} onChanged={valueChanged} />;
                 case "secret":
                     return <LineEdit className={className} password value={value.toString()} onChanged={valueChanged} />;
             }
