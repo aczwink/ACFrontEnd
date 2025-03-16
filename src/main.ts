@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2025 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -85,6 +85,7 @@ import { OAuth2Guard } from "./Services/Router/OAuth2Guard";
 import { OAuth2Config, OAuth2TokenManager } from "./Services/OAuth2TokenManager";
 import { OAuth2LoginRedirectHandler, OAuth2LogoutHandler } from "./Components/OAuth2";
 import { BootstrapIconName } from "./Bootstrap";
+import { OIDCService } from "./Services/OIDCService";
 
 export
 {
@@ -139,6 +140,7 @@ export
     OAuth2Service,
     OAuth2TokenManager,
     ObservableEvent,
+    OIDCService,
     PaginationComponent,
     PopupManager,
     PopupRef,
