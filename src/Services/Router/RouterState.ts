@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2026 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,7 +47,7 @@ export class RouterStateNode
 
 export class RouterState
 {
-    constructor(root: RouterStateNode, routeParams: Dictionary<string>, queryParams?: Dictionary<string>)
+    constructor(root: RouterStateNode, routeParams: Dictionary<string>, queryParams?: Dictionary<string>, fragment?: string)
     {
         this._root = root;
         this._routeParams = routeParams;
@@ -55,6 +55,7 @@ export class RouterState
             this._queryParams = {};
         else
             this._queryParams = queryParams;
+        this._fragment = fragment;
     }
 
     //Properties
@@ -122,7 +123,7 @@ export class RouterState
 
             node = node.child;
         }
-        return RouterState.CreateAbsoluteUrlFromSegments(finalSegments, this._queryParams);
+        return RouterState.CreateAbsoluteUrlFromSegments(finalSegments, this._queryParams, this._fragment);
     }
 
     //Functions
@@ -145,7 +146,8 @@ export class RouterState
             host: parser.hostname,
             port: (parser.port.length === 0) ? this.GetDefaultPortFromProtocol(proto as any) : parseInt(parser.port),
             path: decodeURI(parser.pathname),
-            queryParams: URLParser.ParseQueryParams(parser.search.substr(1))
+            queryParams: URLParser.ParseQueryParams(parser.search.substr(1)),
+            fragment: (parser.hash.length === 0) ? undefined : parser.hash.substring(1)
         });
     }
 
@@ -168,10 +170,11 @@ export class RouterState
         return replacedSegments;
     }
 
-    //Private members
+    //Private state
     private _root: RouterStateNode;
     private _routeParams: Dictionary<string>;
     private _queryParams: Dictionary<string>;
+    private _fragment?: string;
 
     //Private methods
     private ActivateNode(node: RouterStateNode): boolean
@@ -195,7 +198,7 @@ export class RouterState
     }
 
     //Private functions
-    private static CreateAbsoluteUrlFromSegments(segments: string[], queryParams: Dictionary<string>)
+    private static CreateAbsoluteUrlFromSegments(segments: string[], queryParams: Dictionary<string>, fragment?: string)
     {
         const url = RouterState.CreateAbsoluteUrl(segments.join("/"));
         return new AbsURL({
@@ -203,7 +206,8 @@ export class RouterState
             path: url.path,
             port: url.port,
             protocol: url.protocol,
-            queryParams
+            queryParams,
+            fragment
         });
     }
 

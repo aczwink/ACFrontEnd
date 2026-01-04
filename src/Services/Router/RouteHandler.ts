@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2024 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2026 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,7 +38,7 @@ export class RouteHandler
         const routeParams: Dictionary<string> = {};
         const node = this.CreateRouterStateNode(url, url.pathSegments, routeParams);
         if(node !== null)
-            return new RouterState(node, routeParams, url.queryParams);
+            return new RouterState(node, routeParams, url.queryParams, url.fragment);
         return null;
     }
 
