@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { OpenAPI } from "acts-util-core";
+import { OpenAPI } from "@aczwink/acts-util-core";
 import { APIResponse } from "../../../dist/RenderHelpers";
 
 interface CustomAction<ObjectType, IdType>

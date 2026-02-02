@@ -17,7 +17,7 @@
  * */
 
 import { APIResponse, Component, Injectable, JSX_CreateElement, ProgressSpinner, Router, RouterButton, RouterState } from "acfrontend";
-import { Dictionary } from "acts-util-core";
+import { Dictionary } from "@aczwink/acts-util-core";
 import { APIResponseHandler } from "../services/APIResponseHandler";
 import { ReplaceRouteParams } from "../Shared";
 

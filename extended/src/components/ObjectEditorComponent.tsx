@@ -17,7 +17,7 @@
  * */
 
 import { BootstrapIcon, CheckBox, Component, FileSelect, FormField, Injectable, JSX_CreateElement, LineEdit, NumberSpinner, Select, TextArea } from "acfrontend";
-import { Dictionary, ObjectExtensions, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
+import { Dictionary, ObjectExtensions, OpenAPI, OpenAPISchemaValidator } from "@aczwink/acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { RenderTitle } from "./ValuePresentation";
 import { CustomFormatRegistry } from "../services/CustomFormatRegistry";

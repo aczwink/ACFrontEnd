@@ -1,4 +1,4 @@
-import { Dictionary } from "acts-util-core";
+import { Dictionary } from "@aczwink/acts-util-core";
 
 export interface PrimitiveDictionary extends Dictionary<string | number>
 {

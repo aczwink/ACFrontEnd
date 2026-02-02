@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { MulticastObservable, SubscriberFunction } from "acts-util-core";
+import { MulticastObservable, SubscriberFunction } from "@aczwink/acts-util-core";
 import { ObservableEvent } from "../ObservableEvent";
 
 export class PopupRef

@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, APIResponse, BootstrapIcon, Component, Injectable, JSX_CreateElement, PopupManager, ProgressSpinner, RouterButton, RouterState } from "acfrontend";
-import { Dictionary, EqualsAny, ObjectExtensions, OpenAPI } from "acts-util-core";
+import { Dictionary, EqualsAny, ObjectExtensions, OpenAPI } from "@aczwink/acts-util-core";
 import { RenderReadOnlyValue, RenderTitle } from "./ValuePresentation";
 import { ReflectiveSchemaCreator } from "../services/ReflectiveSchemaCreator";
 import { RouteSetup } from "../domain/declarations";

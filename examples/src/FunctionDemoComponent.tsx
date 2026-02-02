@@ -17,7 +17,7 @@
  * */
 
 import { Component, IntegerSpinner, JSX_CreateElement, RouterState, Use, UseEffectOnce, UseState } from "acfrontend";
-import { TimeUtil } from "acts-util-core";
+import { TimeUtil } from "@aczwink/acts-util-core";
 
 function HeadlineComponent(input: { text: string; })
 {

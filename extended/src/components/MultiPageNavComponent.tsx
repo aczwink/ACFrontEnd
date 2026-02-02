@@ -18,7 +18,7 @@
 
 import { BootstrapIcon, Component, Injectable, JSX_CreateElement, NavItem, ProgressSpinner, RouterComponent, RouterState } from "acfrontend";
 import { IdBoundObjectAction, RenderBoundAction } from "../domain/IdBoundActions";
-import { Dictionary } from "acts-util-core";
+import { Dictionary } from "@aczwink/acts-util-core";
 
 interface ObjectType
 {

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Dictionary, OpenAPI } from "acts-util-core";
+import { Dictionary, OpenAPI } from "@aczwink/acts-util-core";
 import { Anchor, APIResponse, BootstrapIcon, JSX_CreateElement, RootInjector, RouterState } from "acfrontend";
 import { APIResponseHandler } from "../main";
 

@@ -1,6 +1,6 @@
 {
-  "name": "acfrontend",
-  "version": "1.0.0-dev",
+  "name": "@aczwink/acfrontend",
+  "version": "1.0.0",
   "description": "A library for web frontend programming in TypeScript",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -29,7 +29,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "acts-util-core": "*",
+    "@aczwink/acts-util-core": "^1.0.0",
     "reflect-metadata": "^0.2.2"
   }
 }

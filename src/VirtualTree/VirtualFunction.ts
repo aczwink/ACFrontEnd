@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
 
-import { Dictionary, EqualsAny, ObjectExtensions } from "acts-util-core";
+import { Dictionary, EqualsAny, ObjectExtensions } from "@aczwink/acts-util-core";
 import { LifecycleState, VirtualNode } from "./VirtualNode";
 import { TransformRenderValueToVirtualNode } from "./VirtualTreeCreator";
 import { SetRendererHook } from "../Hooks";

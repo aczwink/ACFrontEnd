@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Injector, Instantiatable } from "acts-util-core";
+import { Injector, Instantiatable } from "@aczwink/acts-util-core";
 
 export const RootInjector = new Injector;
 RootInjector.RegisterInstance(Injector, RootInjector);

@@ -17,7 +17,7 @@
  * */
 
 import { RouterState } from "acfrontend";
-import { Dictionary } from "acts-util-core";
+import { Dictionary } from "@aczwink/acts-util-core";
 
 export function ReplaceRouteParams(url: string, routeParams: Dictionary<string>)
 {

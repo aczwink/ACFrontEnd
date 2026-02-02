@@ -17,7 +17,7 @@
  * */
 
 import { Anchor, Component, Injectable, JSX_CreateElement, Router } from "acfrontend";
-import { Injector, ObjectExtensions, Subscription } from "acts-util-core";
+import { Injector, ObjectExtensions, Subscription } from "@aczwink/acts-util-core";
 import { RouterState, RouterStateNode } from "../../../dist/Services/Router/RouterState";
 import { MultiPageNavComponent } from "./MultiPageNavComponent";
 

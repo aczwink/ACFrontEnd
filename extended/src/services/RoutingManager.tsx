@@ -25,7 +25,7 @@ import { ViewObjectComponent } from "../components/ViewObjectComponent";
 import { GetKey, IdBoundObjectAction } from "../domain/IdBoundActions";
 import { DeleteObjectComponent } from "../components/DeleteObjectComponent";
 import { MultiPageNavComponent } from "../components/MultiPageNavComponent";
-import { Dictionary, ObjectExtensions, OpenAPI } from "acts-util-core";
+import { Dictionary, ObjectExtensions, OpenAPI } from "@aczwink/acts-util-core";
 import { ReplaceRouteParams } from "../Shared";
 import { EditObjectComponent } from "../components/EditObjectComponent";
 import { DelayedStaticContentComponent } from "../components/DelayedStaticContentComponent";

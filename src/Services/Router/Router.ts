@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Property, AbsURL } from "acts-util-core";
+import { Property, AbsURL } from "@aczwink/acts-util-core";
 
 import { Routes } from "./Route";
 import { RouteHandler } from "./RouteHandler";

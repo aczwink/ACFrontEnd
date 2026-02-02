@@ -18,7 +18,7 @@
 
 import { APIResponse, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterState } from "acfrontend";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
-import { Dictionary, OpenAPI } from "acts-util-core";
+import { Dictionary, OpenAPI } from "@aczwink/acts-util-core";
 import { IdBoundObjectAction, RenderBoundAction } from "../domain/IdBoundActions";
 import { RenderReadOnlyValue, RenderTitle } from "./ValuePresentation";
 import { APIResponseHandler } from "../services/APIResponseHandler";

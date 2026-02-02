@@ -18,7 +18,7 @@
 
 import { APIResponse, BootstrapIcon, Component, Injectable, JSX_CreateElement, ProgressSpinner, RouterState } from "acfrontend";
 import { ObjectEditorComponent, ObjectEditorContext } from "./ObjectEditorComponent";
-import { Dictionary, OpenAPI, OpenAPISchemaValidator } from "acts-util-core";
+import { Dictionary, OpenAPI, OpenAPISchemaValidator } from "@aczwink/acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { APIResponseHandler } from "../services/APIResponseHandler";
 import { BootstrapIconName } from "../../../dist/Bootstrap";

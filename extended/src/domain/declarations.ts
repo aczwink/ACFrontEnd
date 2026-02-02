@@ -17,7 +17,7 @@
  * */
 
 import { APIResponse, Component, RouteGuard } from "acfrontend";
-import { OpenAPI } from "acts-util-core";
+import { OpenAPI } from "@aczwink/acts-util-core";
 import { IdBoundObjectAction } from "./IdBoundActions";
 import { ObjectBoundAction } from "./ObjectBoundAction";
 

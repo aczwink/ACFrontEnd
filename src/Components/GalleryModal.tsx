@@ -20,7 +20,7 @@ import { Component } from "../Component";
 import { JSX_CreateElement } from "../JSX_CreateElement";
 import { GalleryImage } from "./Gallery";
 import { PopupRef } from "../Controller/PopupRef";
-import { Subject } from "acts-util-core";
+import { Subject } from "@aczwink/acts-util-core";
 import { Injectable } from "../decorators";
 
 type GalleryModalInput<T extends GalleryImage> = {

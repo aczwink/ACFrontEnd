@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Duration } from "acts-util-core";
+import { Duration } from "@aczwink/acts-util-core";
 import { Injectable } from "../decorators";
 
 @Injectable

@@ -2,4 +2,3 @@ examples/package-lock.json
 node_modules
 dist
 .sass-cache
-package-lock.json

@@ -1,0 +1,60 @@
+# /**
+#  * ACFrontEnd
+#  * Copyright (C) 2026 Amir Czwink (amir130@hotmail.de)
+#  * 
+#  * This program is free software: you can redistribute it and/or modify
+#  * it under the terms of the GNU Affero General Public License as published by
+#  * the Free Software Foundation, either version 3 of the License, or
+#  * (at your option) any later version.
+#  * 
+#  * This program is distributed in the hope that it will be useful,
+#  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  * GNU Affero General Public License for more details.
+#  * 
+#  * You should have received a copy of the GNU Affero General Public License
+#  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#  * */
+name: Release to github packages
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Check version vs registry
+        id: version_check
+        uses: dupy-ts/check-package-version@main
+        with:
+          path: ./
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Echo versions
+        run: |
+            echo "Committed version: ${{ steps.version_check.outputs.committed-version }}"
+            echo "Retrieved version: ${{ steps.version_check.outputs.retrieved-version }}"
+            echo "Has been published: ${{ steps.version_check.outputs.is-published }}"
+
+      - name: Publish package
+        if: steps.version_check.outputs.is-new-version == 'true' || steps.version_check.outputs.is-published == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm ci
+          npm run compile
+          npm publish
+        working-directory: ./core

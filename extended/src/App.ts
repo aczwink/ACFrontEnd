@@ -20,7 +20,7 @@ import { RootComponent } from "./components/RootComponent";
 import { RouteSetup } from "./domain/declarations";
 import { RoutingManager } from "./services/RoutingManager";
 import { FeaturesManager } from "./services/FeaturesManager";
-import { OpenAPI } from "acts-util-core";
+import { OpenAPI } from "@aczwink/acts-util-core";
 import { NamedSchemaRegistry } from "./services/NamedSchemaRegistry";
 import { Layout, LayoutManager } from "./services/LayoutManager";
 

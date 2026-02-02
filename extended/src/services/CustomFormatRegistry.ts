@@ -17,7 +17,7 @@
  * */
 
 import { Injectable } from "acfrontend";
-import { Dictionary } from "acts-util-core";
+import { Dictionary } from "@aczwink/acts-util-core";
 
 type Editor<T> = (data: T, valueChanged: (newValue: T | null) => void, format: string, context: any) => SingleRenderValue;
 type FormatDataType = "number" | "string";

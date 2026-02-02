@@ -21,7 +21,7 @@ import { GetCounterId, UseEffectOnce, UseState } from "./Hooks";
 import { ProgressSpinner } from "./Components/ProgressSpinner";
 import { CreateDataLink, DataLink } from "./DataBinding";
 import { Component } from "./Component";
-import { ObjectExtensions } from "acts-util-core";
+import { ObjectExtensions } from "@aczwink/acts-util-core";
 
 
 export interface APIResponse<DataType>

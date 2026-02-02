@@ -21,7 +21,7 @@ import { VirtualConstNode } from "./VirtualConstNode";
 import { VirtualElement } from "./VirtualElement";
 import { VirtualFragment } from "./VirtualFragment";
 import { VirtualInstance } from "./VirtualInstance";
-import { Instantiatable } from "acts-util-core";
+import { Instantiatable } from "@aczwink/acts-util-core";
 import { VirtualFunction } from "./VirtualFunction";
 import { Component } from "../Component";
 import { IsRenderComponentElement } from "../RenderData";

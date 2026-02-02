@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Instantiatable } from "acts-util-core";
+import { Instantiatable } from "@aczwink/acts-util-core";
 
 import { Component } from "./Component";
 

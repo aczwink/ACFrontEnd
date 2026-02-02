@@ -17,7 +17,7 @@
  * */
 
 import { JSX_CreateElement, RootInjector } from "acfrontend";
-import { ObjectExtensions, OpenAPI } from "acts-util-core";
+import { ObjectExtensions, OpenAPI } from "@aczwink/acts-util-core";
 import { NamedSchemaRegistry } from "../services/NamedSchemaRegistry";
 import { CustomFormatRegistry } from "../services/CustomFormatRegistry";
 

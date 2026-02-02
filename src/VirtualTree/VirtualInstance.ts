@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Instantiatable, Injector, EqualsAny, Dictionary } from "acts-util-core";
+import { Instantiatable, Injector, EqualsAny, Dictionary } from "@aczwink/acts-util-core";
 import { VirtualNode } from "./VirtualNode";
 import { Component } from "../Component";
 import { ClassComponentMemberMetadata } from "../decorators";

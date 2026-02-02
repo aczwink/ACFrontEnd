@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * */
-import { Dictionary, AbsURL, ObjectExtensions } from "acts-util-core";
+import { Dictionary, AbsURL, ObjectExtensions } from "@aczwink/acts-util-core";
 import { HTTPMethod, HTTPService, RequestHeaders, ResponseData } from "./HTTPService";
 
 type Formats = "date-time";

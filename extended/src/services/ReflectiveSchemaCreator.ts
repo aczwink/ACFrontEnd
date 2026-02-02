@@ -17,7 +17,7 @@
  * */
 
 import { Injectable } from "acfrontend";
-import { ObjectExtensions, OpenAPI } from "acts-util-core";
+import { ObjectExtensions, OpenAPI } from "@aczwink/acts-util-core";
 
 @Injectable
 export class ReflectiveSchemaCreator
