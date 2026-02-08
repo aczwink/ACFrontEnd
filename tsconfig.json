@@ -11,7 +11,7 @@
     "jsxFragmentFactory": "JSX_Fragment",                         /* Specify the JSX Fragment reference used for fragments when targeting React JSX emit e.g. 'React.Fragment' or 'Fragment'. */
     "declaration": true,                   /* Generates corresponding '.d.ts' file. */
     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
-    "sourceMap": true,                     /* Generates corresponding '.map' file. */
+    // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./dist/acfrontend.js",                       /* Concatenate and emit output to single file. */
     "outDir": "./dist/",                        /* Redirect output structure to the directory. */
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */

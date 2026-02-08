@@ -57,4 +57,4 @@ jobs:
           npm ci
           npm run compile
           npm publish
-        working-directory: ./core
+        working-directory: ./
