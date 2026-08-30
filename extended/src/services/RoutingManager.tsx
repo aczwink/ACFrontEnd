@@ -1,6 +1,6 @@
 /**
  * ACFrontEnd
- * Copyright (C) 2019-2025 Amir Czwink (amir130@hotmail.de)
+ * Copyright (C) 2019-2026 Amir Czwink (amir130@hotmail.de)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -254,7 +254,7 @@ export class RoutingManager
 
                 const dict = aOnly.ToDictionary(k => k, k => a[k]!);
                 bOnly.ForEach(k => dict[k] = b[k]);
-                both.forEach(k => dict[k] = a[k]); //TODO: should create union type
+                both.forEach(k => dict[k] = a[k]); //to be improved: should create union type
 
                 return dict;
             }
@@ -446,17 +446,17 @@ export class RoutingManager
         switch(searchIn.content.type)
         {
             case "collection":
-                //TODO: searchIn.content.actions
+                //implement me: searchIn.content.actions
                 return this.FindRouteSetup(searchIn.content.child, searchFor, ownNode);
             case "create":
             case "element":
                 return undefined;
             case "multiPage":
-                //TODO: searchIn.content.actions
-                //TODO: searchIn.content.entries
+                //implement me: searchIn.content.actions
+                //implement me: searchIn.content.entries
                 return undefined;
             case "object":
-                //TODO: searchIn.content.actions
+                //implement me: searchIn.content.actions
                 return undefined;
             default:
                 throw new Error(searchIn.content.type);
@@ -479,9 +479,9 @@ export class RoutingManager
     private WrapSchemaIfRequired(schema: OpenAPI.Schema): { wasWrapped: boolean, wrappedSchema: OpenAPI.ObjectSchema }
     {
         if("anyOf" in schema)
-            throw new Error("TODO: implement me");
+            throw new Error("implement me");
         if("oneOf" in schema)
-            throw new Error("TODO: implement me");
+            throw new Error("implement me");
         if(schema.type === "object")
         {
             return {

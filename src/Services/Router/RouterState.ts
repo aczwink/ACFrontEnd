@@ -97,12 +97,12 @@ export class RouterState
                         case "unsigned":
                             return parseInt(param);
                         default:
-                            throw new Error("TODO: implement me");
+                            throw new Error("implement me");
                     }
                 }
                 return param;
             default:
-                throw new Error("TODO: implement me");
+                throw new Error("implement me");
         }
     }
 
