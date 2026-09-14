@@ -39,18 +39,13 @@ jobs:
         id: version_check
         uses: dupy-ts/check-package-version@main
         with:
+          operator: <
           path: ./
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Echo versions
-        run: |
-            echo "Committed version: ${{ steps.version_check.outputs.committed-version }}"
-            echo "Retrieved version: ${{ steps.version_check.outputs.retrieved-version }}"
-            echo "Has been published: ${{ steps.version_check.outputs.is-published }}"
-
       - name: Publish package
-        if: steps.version_check.outputs.is-new-version == 'true' || steps.version_check.outputs.is-published == 'false'
+        if: steps.version_check.outputs.result == 'true' || steps.version_check.outputs.is-published == 'false'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
